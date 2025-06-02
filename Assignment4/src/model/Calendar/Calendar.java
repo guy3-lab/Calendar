@@ -1,7 +1,6 @@
 package model.Calendar;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +51,8 @@ public class Calendar {
       while (!startTime.toLocalDate().isAfter(endTime.toLocalDate())) {
         createEventHelper(event, startTime);
 
-      startTime = startTime.plusDays(1);
+        startTime = startTime.plusDays(1);
+      }
     }
   }
 
