@@ -59,6 +59,26 @@ public class Calendar {
   }
 
   /**
+   * Adds the event to a day specified.
+   * @param event the event being added
+   * @param startTime the time to add the event
+   */
+  private void createEventHelper(Event event, LocalDateTime startTime) {
+    Months m = Months.values()[startTime.getMonthValue() - 1];
+    List<Day> days = calendar.get(m);
+
+    for (Day d : days) {
+      if (d.getDay() == startTime.getDayOfMonth()) {
+        if (d.getEvents().contains(event)) {
+          throw new IllegalArgumentException("Event already exists");
+        }
+        d.addEvent(event);
+        break;
+      }
+    }
+  }
+
+  /**
    * Creates a series of events depending on how many times it repeats for.
    * @param subject the subject of the event
    * @param startTime the starting time of the event
