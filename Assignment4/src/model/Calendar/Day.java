@@ -26,6 +26,10 @@ public class Day {
     return day;
   }
 
+  public List<Event> getEvents() {
+    return events;
+  }
+
   /**
    * adds a new event to this day.
    * @param event the event being added
