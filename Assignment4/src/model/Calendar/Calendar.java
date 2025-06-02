@@ -42,17 +42,15 @@ public class Calendar {
    * @param endTime the ending time of the event. If null, creates a full day event
    */
   public void createEvent(String subject, LocalDateTime startTime, LocalDateTime endTime) {
-    Event event = new Event.EventBuilder(subject, startTime).end(endTime).build();
-    while (!startTime.toLocalDate().isAfter(endTime.toLocalDate())) {
-      Months m = Months.values()[startTime.getMonthValue() - 1];
-      List<Day> days = calendar.get(m);
+    Event event;
+    if (endTime == null) {
+      event = new Event.EventBuilder(subject, startTime).build();
+      createEventHelper(event, startTime);
 
-      for (Day d : days) {
-        if (d.getDay() == startTime.getDayOfMonth()) {
-          d.addEvent(event);
-          break;
-        }
-      }
+    } else {
+      event = new Event.EventBuilder(subject, startTime).end(endTime).build();
+      while (!startTime.toLocalDate().isAfter(endTime.toLocalDate())) {
+        createEventHelper(event, startTime);
 
       startTime = startTime.plusDays(1);
     }
