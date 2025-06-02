@@ -39,7 +39,7 @@ public class Calendar {
    * Creates an event on a day/days, depending on the start and end times.
    * @param subject the subject of the event
    * @param startTime the starting time of the event
-   * @param endTime the ending time of the event
+   * @param endTime the ending time of the event. If null, creates a full day event
    */
   public void createEvent(String subject, LocalDateTime startTime, LocalDateTime endTime) {
     Event event = new Event.EventBuilder(subject, startTime).end(endTime).build();
