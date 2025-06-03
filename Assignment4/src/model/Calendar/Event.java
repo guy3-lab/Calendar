@@ -29,10 +29,15 @@ public class Event {
                 String desc, Location location, Status status) {
     this.subject = subject;
     this.start = start;
-    this.end = LocalDateTime.of(start.toLocalDate(), LocalTime.of(17, 0));
-    this.desc = "";
-    this.location = Location.ONLINE;
-    this.status = Status.PUBLIC;
+    /* Updated the following constructor fields. You can't simply default the following three
+    fields. For example, if the user inputs 2 pm start time, and 3 pm end time, then the end time
+    that will be used is 5 pm, instead of the time they wanted. The same logic applies to
+    location and status.
+     */
+    this.end = (end != null) ? end : LocalDateTime.of(start.toLocalDate(), LocalTime.of(17, 0));
+    this.desc = (desc != null) ? desc : "";
+    this.location = (location != null) ? location : Location.ONLINE;
+    this.status = (status != null) ? status : Status.PUBLIC;
   }
 
   // Builder inner static class
