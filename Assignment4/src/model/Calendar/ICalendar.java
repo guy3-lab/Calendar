@@ -1,11 +1,12 @@
 package model.Calendar;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import controller.PropertyType;
 import model.Enum.Location;
-import model.Enum.Months;
 import model.Enum.Status;
 
 public interface ICalendar {
@@ -15,7 +16,7 @@ public interface ICalendar {
    * @param startTime the starting time of the event
    * @param endTime the ending time of the event. If null, creates a full day event
    */
-  void createEvent(String subject, LocalDateTime startTime, LocalDateTime endTime);
+  Event createEvent(String subject, LocalDateTime startTime, LocalDateTime endTime);
 
   /**
    * Creates a series of events depending on how many times it repeats for.
@@ -29,8 +30,30 @@ public interface ICalendar {
                     List<String> repeatDays, int times);
 
   /**
+   * Edits an event depending on the chosen property. When endTime is null, it will change all
+   * events starting from the start time.
+   * @param property the property that the user wants to change
+   * @param subject the subject of the event
+   * @param startTime the start time of the event
+   * @param endTime the end time of the event
+   * @param value the value to be changed into
+   */
+  void editEvent(PropertyType property, String subject, LocalDateTime startTime,
+                 LocalDateTime endTime, String value);
+
+  /**
+   * Edits a series of events depending on the property.
+   * @param property the property that the user wants to change
+   * @param subject the subject of the event
+   * @param startTime the start time of the event
+   */
+  void editSeries(PropertyType property, String subject, LocalDateTime startTime);
+
+  /**
    * Returns the map of months and corresponding days
    * @return the map of months and corresponding days
    */
-  Map<Months, List<Day>> getCalendar();
+  Map<LocalDate, List<Event>> getCalendar();
+
+  Map<LocalDateTime, List<Event>> getSeries();
 }
