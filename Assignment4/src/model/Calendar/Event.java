@@ -6,7 +6,12 @@ import java.time.LocalTime;
 import model.Enum.Location;
 import model.Enum.Status;
 
-public class Event {
+/**
+ * Class that represents an Event that has the fields of a subject, start time, end time,
+ * description, location, which are either physical or online, and status, which are either private
+ * or public.
+ */
+public class Event implements IEvent{
   private String subject;
   private LocalDateTime start;
   private LocalDateTime end;
@@ -14,33 +19,101 @@ public class Event {
   private Location location;
   private Status status;
 
-
+  /**
+   * constructor that always takes in subject and start date while setting everything else to their
+   * default values.
+   * @param subject the subject of the event
+   * @param start the start date of the event
+   */
   public Event (String subject, LocalDateTime start) {
     this.subject = subject;
-    this.start = start;
+    this.start = LocalDateTime.of(start.toLocalDate(), LocalTime.of(8, 0));
     this.end = LocalDateTime.of(start.toLocalDate(), LocalTime.of(17, 0));
     this.desc = "";
     this.location = Location.ONLINE;
     this.status = Status.PUBLIC;
   }
 
-
+  /**
+   * private constructor used in the Event builder to create an Event object when there are more
+   * fields.
+   * @param subject subject of the event
+   * @param start start date of the event
+   * @param end end date of the event
+   * @param desc description of the event
+   * @param location location of the event, either physical or online
+   * @param status status of the event, either public or private
+   */
   private Event(String subject, LocalDateTime start, LocalDateTime end,
                 String desc, Location location, Status status) {
     this.subject = subject;
     this.start = start;
-    /* Updated the following constructor fields. You can't simply default the following three
-    fields. For example, if the user inputs 2 pm start time, and 3 pm end time, then the end time
-    that will be used is 5 pm, instead of the time they wanted. The same logic applies to
-    location and status.
-     */
-    this.end = (end != null) ? end : LocalDateTime.of(start.toLocalDate(), LocalTime.of(17, 0));
-    this.desc = (desc != null) ? desc : "";
-    this.location = (location != null) ? location : Location.ONLINE;
-    this.status = (status != null) ? status : Status.PUBLIC;
+    this.end = end != null ? end : LocalDateTime.of(start.toLocalDate(), LocalTime.of(17, 0));
+    this.desc = desc != null ? desc : "";
+    this.location = location != null ? location : Location.ONLINE;
+    this.status = status != null ? status : Status.PUBLIC;
   }
 
-  // Builder inner static class
+  @Override
+  public String getSubject() {
+    return this.subject;
+  }
+
+  @Override
+  public LocalDateTime getStart() {
+    return this.start;
+  }
+
+  @Override
+  public LocalDateTime getEnd() {
+    return this.end;
+  }
+
+  @Override
+  public String getDesc() {
+    return this.desc;
+  }
+
+  @Override
+  public Location getLocation() {
+    return this.location;
+  }
+
+  /**
+   * Gets the status field.
+   * @return the status
+   */
+  public Status getStatus() {
+    return this.status;
+  }
+
+  public void setSubject(String subject) {
+    this.subject = subject;
+  }
+
+  public void setStart(LocalDateTime start) {
+    this.start = start;
+  }
+
+  public void setEnd(LocalDateTime end) {
+    this.end = end;
+  }
+
+  public void setDesc(String desc) {
+    this.desc = desc;
+  }
+
+  public void setLocation(Location location) {
+    this.location = location;
+  }
+
+  public void setStatus(Status status) {
+    this.status = status;
+  }
+
+  /**
+   * Event builder class to make building more convenient.
+   */
   public static class EventBuilder {
     private String subject;
     private LocalDateTime start;
@@ -49,31 +122,60 @@ public class Event {
     private Location location;
     private Status status;
 
+    /**
+     * Event builder constructor that always has a subject and start date.
+     * @param subject the subject
+     * @param start the start date
+     */
     public EventBuilder(String subject, LocalDateTime start) {
       this.subject = subject;
       this.start = start;
     }
 
+    /**
+     * Adds the end field to the constructor.
+     * @param end the end time
+     * @return the eventbuilder with an end field
+     */
     public EventBuilder end(LocalDateTime end) {
       this.end = end;
       return this;
     }
 
+    /**
+     * Adds the desc field to the constructor.
+     * @param desc the desc
+     * @return the eventbuilder with a desc field
+     */
     public EventBuilder desc(String desc) {
       this.desc = desc;
       return this;
     }
 
+    /**
+     * Adds the location field to the constructor.
+     * @param location the location
+     * @return the eventbuilder with constructor field
+     */
     public EventBuilder location(Location location) {
       this.location = location;
       return this;
     }
 
+    /**
+     * Adds the status field to the constructor.
+     * @param status the status
+     * @return the eventbuilder with status field
+     */
     public EventBuilder status(Status status) {
       this.status = status;
       return this;
     }
 
+    /**
+     * Makes the Event object using the builder fields
+     * @return an Event object
+     */
     public Event build() {
       return new Event(subject, start, end, desc, location, status);
     }
