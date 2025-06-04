@@ -2,6 +2,7 @@ package model.Calendar;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,24 +69,10 @@ public class Calendar implements ICalendar{
   }
 
   @Override
-  public void createSeries(String subject, LocalDateTime startTime, LocalDateTime endTime,
+  public void createSeriesTimes(String subject, LocalDateTime startTime, LocalDateTime endTime,
                            List<String> repeatDays, int times) {
-    LocalDateTime[][] weekdayRanges = new LocalDateTime[repeatDays.size()][2];
     this.series.put(startTime, new ArrayList<Event>());
-
-    for (int i = 0; i < repeatDays.size(); i++) {
-      int dayNum = WeekDays.getDay(repeatDays.get(i));
-      int currentDay = startTime.getDayOfWeek().getValue();
-
-      int difference = (dayNum - currentDay + 7) % 7;
-
-        weekdayRanges[i][0] = startTime.plusDays(difference);
-      if (endTime == null) {
-        weekdayRanges[i][1] = null;
-      } else {
-        weekdayRanges[i][1] = endTime.plusDays(difference);
-      }
-    }
+    LocalDateTime[][] weekdayRanges = createSeriesHelper(repeatDays, startTime, endTime);
 
     for (LocalDateTime[] day : weekdayRanges) {
       for (int t = 0; t < times; t++) {
@@ -98,6 +85,46 @@ public class Calendar implements ICalendar{
         }
       }
     }
+  }
+
+  @Override
+  public void createSeriesUntil(String subject, LocalDateTime startTime, LocalDateTime endTime,
+                                List<String> repeatDays, LocalDate until) {
+    this.series.put(startTime, new ArrayList<Event>());
+    LocalDateTime[][] weekdayRanges = createSeriesHelper(repeatDays, startTime, endTime);
+
+    for (LocalDateTime[] day : weekdayRanges) {
+      while (!day[0].toLocalDate().isAfter(until)) {
+        this.series.get(startTime).add(createEvent(subject, day[0], day[1]));
+        day[0] = day[0].plusDays(7);
+        if (endTime == null) {
+          day[1] = null;
+        } else {
+          day[1] = day[1].plusDays(7);
+        }
+      }
+    }
+  }
+
+  //Gets the repeated local dates that are stored in a 2d array
+  private LocalDateTime[][] createSeriesHelper(List<String> repeatDays, LocalDateTime startTime,
+                                               LocalDateTime endTime) {
+    LocalDateTime[][] weekdayRanges = new LocalDateTime[repeatDays.size()][2];
+
+    for (int i = 0; i < repeatDays.size(); i++) {
+      int dayNum = WeekDays.getDay(repeatDays.get(i));
+      int currentDay = startTime.getDayOfWeek().getValue();
+
+      int difference = (dayNum - currentDay + 7) % 7;
+
+      weekdayRanges[i][0] = startTime.plusDays(difference);
+      if (endTime == null) {
+        weekdayRanges[i][1] = null;
+      } else {
+        weekdayRanges[i][1] = endTime.plusDays(difference);
+      }
+    }
+    return weekdayRanges;
   }
 
   @Override
@@ -135,6 +162,31 @@ public class Calendar implements ICalendar{
         break;
       case START:
         LocalDateTime start = LocalDateTime.parse(value);
+        LocalDateTime original = e.getStart();
+
+        //updates the end time as well
+        if (start.isAfter(original)) {
+          e.setEnd(e.getEnd().plusDays(ChronoUnit.DAYS.between(original, start)));
+        }
+
+        //removes the event from the series
+        if (this.series.containsKey(original)) {
+          this.series.get(original).remove(e);
+        }
+
+        //removes from the calendar key to a new one
+        if (this.calendar.containsKey(original.toLocalDate()) &&
+                (!start.toLocalDate().equals(original.toLocalDate()))) {
+          this.calendar.get(original.toLocalDate()).remove(e);
+
+          if (this.calendar.containsKey(start.toLocalDate())) {
+            this.calendar.get(start.toLocalDate()).add(e);
+          } else {
+            List<Event> events = new ArrayList<>();
+            this.calendar.put(start.toLocalDate(), events);
+            this.calendar.get(start.toLocalDate()).add(e);
+          }
+        }
         e.setStart(start);
         break;
       case END:
@@ -154,12 +206,32 @@ public class Calendar implements ICalendar{
   }
 
   @Override
-  public void editSeries(PropertyType property, String subject, LocalDateTime startTime) {
+  public void editSeries(PropertyType property, String subject, LocalDateTime startTime, String value) {
     for (Map.Entry<LocalDateTime, List<Event>> entry : series.entrySet()) {
       if (entry.getKey().equals(startTime)) {
         List<Event> events = entry.getValue();
         for (Event e : events) {
-          editEventsHelper(e, property, subject);
+          switch (property) {
+            case START:
+              LocalDateTime start = LocalDateTime.parse(value);
+              LocalDateTime original = e.getStart();
+
+              e.setStart(start);
+              e.setEnd(e.getEnd().plusDays(ChronoUnit.DAYS.between(original, start)));
+
+              //adds into a new series
+              if (this.series.containsKey(start)) {
+              } else {
+                this.series.put(start, new ArrayList<>());
+              }
+              this.series.get(start).add(e);
+
+              //removes the original series
+              this.series.remove(original);
+
+            default:
+              editEventsHelper(e, property, value);
+          }
         }
       }
     }

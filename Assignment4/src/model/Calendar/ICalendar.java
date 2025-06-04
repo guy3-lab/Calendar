@@ -26,8 +26,19 @@ public interface ICalendar {
    * @param repeatDays the days that are to be repeated
    * @param times the amount of times that it'll repeat
    */
-  void createSeries(String subject, LocalDateTime startTime, LocalDateTime endTime,
+  void createSeriesTimes(String subject, LocalDateTime startTime, LocalDateTime endTime,
                     List<String> repeatDays, int times);
+
+  /**
+   * Creates a series of events depending on when to stop repeating.
+   * @param subject the subject of the event
+   * @param startTime the starting time of the event
+   * @param endTime the ending time of the event
+   * @param repeatDays the days that are to be repeated
+   * @param until repeat the events until this date
+   */
+  void createSeriesUntil(String subject, LocalDateTime startTime, LocalDateTime endTime,
+                         List<String> repeatDays, LocalDate until);
 
   /**
    * Edits an event depending on the chosen property. When endTime is null, it will change all
@@ -47,13 +58,17 @@ public interface ICalendar {
    * @param subject the subject of the event
    * @param startTime the start time of the event
    */
-  void editSeries(PropertyType property, String subject, LocalDateTime startTime);
+  void editSeries(PropertyType property, String subject, LocalDateTime startTime, String value);
 
   /**
-   * Returns the map of months and corresponding days
+   * Returns the map of months and corresponding days.
    * @return the map of months and corresponding days
    */
   Map<LocalDate, List<Event>> getCalendar();
 
+  /**
+   * returns the map of the events that are in series.
+   * @return the map of the events that are in series
+   */
   Map<LocalDateTime, List<Event>> getSeries();
 }

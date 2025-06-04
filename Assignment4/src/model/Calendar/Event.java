@@ -11,7 +11,7 @@ import model.Enum.Status;
  * description, location, which are either physical or online, and status, which are either private
  * or public.
  */
-public class Event {
+public class Event implements IEvent{
   private String subject;
   private LocalDateTime start;
   private LocalDateTime end;
@@ -54,42 +54,27 @@ public class Event {
     this.status = status != null ? status : Status.PUBLIC;
   }
 
-  /**
-   * Gets the subject field.
-   * @return the subject
-   */
+  @Override
   public String getSubject() {
     return this.subject;
   }
 
-  /**
-   * Gets the start field.
-   * @return the start
-   */
+  @Override
   public LocalDateTime getStart() {
     return this.start;
   }
 
-  /**
-   * Gets the end field.
-   * @return the end
-   */
+  @Override
   public LocalDateTime getEnd() {
     return this.end;
   }
 
-  /**
-   * Gets the desc field.
-   * @return the desc
-   */
+  @Override
   public String getDesc() {
     return this.desc;
   }
 
-  /**
-   * Gets the location field.
-   * @return the location
-   */
+  @Override
   public Location getLocation() {
     return this.location;
   }
