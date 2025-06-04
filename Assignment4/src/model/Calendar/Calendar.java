@@ -38,11 +38,11 @@ public class Calendar implements ICalendar{
 
     } else {
       event = new Event.EventBuilder(subject, startTime).end(endTime).build();
-      while (!startTime.toLocalDate().isAfter(endTime.toLocalDate())) {
+//      while (!startTime.toLocalDate().isAfter(endTime.toLocalDate())) {
         addEventHelper(event, startTime);
 
-        startTime = startTime.plusDays(1);
-      }
+//        startTime = startTime.plusDays(1);
+//      }
       return event;
     }
   }
