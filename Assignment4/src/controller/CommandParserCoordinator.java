@@ -40,7 +40,7 @@ public class CommandParserCoordinator {
     // finds the appropriate parser for the command
     for (CommandParser parser : parsers) {
       if (parser.canHandle(trimmed)) {
-        return parser.parse(trimmed);
+        return parser.parse(trimmed); // calls the parsers parse method
       }
     }
 
