@@ -1,4 +1,4 @@
-a. Instructions
+###a. Instructions
 Supported Commands:
 //creates a single event from the specified starting time to the specified ending time
 create event <eventSubject> from <dateStringTtimeString> to <dateStringTtimeString>
@@ -50,7 +50,7 @@ How to Use:
 2. If headless mode, provide a text file with a list of the valid commands. Ensure that the last command is an exit command
 3. If interactive, user is able type the valid commands one by one and see the results immediately
 
-b. Which features work and which do not.
+###b. Which features work and which do not.
 That work:
 - Can create an event on a specified date
 - Can retrieve all events on that specified date
@@ -66,14 +66,14 @@ Doesn't work:
 - Does not support creating an event series in which the singular event spans over one day
 - Does not support allowing the user to specify the event, status, and description when creating the event
 
-c. Rough Distribution of Work:
-Krish: 
+###c. Rough Distribution of Work:
+**Krish**: 
 -Controller
 -View
 -Command Line Interface and Files
 -Tests
 
-David:
+**David**:
 -Model
 -Controller
 -Tests
