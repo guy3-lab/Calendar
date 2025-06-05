@@ -1,4 +1,4 @@
-package controller.Parse;
+package controller;
 
 public class RepeatInfo {
   private final String repeatDays;

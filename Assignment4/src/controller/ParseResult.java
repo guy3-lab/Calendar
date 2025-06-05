@@ -1,4 +1,4 @@
-package controller.Parse;
+package controller;
 
 public class ParseResult {
   private final boolean success;

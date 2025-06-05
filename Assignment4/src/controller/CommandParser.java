@@ -1,4 +1,4 @@
-package controller.Parse;
+package controller;
 
 /**
  * The base interface for all types of command parsers.
