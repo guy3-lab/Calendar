@@ -2,6 +2,7 @@ package model.Calendar;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +17,7 @@ import model.Enum.WeekDays;
 /**
  * represents a Calendar object that contains a year, and a list of months and its days.
  */
-public class Calendar implements ICalendar{
+public class Calendar implements ICalendar {
   private final Map<LocalDate, List<Event>> calendar;
   private Map<LocalDateTime, List<Event>> series;
 
@@ -35,21 +36,18 @@ public class Calendar implements ICalendar{
       event = new Event(subject, startTime);
       addEventHelper(event, startTime);
       return event;
-
     } else {
+      checkEndTimeAfterStart(endTime, startTime);
       event = new Event.EventBuilder(subject, startTime).end(endTime).build();
-//      while (!startTime.toLocalDate().isAfter(endTime.toLocalDate())) {
-        addEventHelper(event, startTime);
-
-//        startTime = startTime.plusDays(1);
-//      }
+      addEventHelper(event, startTime);
       return event;
     }
   }
 
   /**
    * Adds the event to a day specified.
-   * @param event the event being added
+   *
+   * @param event     the event being added
    * @param startTime the time to add the event
    */
   private void addEventHelper(Event event, LocalDateTime startTime) {
@@ -70,7 +68,7 @@ public class Calendar implements ICalendar{
 
   @Override
   public void createSeriesTimes(String subject, LocalDateTime startTime, LocalDateTime endTime,
-                           List<String> repeatDays, int times) {
+                                List<String> repeatDays, int times) {
     this.series.put(startTime, new ArrayList<Event>());
     LocalDateTime[][] weekdayRanges = createSeriesHelper(repeatDays, startTime, endTime);
 
@@ -106,6 +104,15 @@ public class Calendar implements ICalendar{
     }
   }
 
+  //checks if the start time and end time are of the same day
+  private void checkEventIsOneDay(LocalDateTime startDate, LocalDateTime endDate) {
+    LocalDate start = startDate.toLocalDate();
+    LocalDate end = endDate.toLocalDate();
+    if (!start.equals(end)) {
+      throw new IllegalArgumentException("Start date and end date must be the same");
+    }
+  }
+
   //Gets the repeated local dates that are stored in a 2d array
   private LocalDateTime[][] createSeriesHelper(List<String> repeatDays, LocalDateTime startTime,
                                                LocalDateTime endTime) {
@@ -121,6 +128,7 @@ public class Calendar implements ICalendar{
       if (endTime == null) {
         weekdayRanges[i][1] = null;
       } else {
+        checkEventIsOneDay(startTime, endTime);
         weekdayRanges[i][1] = endTime.plusDays(difference);
       }
     }
@@ -130,33 +138,19 @@ public class Calendar implements ICalendar{
   @Override
   public void editEvent(PropertyType property, String subject, LocalDateTime startTime,
                         LocalDateTime endTime, String value) {
-    if (endTime == null) {
-      for (Map.Entry<LocalDate, List<Event>> entry : calendar.entrySet()) {
-        for (Event e : entry.getValue()) {
-          if (!e.getStart().isBefore(startTime) && e.getSubject().equals(subject)) {
-            editEventsHelper(e, property, value);
-          }
-        }
-      }
-    } else {
-      List<Event> events = this.calendar.get(startTime.toLocalDate());
-      for (Event e : events) {
-        if (e.getSubject().equals(subject) && e.getStart().equals(startTime) &&
-                e.getEnd().equals(endTime)) {
-          editEventsHelper(e, property, value);
-        }
+
+    List<Event> events = this.calendar.get(startTime.toLocalDate());
+    for (Event e : events) {
+      if (e.getSubject().equals(subject) && e.getStart().equals(startTime) &&
+              e.getEnd().equals(endTime)) {
+        editEventHelper(e, property, value);
       }
     }
   }
 
-  /**
-   * Checks the property and edits the field of the event accordingly.
-   * @param e the event being edited
-   * @param property the property the user chose to edit
-   * @param value the value to be changed to
-   */
-  private void editEventsHelper(Event e, PropertyType property, String value) {
-    switch(property) {
+  //checks the property to be changed and edits the fields of the event accordingly
+  private void editEventHelper(Event e, PropertyType property, String value) {
+    switch (property) {
       case SUBJECT:
         e.setSubject(value);
         break;
@@ -175,22 +169,13 @@ public class Calendar implements ICalendar{
         }
 
         //removes from the calendar key to a new one
-        if (this.calendar.containsKey(original.toLocalDate()) &&
-                (!start.toLocalDate().equals(original.toLocalDate()))) {
-          this.calendar.get(original.toLocalDate()).remove(e);
-
-          if (this.calendar.containsKey(start.toLocalDate())) {
-            this.calendar.get(start.toLocalDate()).add(e);
-          } else {
-            List<Event> events = new ArrayList<>();
-            this.calendar.put(start.toLocalDate(), events);
-            this.calendar.get(start.toLocalDate()).add(e);
-          }
-        }
+        removeAndAddToCalendar(original, e, start);
         e.setStart(start);
+        e.setEnd(LocalDateTime.of(start.toLocalDate(), e.getEnd().toLocalTime()));
         break;
       case END:
         LocalDateTime end = LocalDateTime.parse(value);
+        checkEndTimeAfterStart(end, e.getStart());
         e.setEnd(end);
         break;
       case DESCRIPTION:
@@ -205,35 +190,105 @@ public class Calendar implements ICalendar{
     }
   }
 
+  private void removeAndAddToCalendar(LocalDateTime original, Event e, LocalDateTime newDate) {
+    if (this.calendar.containsKey(original.toLocalDate()) &&
+            (!newDate.toLocalDate().equals(original.toLocalDate()))) {
+      this.calendar.get(original.toLocalDate()).remove(e);
+
+      if (this.calendar.containsKey(newDate.toLocalDate())) {
+        this.calendar.get(newDate.toLocalDate()).add(e);
+      } else {
+        List<Event> events = new ArrayList<>();
+        this.calendar.put(newDate.toLocalDate(), events);
+        this.calendar.get(newDate.toLocalDate()).add(e);
+      }
+    }
+  }
+
   @Override
-  public void editSeries(PropertyType property, String subject, LocalDateTime startTime, String value) {
+  public void editEvents(PropertyType property, String subject,
+                         LocalDateTime startTime, String value) {
+    for (Map.Entry<LocalDateTime, List<Event>> entry : series.entrySet()) {
+      List<Event> events = entry.getValue();
+      for (Event e : events) {
+        if (e.getStart().equals(startTime)) {
+          for (int i = events.size() - 1; i >= 0; i--) {
+            Event event = events.get(i);
+            if (!event.getStart().isBefore(startTime) && event.getSubject().equals(subject)) {
+              long daysBetween = ChronoUnit.DAYS.between(startTime, LocalDateTime.parse(value));
+              editEventsHelper(event, property, entry.getKey(), value, daysBetween);
+            }
+          }
+          break;
+        }
+      }
+    }
+  }
+
+  @Override
+  public void editSeries(PropertyType property, String subject,
+                         LocalDateTime startTime, String value) {
     for (Map.Entry<LocalDateTime, List<Event>> entry : series.entrySet()) {
       if (entry.getKey().equals(startTime)) {
         List<Event> events = entry.getValue();
-        for (Event e : events) {
-          switch (property) {
-            case START:
-              LocalDateTime start = LocalDateTime.parse(value);
-              LocalDateTime original = e.getStart();
-
-              e.setStart(start);
-              e.setEnd(e.getEnd().plusDays(ChronoUnit.DAYS.between(original, start)));
-
-              //adds into a new series
-              if (this.series.containsKey(start)) {
-              } else {
-                this.series.put(start, new ArrayList<>());
-              }
-              this.series.get(start).add(e);
-
-              //removes the original series
-              this.series.remove(original);
-
-            default:
-              editEventsHelper(e, property, value);
-          }
+        for (int i = events.size() - 1; i >= 0; i--) {
+          Event e = events.get(i);
+          long daysBetween = ChronoUnit.DAYS.between(startTime, LocalDateTime.parse(value));
+          editEventsHelper(e, property, entry.getKey(), value, daysBetween);
         }
+        removeSeries(property, entry.getKey());
+        break;
       }
+    }
+  }
+
+  //switch case for series
+  private void editEventsHelper(Event e, PropertyType property, LocalDateTime key, String value,
+                                long between) {
+    switch (property) {
+      case START:
+        LocalDateTime start = LocalDateTime.parse(value);
+        LocalDateTime newDate = e.getStart().plusDays(between);
+
+        if (this.series.containsKey(key)) {
+          this.series.get(key).remove(e);
+        }
+
+        //adds into a new series
+        if (!this.series.containsKey(start)) {
+          this.series.put(start, new ArrayList<>());
+        }
+        this.series.get(start).add(e);
+
+        removeAndAddToCalendar(e.getStart(), e, newDate);
+
+        e.setStart(LocalDateTime.of(newDate.toLocalDate(), start.toLocalTime()));
+        e.setEnd(LocalDateTime.of(newDate.toLocalDate(), e.getEnd().toLocalTime()));
+        break;
+
+      //checks for exception, and then goes to the helper method to mutate
+      case END:
+        LocalDateTime end = LocalDateTime.parse(value);
+        LocalTime endTime = LocalDateTime.parse(value).toLocalTime();
+//        checkEndTimeAfterStart(end, e.getStart());
+        e.setEnd(LocalDateTime.of(e.getEnd().toLocalDate(), endTime));
+        break;
+
+      default:
+        editEventHelper(e, property, value);
+    }
+  }
+
+  private void removeSeries(PropertyType property, LocalDateTime start) {
+    if (property == PropertyType.START && this.series.get(start) != null
+            && this.series.get(start).isEmpty()) {
+      this.series.remove(start);
+    }
+  }
+
+  private void checkEndTimeAfterStart(LocalDateTime end, LocalDateTime start) {
+    if (end.isBefore(start)) {
+      throw new IllegalArgumentException("End time must be after start time");
     }
   }
 

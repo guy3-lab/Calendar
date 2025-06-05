@@ -41,8 +41,7 @@ public interface ICalendar {
                          List<String> repeatDays, LocalDate until);
 
   /**
-   * Edits an event depending on the chosen property. When endTime is null, it will change all
-   * events starting from the start time.
+   * Edits an event depending on the chosen property.
    * @param property the property that the user wants to change
    * @param subject the subject of the event
    * @param startTime the start time of the event
@@ -51,6 +50,15 @@ public interface ICalendar {
    */
   void editEvent(PropertyType property, String subject, LocalDateTime startTime,
                  LocalDateTime endTime, String value);
+
+  /**
+   * Edits the events in a series starting at a specific date regarding the chosen property.
+   * @param property the property the user wants to change
+   * @param subject the subject of the event
+   * @param startTime the starting time that the user wants to start editing from
+   * @param value the value that the user wants to change the property to
+   */
+  void editEvents(PropertyType property, String subject, LocalDateTime startTime, String value);
 
   /**
    * Edits a series of events depending on the property.
