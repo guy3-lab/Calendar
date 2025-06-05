@@ -79,34 +79,37 @@ public class Event implements IEvent{
     return this.location;
   }
 
-  /**
-   * Gets the status field.
-   * @return the status
-   */
+  @Override
   public Status getStatus() {
     return this.status;
   }
 
+  @Override
   public void setSubject(String subject) {
     this.subject = subject;
   }
 
+  @Override
   public void setStart(LocalDateTime start) {
     this.start = start;
   }
 
+  @Override
   public void setEnd(LocalDateTime end) {
     this.end = end;
   }
 
+  @Override
   public void setDesc(String desc) {
     this.desc = desc;
   }
 
+  @Override
   public void setLocation(Location location) {
     this.location = location;
   }
 
+  @Override
   public void setStatus(Status status) {
     this.status = status;
   }

@@ -44,12 +44,7 @@ public class Calendar implements ICalendar {
     }
   }
 
-  /**
-   * Adds the event to a day specified.
-   *
-   * @param event     the event being added
-   * @param startTime the time to add the event
-   */
+  //adds the events to the specific calendar date
   private void addEventHelper(Event event, LocalDateTime startTime) {
     LocalDate startDate = startTime.toLocalDate();
     List<Event> events;
@@ -138,12 +133,12 @@ public class Calendar implements ICalendar {
   @Override
   public void editEvent(PropertyType property, String subject, LocalDateTime startTime,
                         LocalDateTime endTime, String value) {
-
     List<Event> events = this.calendar.get(startTime.toLocalDate());
     for (Event e : events) {
       if (e.getSubject().equals(subject) && e.getStart().equals(startTime) &&
               e.getEnd().equals(endTime)) {
         editEventHelper(e, property, value);
+        break;
       }
     }
   }
@@ -171,7 +166,6 @@ public class Calendar implements ICalendar {
         //removes from the calendar key to a new one
         removeAndAddToCalendar(original, e, start);
         e.setStart(start);
-        e.setEnd(LocalDateTime.of(start.toLocalDate(), e.getEnd().toLocalTime()));
         break;
       case END:
         LocalDateTime end = LocalDateTime.parse(value);
@@ -182,10 +176,10 @@ public class Calendar implements ICalendar {
         e.setDesc(value);
         break;
       case LOCATION:
-        e.setLocation(Location.valueOf(value));
+        e.setLocation(Location.valueOf(value.toUpperCase()));
         break;
       case STATUS:
-        e.setStatus(Status.valueOf(value));
+        e.setStatus(Status.valueOf(value.toUpperCase()));
         break;
     }
   }
@@ -215,8 +209,7 @@ public class Calendar implements ICalendar {
           for (int i = events.size() - 1; i >= 0; i--) {
             Event event = events.get(i);
             if (!event.getStart().isBefore(startTime) && event.getSubject().equals(subject)) {
-              long daysBetween = ChronoUnit.DAYS.between(startTime, LocalDateTime.parse(value));
-              editEventsHelper(event, property, entry.getKey(), value, daysBetween);
+              editEventsHelper(event, property, entry.getKey(), startTime, value);
             }
           }
           break;
@@ -233,8 +226,7 @@ public class Calendar implements ICalendar {
         List<Event> events = entry.getValue();
         for (int i = events.size() - 1; i >= 0; i--) {
           Event e = events.get(i);
-          long daysBetween = ChronoUnit.DAYS.between(startTime, LocalDateTime.parse(value));
-          editEventsHelper(e, property, entry.getKey(), value, daysBetween);
+          editEventsHelper(e, property, entry.getKey(), startTime, value);
         }
         removeSeries(property, entry.getKey());
         break;
@@ -243,10 +235,12 @@ public class Calendar implements ICalendar {
   }
 
   //switch case for series
-  private void editEventsHelper(Event e, PropertyType property, LocalDateTime key, String value,
-                                long between) {
+  private void editEventsHelper(Event e, PropertyType property, LocalDateTime key,
+                                LocalDateTime base, String value) {
+    long between;
     switch (property) {
       case START:
+        between = ChronoUnit.DAYS.between(base, LocalDateTime.parse(value));
         LocalDateTime start = LocalDateTime.parse(value);
         LocalDateTime newDate = e.getStart().plusDays(between);
 
@@ -261,6 +255,7 @@ public class Calendar implements ICalendar {
         this.series.get(start).add(e);
 
         removeAndAddToCalendar(e.getStart(), e, newDate);
+        checkEndTimeAfterStart(newDate, e.getEnd());
 
         e.setStart(LocalDateTime.of(newDate.toLocalDate(), start.toLocalTime()));
         e.setEnd(LocalDateTime.of(newDate.toLocalDate(), e.getEnd().toLocalTime()));
@@ -268,9 +263,14 @@ public class Calendar implements ICalendar {
 
       //checks for exception, and then goes to the helper method to mutate
       case END:
-        LocalDateTime end = LocalDateTime.parse(value);
+        between = ChronoUnit.DAYS.between(base, LocalDateTime.parse(value));
+        LocalDateTime end = e.getEnd().plusDays(between);
         LocalTime endTime = LocalDateTime.parse(value).toLocalTime();
-//        checkEndTimeAfterStart(end, e.getStart());
+
+        //check exceptions
+        checkEndTimeAfterStart(end, e.getStart());
+        checkEventIsOneDay(e.getStart().plusDays(between), end);
+
         e.setEnd(LocalDateTime.of(e.getEnd().toLocalDate(), endTime));
         break;
 
@@ -279,6 +279,7 @@ public class Calendar implements ICalendar {
     }
   }
 
+  //removes a series
   private void removeSeries(PropertyType property, LocalDateTime start) {
     if (property == PropertyType.START && this.series.get(start) != null
             && this.series.get(start).isEmpty()) {
@@ -286,6 +287,7 @@ public class Calendar implements ICalendar {
     }
   }
 
+  //checks that the end time is not before the start time
   private void checkEndTimeAfterStart(LocalDateTime end, LocalDateTime start) {
     if (end.isBefore(start)) {
       throw new IllegalArgumentException("End time must be after start time");
