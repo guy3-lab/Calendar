@@ -87,6 +87,13 @@ public interface ICalendar {
   String printEventsInterval(LocalDateTime start, LocalDateTime end);
 
   /**
+   * Prints busy status if the user has events scheduled on a given day and time,
+   * otherwise, available.
+   * @return "busy" or "available"
+   */
+  String showStatus(LocalDateTime day);
+
+  /**
    * Returns the map of months and corresponding days.
    * @return the map of months and corresponding days
    */
