@@ -140,11 +140,10 @@ public class CalendarController {
           return formatter.formatSuccess("Updated event: \"" + parseResult.getEventSubject() + "\"");
 
         case EDIT_EVENTS:
-          calendar.editEvent(
+          calendar.editEvents(
                   parseResult.getProperty(),
                   parseResult.getEventSubject(),
                   parseResult.getEventStart(),
-                  null,
                   parseResult.getNewValue()
           );
           return formatter.formatSuccess("Updated events starting from: \"" + parseResult.getEventSubject() + "\"");
