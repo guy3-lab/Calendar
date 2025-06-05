@@ -42,19 +42,31 @@ public class Calendar implements ICalendar {
     return event;
   }
 
-  //adds the events to the specific calendar date
+  // adds event to all days that are spanned (covers series logic)
   private void addEventHelper(Event event, LocalDateTime startTime) {
     LocalDate startDate = startTime.toLocalDate();
-    List<Event> events;
-    if (!calendar.containsKey(startDate)) {
-      calendar.put(startDate, new ArrayList<>());
-      events = calendar.get(startDate);
-      events.add(event);
-    } else {
-      events = calendar.get(startDate);
-      alreadyExistsInCalendar(events, event);
-      events.add(event);
+    LocalDate endDate = event.getEnd().toLocalDate();
+
+    LocalDate currentDate = startDate;
+    while(!currentDate.isAfter(endDate)){
+      addToCalendarDate(currentDate, event);
+      currentDate = currentDate.plusDays(1);
     }
+  }
+
+  // adds an event to a specific date in the calendar
+  private void addToCalendarDate(LocalDate date, Event event){
+    if(!calendar.containsKey(date)){
+      calendar.put(date, new ArrayList<>());
+    }
+
+    List<Event> events = calendar.get(date); // get the list associated with the date key
+
+    // check and bar duplicates
+    if(date.equals(event.getStart().toLocalDate())){
+      alreadyExistsInCalendar(events, event);
+    }
+    events.add(event); // NOW we add the event to the list
   }
 
   //checks if there's an event with the same fields
@@ -63,6 +75,24 @@ public class Calendar implements ICalendar {
       if (e != event && e.equals(event)) {
         throw new IllegalArgumentException("Event already exists");
       }
+    }
+  }
+
+  // removes ALL days that are spanned when edited to a different day/time
+  private void removeEventFromAllDates(Event event) {
+    LocalDate startDate = event.getStart().toLocalDate();
+    LocalDate endDate = event.getEnd().toLocalDate();
+
+    LocalDate currentDate = startDate;
+
+    while (!currentDate.isAfter(endDate)) {
+      if (calendar.containsKey(currentDate)) {
+        calendar.get(currentDate).remove(event);
+        if (calendar.get(currentDate).isEmpty()) {
+          calendar.remove(currentDate);
+        }
+      }
+      currentDate = currentDate.plusDays(1);
     }
   }
 
@@ -190,22 +220,6 @@ public class Calendar implements ICalendar {
     }
   }
 
-  //Removes an event from a specific day of the calendar and adds it to a new day
-  private void removeAndAddToCalendar(LocalDateTime original, Event e, LocalDateTime newDate) {
-    if (this.calendar.containsKey(original.toLocalDate()) &&
-            (!newDate.toLocalDate().equals(original.toLocalDate()))) {
-      this.calendar.get(original.toLocalDate()).remove(e);
-
-      if (this.calendar.containsKey(newDate.toLocalDate())) {
-        this.calendar.get(newDate.toLocalDate()).add(e);
-      } else {
-        List<Event> events = new ArrayList<>();
-        this.calendar.put(newDate.toLocalDate(), events);
-        this.calendar.get(newDate.toLocalDate()).add(e);
-      }
-    }
-  }
-
   @Override
   public void editEvents(PropertyType property, String subject,
                          LocalDateTime startTime, String value) {
@@ -283,6 +297,13 @@ public class Calendar implements ICalendar {
       default:
         editEventHelper(e, property, value);
     }
+  }
+
+  // removes event from span of days -> sets a new date -> adds event to span of days
+  private void removeAndAddToCalendar(LocalDateTime original, Event e, LocalDateTime newDate) {
+    removeEventFromAllDates(e);
+    e.setStart(newDate);
+    addEventHelper(e, newDate);
   }
 
   //removes a series
