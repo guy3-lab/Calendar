@@ -54,10 +54,17 @@ public class Calendar implements ICalendar {
       events.add(event);
     } else {
       events = calendar.get(startDate);
-      if (events.contains(event)) {
+      alreadyExistsInCalendar(events, event);
+      events.add(event);
+    }
+  }
+
+  //checks if there's an event with the same fields
+  private void alreadyExistsInCalendar(List<Event> events, Event event) {
+    for (Event e : events) {
+      if (e != event && e.equals(event)) {
         throw new IllegalArgumentException("Event already exists");
       }
-      events.add(event);
     }
   }
 
@@ -138,6 +145,7 @@ public class Calendar implements ICalendar {
       if (e.getSubject().equals(subject) && e.getStart().equals(startTime) &&
               e.getEnd().equals(endTime)) {
         editEventHelper(e, property, value);
+        alreadyExistsInCalendar(events, e);
         break;
       }
     }
@@ -211,6 +219,7 @@ public class Calendar implements ICalendar {
             Event event = events.get(i);
             if (!event.getStart().isBefore(startTime) && event.getSubject().equals(subject)) {
               editEventsHelper(event, property, entry.getKey(), startTime, value);
+              alreadyExistsInCalendar(this.calendar.get(event.getStart().toLocalDate()), event);
             }
           }
           break;
@@ -222,16 +231,14 @@ public class Calendar implements ICalendar {
   @Override
   public void editSeries(PropertyType property, String subject,
                          LocalDateTime startTime, String value) {
-    for (Map.Entry<LocalDateTime, List<Event>> entry : series.entrySet()) {
-      if (entry.getKey().equals(startTime)) {
-        List<Event> events = entry.getValue();
-        for (int i = events.size() - 1; i >= 0; i--) {
-          Event e = events.get(i);
-          editEventsHelper(e, property, entry.getKey(), startTime, value);
-        }
-        removeSeries(property, entry.getKey());
-        break;
+    if (this.series.containsKey(startTime)) {
+      List<Event> events = this.series.get(startTime);
+      for (int i = events.size() - 1; i >= 0; i--) {
+        Event e = events.get(i);
+        editEventsHelper(e, property, startTime, startTime, value);
+        alreadyExistsInCalendar(this.calendar.get(e.getStart().toLocalDate()), e);
       }
+      removeSeries(property, startTime);
     }
   }
 
@@ -293,6 +300,45 @@ public class Calendar implements ICalendar {
     if (end.isBefore(start)) {
       throw new IllegalArgumentException("End time must be after start time");
     }
+  }
+
+  @Override
+  public String printEvents(LocalDate day) {
+    List<String> events = new ArrayList<>();
+    if (this.calendar.containsKey(day)) {
+      List<Event> eventList = this.calendar.get(day);
+      for (Event e : eventList) {
+        events.add(printHelper(e));
+      }
+    } else {
+      return "No events on this day";
+    }
+    return String.join("\n", events);
+  }
+
+  @Override
+  public String printEventsInterval(LocalDateTime start, LocalDateTime end) {
+    LocalDate day = start.toLocalDate();
+    List<String> events = new ArrayList<>();
+    if (this.calendar.containsKey(day)) {
+      List<Event> eventList = this.calendar.get(day);
+      for (Event e : eventList) {
+        if (e.getStart().equals(start) && e.getEnd().equals(end)) {
+          events.add(printHelper(e));
+        }
+      }
+    } else {
+      return "No events on this interval";
+    }
+    return String.join("\n", events);
+  }
+
+  //creates the string to return
+  private String printHelper(Event e) {
+    String event = "";
+    event += e.getSubject() + ", " + "Start Time: " + e.getStart() + ", "
+            + "End Time: " + e.getEnd() + ", " + "Location: " + e.getLocation();
+    return event;
   }
 
   @Override

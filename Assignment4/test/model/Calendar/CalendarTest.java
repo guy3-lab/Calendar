@@ -15,6 +15,9 @@ import model.Enum.Status;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * The test class that tests the model of the calendar application.
+ */
 public class CalendarTest {
   Calendar calendar;
   Calendar calendarLeap;
@@ -28,6 +31,8 @@ public class CalendarTest {
   @Test
   public void ExceptionTest() {
     calendar.createEvent("test", LocalDateTime.parse("2025-10-05T10:00"),
+            LocalDateTime.parse("2025-10-05T15:00"));
+    calendar.createEvent("different", LocalDateTime.parse("2025-10-05T10:00"),
             LocalDateTime.parse("2025-10-05T15:00"));
 
     //throws exception for trying to create an existing event
@@ -62,6 +67,14 @@ public class CalendarTest {
               LocalDateTime.parse("2024-02-04T05:00"), repeatedDays, 3);
     } catch (Exception e) {
       assertEquals("Start date and end date must be the same", e.getMessage());
+    }
+
+    //throws an exception when editing an event to an existing event
+    try {
+      calendar.editEvent(PropertyType.SUBJECT,"different", LocalDateTime.parse("2025-10-05T10:00"),
+              LocalDateTime.parse("2025-10-05T15:00"), "test");
+    } catch (Exception e) {
+      assertEquals("Event already exists", e.getMessage());
     }
   }
 
@@ -409,5 +422,31 @@ public class CalendarTest {
             "2026-01-05T10:00");
     assertEquals(LocalDateTime.parse("2026-01-05T10:00"), calendar.getSeries().
             get(LocalDateTime.parse("2026-01-05T06:00")).get(0).getEnd());
+  }
+
+  @Test
+  public void printTests() {
+    LocalDateTime first = LocalDateTime.parse("2000-10-10T10:00");
+    LocalDateTime firstEnd = LocalDateTime.parse("2000-10-11T10:00");
+    LocalDateTime second = LocalDateTime.parse("2000-10-10T10:00");
+    LocalDateTime secondEnd = LocalDateTime.parse("2000-10-10T15:00");
+    calendar.createEvent("event1", first, firstEnd);
+    calendar.createEvent("event2", first, firstEnd);
+    calendar.createEvent("event3", second, secondEnd);
+    List<Event> oct10Events = calendar.getCalendar().get(first.toLocalDate());
+
+    //string that contain the events of the whole day
+    String eventsOnDay = "event1, Start Time: 2000-10-10T10:00, End Time: 2000-10-11T10:00, "
+            + "Location: ONLINE" + "\n" + "event2, Start Time: 2000-10-10T10:00, "
+            + "End Time: 2000-10-11T10:00, Location: ONLINE" + "\n"
+            + "event3, Start Time: 2000-10-10T10:00, End Time: 2000-10-10T15:00, Location: ONLINE";
+
+    //string that contains only the events on the specified interval
+    String eventsOnInterval = "event1, Start Time: 2000-10-10T10:00, End Time: 2000-10-11T10:00, "
+            + "Location: ONLINE" + "\n" + "event2, Start Time: 2000-10-10T10:00, "
+            + "End Time: 2000-10-11T10:00, Location: ONLINE";
+
+    assertEquals(eventsOnDay, calendar.printEvents(first.toLocalDate()));
+    assertEquals(eventsOnInterval, calendar.printEventsInterval(first, firstEnd));
   }
 }
