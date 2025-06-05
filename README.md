@@ -1,5 +1,6 @@
 ### Instructions:
 Supported Commands:
+
 //creates a single event from the specified starting time to the specified ending time
 create event <eventSubject> from <dateStringTtimeString> to <dateStringTtimeString>
 - <eventSubject> is a string
