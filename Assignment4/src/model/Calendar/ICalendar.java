@@ -1,3 +1,4 @@
+
 package model.Calendar;
 
 import java.time.LocalDate;
@@ -29,7 +30,7 @@ public interface ICalendar {
    * @param times the amount of times that it'll repeat
    */
   void createSeriesTimes(String subject, LocalDateTime startTime, LocalDateTime endTime,
-                    List<String> repeatDays, int times);
+                         List<String> repeatDays, int times);
 
   /**
    * Creates a series of events depending on when to stop repeating.
