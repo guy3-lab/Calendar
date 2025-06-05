@@ -11,7 +11,6 @@ import java.util.List;
 
 import controller.PropertyType;
 
-import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 
 public class CalendarTest {
@@ -42,6 +41,14 @@ public class CalendarTest {
     } catch (Exception e) {
       assertEquals("Text '2024-02-30T10:00' could not be parsed: Invalid date 'FEBRUARY 30'",
               e.getMessage());
+    }
+
+    try {
+      List<String> repeatedDays = new ArrayList<>(Arrays.asList("W", "R", "F"));
+      calendar.createSeriesTimes("series", LocalDateTime.parse("2024-02-03T05:00"),
+              LocalDateTime.parse("2024-02-04T05:00"), repeatedDays, 3);
+    } catch (Exception e) {
+      assertEquals("Start date and end date must be the same", e.getMessage());
     }
   }
 
@@ -220,16 +227,21 @@ public class CalendarTest {
     assertEquals(LocalDateTime.parse("2025-10-05T05:00"), calendar.getCalendar().
             get(LocalDate.parse("2025-10-05")).
             get(0).getStart());
+    calendar.editEvent(PropertyType.END, "New name", LocalDateTime.parse("2025-10-05T05:00"),
+            LocalDateTime.parse("2025-10-05T15:00"), "2025-10-05T12:00");
+    assertEquals(LocalDateTime.parse("2025-10-05T12:00"), calendar.getCalendar().
+            get(LocalDate.parse("2025-10-05")).
+            get(0).getEnd());
 
     //change by a whole day
     calendar.editEvent(PropertyType.START, "New name", LocalDateTime.parse("2025-10-05T05:00"),
-            LocalDateTime.parse("2025-10-05T15:00"), "2025-10-06T10:00");
+            LocalDateTime.parse("2025-10-05T12:00"), "2025-10-06T10:00");
     assertEquals(1, calendar.getCalendar().get(LocalDate.parse("2025-10-05")).size());
     assertEquals(1, calendar.getCalendar().get(LocalDate.parse("2025-10-06")).size());
     assertEquals(LocalDateTime.parse("2025-10-06T10:00"), calendar.getCalendar().
             get(LocalDate.parse("2025-10-06")).
             get(0).getStart());
-    assertEquals(LocalDateTime.parse("2025-10-06T15:00"), calendar.getCalendar().
+    assertEquals(LocalDateTime.parse("2025-10-06T12:00"), calendar.getCalendar().
             get(LocalDate.parse("2025-10-06")).
             get(0).getEnd());
   }
@@ -246,8 +258,34 @@ public class CalendarTest {
             "2025-12-26T05:00");
     assertEquals(false, calendar.getSeries().containsKey(LocalDateTime.parse("2025-12-24T05:00")));
     assertEquals(true, calendar.getSeries().containsKey(LocalDateTime.parse("2025-12-26T05:00")));
-    assertEquals(LocalDateTime.parse("2025-12-26T06:00"), calendar.getCalendar().
-            get(LocalDate.parse("2025-12-26")).
-            get(0).getEnd());
+
+    assertEquals(LocalDateTime.parse("2026-01-04T06:00"), calendar.getSeries().
+            get(LocalDateTime.parse("2025-12-26T05:00")).get(0).getEnd());
+    assertEquals(LocalDateTime.parse("2026-01-02T05:00"), calendar.getSeries().
+            get(LocalDateTime.parse("2025-12-26T05:00")).get(2).getStart());
+
+
   }
+
+  @Test
+  public void editEventsTest() {
+    List<String> repeatedDays = new ArrayList<>(Arrays.asList("W", "F"));
+    calendar.createSeriesTimes("Series", LocalDateTime.parse("2025-12-26T05:00"),
+            LocalDateTime.parse("2025-12-26T06:00"), repeatedDays, 2);
+    List<Event> dec26Events = calendar.getSeries().get(LocalDateTime.parse("2025-12-26T05:00"));
+    assertEquals(4, dec26Events.size());
+    calendar.editEvents(PropertyType.START, "Series", LocalDateTime.parse("2026-01-02T05:00"),
+            "2026-01-05T06:00");
+    List<Event> jan5Events = calendar.getSeries().get(LocalDateTime.parse("2026-01-05T06:00"));
+    assertEquals(2, dec26Events.size());
+    assertEquals(2, jan5Events.size());
+
+    calendar.editEvents(PropertyType.END, "Series", LocalDateTime.parse("2026-01-05T06:00"),
+            "2026-01-05T10:00");
+    assertEquals(LocalDateTime.parse("2026-01-05T10:00"), calendar.getSeries().
+            get(LocalDateTime.parse("2026-01-05T06:00")).get(0).getEnd());
+
+  }
+
+
 }
