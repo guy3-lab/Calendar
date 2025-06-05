@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import controller.PropertyType;
+import controller.Parse.PropertyType;
 import model.Enum.Location;
 import model.Enum.Status;
 

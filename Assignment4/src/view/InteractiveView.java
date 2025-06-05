@@ -1,7 +1,7 @@
 package view;
 
 import java.util.Scanner;
-import controller.Execution.CalendarController;
+import controller.CalendarController;
 
 public class InteractiveView implements IView {
   private final CalendarController controller;

@@ -1,4 +1,4 @@
-package controller.Format;
+package controller.format;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

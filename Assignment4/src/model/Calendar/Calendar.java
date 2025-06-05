@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import controller.PropertyType;
+import controller.Parse.PropertyType;
 import model.Enum.Location;
 import model.Enum.Status;
 import model.Enum.WeekDays;

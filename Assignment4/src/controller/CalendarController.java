@@ -1,4 +1,4 @@
-package controller.Execution;
+package controller;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,8 +10,8 @@ import controller.Parse.CommandParserCoordinator;
 import controller.Parse.CommandType;
 import controller.Parse.ParseResult;
 import controller.Parse.RepeatInfo;
-import controller.Format.IOutputFormatter;
-import controller.Format.OutputFormatter;
+import controller.format.IOutputFormatter;
+import controller.format.OutputFormatter;
 import model.Calendar.Calendar;
 import model.Calendar.Event;
 import model.Calendar.ICalendar;
@@ -144,7 +144,7 @@ public class CalendarController {
                   parseResult.getProperty(),
                   parseResult.getEventSubject(),
                   parseResult.getEventStart(),
-                  null, // null endTime means edit from this event forward
+                  null,
                   parseResult.getNewValue()
           );
           return formatter.formatSuccess("Updated events starting from: \"" + parseResult.getEventSubject() + "\"");
