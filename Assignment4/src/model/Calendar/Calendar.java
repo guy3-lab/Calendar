@@ -25,8 +25,8 @@ public class Calendar implements ICalendar {
    * Creates a calendar object that takes in a year as an argument to account for leap years.
    */
   public Calendar() {
-    this.calendar = new HashMap<LocalDate, List<Event>>();
-    this.series = new HashMap<LocalDateTime, List<Event>>();
+    this.calendar = new HashMap<>();
+    this.series = new HashMap<>();
   }
 
   @Override
@@ -34,14 +34,12 @@ public class Calendar implements ICalendar {
     Event event;
     if (endTime == null) {
       event = new Event(subject, startTime);
-      addEventHelper(event, startTime);
-      return event;
     } else {
       checkEndTimeAfterStart(endTime, startTime);
       event = new Event.EventBuilder(subject, startTime).end(endTime).build();
-      addEventHelper(event, startTime);
-      return event;
     }
+    addEventHelper(event, startTime);
+    return event;
   }
 
   //adds the events to the specific calendar date
@@ -49,7 +47,7 @@ public class Calendar implements ICalendar {
     LocalDate startDate = startTime.toLocalDate();
     List<Event> events;
     if (!calendar.containsKey(startDate)) {
-      calendar.put(startDate, new ArrayList<Event>());
+      calendar.put(startDate, new ArrayList<>());
       events = calendar.get(startDate);
       events.add(event);
     } else {
@@ -342,11 +340,17 @@ public class Calendar implements ICalendar {
   }
 
   @Override
-  public String showStatus(LocalDateTime day) {
-    LocalDate date = day.toLocalDate();
-    List<Event> events = this.calendar.get(date);
+  public String showStatus(LocalDateTime queryTime) {
+    LocalDate queryDate = queryTime.toLocalDate();
+
+    if(!this.calendar.containsKey(queryDate)){
+      return "available";
+    }
+
+    List<Event> events = this.calendar.get(queryDate);
+
     for (Event e : events) {
-      if (e.getStart().equals(day)) {
+      if (!queryTime.isBefore(e.getStart()) && queryTime.isBefore(e.getEnd())) {
         return "busy";
       }
     }

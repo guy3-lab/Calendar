@@ -36,7 +36,7 @@ public class Event implements IEvent{
 
   /**
    * private constructor used in the Event builder to create an Event object when there are more
-   * fields.
+   * than just subject and start date fields.
    * @param subject subject of the event
    * @param start start date of the event
    * @param end end date of the event
