@@ -71,6 +71,21 @@ public interface ICalendar {
   void editSeries(PropertyType property, String subject, LocalDateTime startTime, String value);
 
   /**
+   * returns a string of all the events in the given day.
+   * @param day the given day
+   * @return a string of all the events
+   */
+  String printEvents(LocalDate day);
+
+  /**
+   * returns a string of all the events in the given interval.
+   * @param start the start time
+   * @param end the end time
+   * @return the events that are within the start and end time
+   */
+  String printEventsInterval(LocalDateTime start, LocalDateTime end);
+
+  /**
    * Returns the map of months and corresponding days.
    * @return the map of months and corresponding days
    */
