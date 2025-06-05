@@ -6,10 +6,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import controller.Parse.CommandParserCoordinator;
-import controller.Parse.CommandType;
-import controller.Parse.ParseResult;
-import controller.Parse.RepeatInfo;
+import controller.CommandParserCoordinator;
+import controller.CommandType;
+import controller.ParseResult;
+import controller.RepeatInfo;
 import controller.Format.IOutputFormatter;
 import controller.Format.OutputFormatter;
 import model.Calendar.Calendar;
