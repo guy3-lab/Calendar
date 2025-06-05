@@ -344,10 +344,12 @@ public class Calendar implements ICalendar {
   @Override
   public String showStatus(LocalDateTime day) {
     LocalDate date = day.toLocalDate();
-    List<Event> events = this.calendar.get(date);
-    for (Event e : events) {
-      if (e.getStart().equals(day)) {
-        return "busy";
+    if (this.calendar.containsKey(date)) {
+      List<Event> events = this.calendar.get(date);
+      for (Event e : events) {
+        if (e.getStart().equals(day)) {
+          return "busy";
+        }
       }
     }
     return "available";
