@@ -1,8 +1,8 @@
 package model.Enum;
 
 public enum WeekDays {
-  MONDAY(1, "M"), TUESDAY(2, "T"), WEDNESDAY(3, "W"), THURSDAY(4, "R"), FRIDAY(5, "F"),
-  SATURDAY(6, "S"), SUNDAY(7, "U");
+  MONDAY(1, "M"), TUESDAY(2, "T"), WEDNESDAY(3, "W"), THURSDAY(4, "R"),
+  FRIDAY(5, "F"), SATURDAY(6, "S"), SUNDAY(7, "U");
 
   private final int dayNum;
   private final String abbreviation;
