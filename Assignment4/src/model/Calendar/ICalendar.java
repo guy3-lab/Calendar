@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import controller.PropertyType;
-import model.Enum.Location;
-import model.Enum.Status;
 
+
+/**
+ * The calendar interface that contains all the methods required to edit and create events.
+ */
 public interface ICalendar {
   /**
    * Creates an event on a day/days, depending on the start and end times.

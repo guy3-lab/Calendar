@@ -5,6 +5,9 @@ import java.time.LocalDateTime;
 import model.Enum.Location;
 import model.Enum.Status;
 
+/**
+ * the Event object interface that contains getter and setter methods.
+ */
 public interface IEvent {
 
   /**

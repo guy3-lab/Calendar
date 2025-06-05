@@ -184,6 +184,7 @@ public class Calendar implements ICalendar {
     }
   }
 
+  //Removes an event from a specific day of the calendar and adds it to a new day
   private void removeAndAddToCalendar(LocalDateTime original, Event e, LocalDateTime newDate) {
     if (this.calendar.containsKey(original.toLocalDate()) &&
             (!newDate.toLocalDate().equals(original.toLocalDate()))) {
