@@ -448,5 +448,7 @@ public class CalendarTest {
 
     assertEquals(eventsOnDay, calendar.printEvents(first.toLocalDate()));
     assertEquals(eventsOnInterval, calendar.printEventsInterval(first, firstEnd));
+    assertEquals("available", calendar.showStatus(LocalDateTime.parse("2000-11-10T10:00")));
+    assertEquals("busy", calendar.showStatus(LocalDateTime.parse("2000-10-10T10:00")));
   }
 }
