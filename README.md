@@ -2,47 +2,47 @@
 Supported Commands:
 
 //creates a single event from the specified starting time to the specified ending time
-create event <eventSubject> from <dateStringTtimeString> to <dateStringTtimeString>
+create event `<eventSubject>` from `<dateStringTtimeString>` to `<dateStringTtimeString>`
 - `<eventSubject>` is a string  
 - `<dateStringTtimeString>` = `"YYYY-MM-DDThh:mm"`
 
-//creates an event that starts at some time and ends at some time that repeats throughout the provided weekdays for <N> amount of times 
-create event <eventSubject> from <dateStringTtimeString> to <dateStringTtimeString> repeats <weekdays> for <N> times
+//creates an event that starts at some time and ends at some time that repeats throughout the provided weekdays for `<N>` amount of times 
+create event `<eventSubject>` from `<dateStringTtimeString>` to `<dateStringTtimeString>` repeats `<weekdays>` for `<N>` times
 - `<weekdays>` = comma-separated values like `M,T,W,R,F,S,U`  
 - `<N>` = number of repetitions
 
 
 //creates an event that starts at some time and ends at some time that repeats throughout the provided weekdays until the specified date
-create event <eventSubject> from <dateStringTtimeString> to <dateStringTtimeString> repeats <weekdays> until <dateString>
+create event `<eventSubject>` from `<dateStringTtimeString>` to `<dateStringTtimeString>` repeats `<weekdays>` until `<dateString>`
 
 //creates an all day event that has the starting time at 8 AM to 5 PM
-create event <eventSubject> on <dateString>
+create event `<eventSubject>` on `<dateString>`
 
-//creates an all day event series that repeats throughout the provided weekdays for <N> amount of times
-create event <eventSubject> on <dateString> repeats <weekdays> for <N> times
+//creates an all day event series that repeats throughout the provided weekdays for `<N>` amount of times
+create event `<eventSubject>` on `<dateString>` repeats `<weekdays>` for `<N>` times
 
 //creates an all day event series that repeats throughout the provided weekdays until the specified date
-create event <eventSubject> on <dateString> repeats <weekdays> until <dateString>
+create event `<eventSubject>` on `<dateString>` repeats `<weekdays>` until `<dateString>`
 
 //edits an event's property to a new value depending on the event's subject, start time, and end time
-edit event <property> <eventSubject> from <dateStringTtimeString> to <dateStringTtimeString> with <NewPropertyValue>
+edit event `<property>` `<eventSubject>` from `<dateStringTtimeString>` to `<dateStringTtimeString>` with `<NewPropertyValue>`
 - `<property>`: `subject`, `start`, `end`, `description`, `location`, `status`  
 - `<NewPropertyValue>`: value to set (string or `YYYY-MM-DDThh:mm`)
 
 //edits an event's property to a new value beginning from the specified start time within the series
-edit events <property> <eventSubject> from <dateStringTtimeString> with <NewPropertyValue>
+edit events `<property>` `<eventSubject>` from `<dateStringTtimeString>` with `<NewPropertyValue>`
 
 //edits the entire series' property to the provided new value by identifying the start time
-edit series <property> <eventSubject> from <dateStringTtimeString> with <NewPropertyValue>
+edit series `<property>` `<eventSubject>` from `<dateStringTtimeString>` with `<NewPropertyValue>`
 
 //prints events on the specified day
-print events on <dateString>
+print events on `<dateString>`
 
 //prints events with the specified time constraints
-print events from <dateStringTtimeString> to <dateStringTtimeString>
+print events from `<dateStringTtimeString>` to `<dateStringTtimeString>`
 
 //shows whether a time of day has an event going on. If there is, prints "busy", if not, prints "available"
-show status on <dateStringTtimeString>
+show status on `<dateStringTtimeString>`
 
 
 ---
