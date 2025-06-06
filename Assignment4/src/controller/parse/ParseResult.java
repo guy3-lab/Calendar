@@ -22,8 +22,8 @@ public class ParseResult {
   private final String newValue;
 
   // PRINT command fields
-  private final java.time.LocalDate printStartDate;
-  private final java.time.LocalDate printEndDate;
+  private final java.time.LocalDateTime printStartDate;
+  private final java.time.LocalDateTime printEndDate;
 
   // SHOW STATUS command fields
   private final java.time.LocalDateTime statusDateTime;
@@ -34,7 +34,7 @@ public class ParseResult {
                       PropertyType property, String eventSubject,
                       java.time.LocalDateTime eventStart,
                       java.time.LocalDateTime eventEnd, String newValue,
-                      java.time.LocalDate printStartDate, java.time.LocalDate printEndDate,
+                      java.time.LocalDateTime printStartDate, java.time.LocalDateTime printEndDate,
                       java.time.LocalDateTime statusDateTime) {
     this.success = success;
     this.commandType = commandType;
@@ -94,12 +94,24 @@ public class ParseResult {
    * @param endDate the end date of the event
    * @return the event to be printed
    */
-  public static ParseResult printEvents(java.time.LocalDate startDate,
-                                        java.time.LocalDate endDate) {
+  public static ParseResult printEventsInterval(java.time.LocalDateTime startDate,
+                                        java.time.LocalDateTime endDate) {
     return new ParseResult(true, CommandType.PRINT_EVENTS, null,
             null, null, null, null,
             null, null, null, null, null,
             startDate, endDate, null);
+  }
+
+  /**
+   * Parses the print event command.
+   * @param startDate the start date of the event
+   * @return the event to be printed
+   */
+  public static ParseResult printEventsDay(java.time.LocalDate startDate) {
+    return new ParseResult(true, CommandType.PRINT_EVENTS, null,
+            null, null, null, null,
+            null, null, null, null, null,
+            startDate.atStartOfDay(), null, null);
   }
 
   /**
@@ -233,13 +245,13 @@ public class ParseResult {
    * The start time of the event that we want to print.
    * @return the start time as a localDate
    */
-  public java.time.LocalDate getPrintStartDate() { return printStartDate; }
+  public java.time.LocalDateTime getPrintStartDate() { return printStartDate; }
 
   /**
    * The end date of the event that we want to print.
    * @return the end time as a localDate
    */
-  public java.time.LocalDate getPrintEndDate() { return printEndDate; }
+  public java.time.LocalDateTime getPrintEndDate() { return printEndDate; }
 
   /**
    * Returns whether or not the end time is valid.

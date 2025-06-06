@@ -74,14 +74,26 @@ public class Calendar implements ICalendar {
     this.series.put(startTime, new ArrayList<Event>());
     LocalDateTime[][] weekdayRanges = createSeriesHelper(repeatDays, startTime, endTime);
 
+//    for (LocalDateTime[] day : weekdayRanges) {
+//      for (int t = 0; t < times; t++) {
+//        this.series.get(startTime).add(createEvent(subject, day[0], day[1]));
+//        day[0] = day[0].plusDays(7);
+//        if (endTime == null) {
+//          day[1] = null;
+//        } else {
+//          day[1] = day[1].plusDays(7);
+//        }
+//      }
+//    }
     for (LocalDateTime[] day : weekdayRanges) {
+      LocalDateTime start = day[0];
+      LocalDateTime end = day[1];
+
       for (int t = 0; t < times; t++) {
-        this.series.get(startTime).add(createEvent(subject, day[0], day[1]));
-        day[0] = day[0].plusDays(7);
-        if (endTime == null) {
-          day[1] = null;
-        } else {
-          day[1] = day[1].plusDays(7);
+        this.series.get(startTime).add(createEvent(subject, start, end));
+        start = start.plusDays(7);
+        if (end != null) {
+          end = end.plusDays(7);
         }
       }
     }
@@ -126,12 +138,12 @@ public class Calendar implements ICalendar {
 
       int difference = (dayNum - currentDay + 7) % 7;
 
-      weekdayRanges[i][0] = startTime.plusDays(difference);
+      weekdayRanges[i][0] = LocalDateTime.of(startTime.toLocalDate().plusDays(difference), startTime.toLocalTime());
       if (endTime == null) {
         weekdayRanges[i][1] = null;
       } else {
         checkEventIsOneDay(startTime, endTime);
-        weekdayRanges[i][1] = endTime.plusDays(difference);
+        weekdayRanges[i][1] = LocalDateTime.of(endTime.toLocalDate().plusDays(difference), endTime.toLocalTime());
       }
     }
     return weekdayRanges;
@@ -304,14 +316,14 @@ public class Calendar implements ICalendar {
 
   @Override
   public String printEvents(LocalDate day) {
-    List<String> events = new ArrayList<>();
-    if (this.calendar.containsKey(day)) {
-      List<Event> eventList = this.calendar.get(day);
-      for (Event e : eventList) {
-        events.add(printHelper(e));
-      }
-    } else {
+    if (!this.calendar.containsKey(day) || this.calendar.get(day).isEmpty()) {
       return "No events on this day";
+    }
+
+    List<String> events = new ArrayList<>();
+    List<Event> eventList = this.calendar.get(day);
+    for (Event e : eventList) {
+      events.add(printHelper(e));
     }
     return String.join("\n", events);
   }
@@ -319,16 +331,18 @@ public class Calendar implements ICalendar {
   @Override
   public String printEventsInterval(LocalDateTime start, LocalDateTime end) {
     LocalDate day = start.toLocalDate();
+    LocalDate endDay = end.toLocalDate();
     List<String> events = new ArrayList<>();
-    if (this.calendar.containsKey(day)) {
-      List<Event> eventList = this.calendar.get(day);
-      for (Event e : eventList) {
-        if (e.getStart().equals(start) && e.getEnd().equals(end)) {
-          events.add(printHelper(e));
+    while(!day.isAfter(endDay)) {
+      if (this.calendar.containsKey(day)) {
+        List<Event> eventList = this.calendar.get(day);
+        for (Event e : eventList) {
+          if (!e.getStart().isBefore(start)) {
+            events.add(printHelper(e));
+          }
         }
       }
-    } else {
-      return "No events on this interval";
+      day = day.plusDays(1);
     }
     return String.join("\n", events);
   }

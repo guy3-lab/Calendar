@@ -179,16 +179,10 @@ public class CalendarController {
       Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
 
       if (parseResult.isPrintRange()) {
-        return formatter.formatEventRange(
-                calendarData,
-                parseResult.getPrintStartDate(),
-                parseResult.getPrintEndDate()
-        );
+        return calendar.printEventsInterval(parseResult.getPrintStartDate(),
+                parseResult.getPrintEndDate());
       } else {
-        return formatter.formatEventsForDate(
-                calendarData,
-                parseResult.getPrintStartDate()
-        );
+        return calendar.printEvents(parseResult.getPrintStartDate().toLocalDate());
       }
     } catch (Exception e) {
       throw new IllegalArgumentException("Failed to print events: " + e.getMessage());
