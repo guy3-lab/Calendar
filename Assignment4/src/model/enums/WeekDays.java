@@ -1,4 +1,4 @@
-package model.Enum;
+package model.enums;
 
 /**
  * The weekdays enum that are the days of the week with their specific abbreviation and
@@ -33,7 +33,7 @@ public enum WeekDays {
   }
 
   /**
-   * Static method that takes in an abbreviation and returns the corresponding day number
+   * Static method that takes in an abbreviation and returns the corresponding day number.
    * @param abbreviation the weekday abbreviation
    * @return the corresponding day number
    */

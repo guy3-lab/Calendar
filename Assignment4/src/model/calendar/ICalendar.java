@@ -1,12 +1,12 @@
 
-package model.Calendar;
+package model.calendar;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-import controller.Parse.PropertyType;
+import controller.parse.PropertyType;
 
 
 /**

@@ -7,17 +7,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import model.Calendar.Event;
-import model.Enum.Location;
+import model.calendar.Event;
+import model.enums.Location;
 
 /**
  * Handles formatting of output for calendar queries and commands.
  */
-public class OutputFormatter implements IOutputFormatter{
+public class OutputFormatter implements IOutputFormatter {
 
   private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
   private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
-  private static final DateTimeFormatter DATETIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+  private static final DateTimeFormatter DATETIME_FORMAT =
+          DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
   /**
    * Formats events for a specific date.

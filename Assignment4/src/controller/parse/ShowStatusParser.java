@@ -1,7 +1,10 @@
-package controller.Parse;
+package controller.parse;
 
 import java.time.LocalDateTime;
 
+/**
+ * Class that handles the commands that asks to show status.
+ */
 public class ShowStatusParser implements CommandParser {
   @Override
   public boolean canHandle(String input) {

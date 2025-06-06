@@ -1,7 +1,10 @@
-package controller.Parse;
+package controller.parse;
 
 import java.time.LocalDateTime;
 
+/**
+ * Parser that parses through the commands that edit events
+ */
 public class EditEventParser implements CommandParser {
   @Override
   public boolean canHandle(String input) {
@@ -17,12 +20,19 @@ public class EditEventParser implements CommandParser {
       CommandType editType = determineEditType(input);
       PropertyType property = extractProperty(input);
       String eventSubject = extractEventSubject(input);
-      LocalDateTime eventStart = ParsingTools.extractDateTime(input, " from ", " to ");
-      LocalDateTime eventEnd = (editType == CommandType.EDIT_EVENT && input.contains(" to ")) ?
-              ParsingTools.extractDateTime(input, " to ", " with ") : null;
+      LocalDateTime eventStart;
+      LocalDateTime eventEnd = null;
+
+      if (editType == CommandType.EDIT_EVENT && input.contains(" to ")) {
+        eventStart = ParsingTools.extractDateTime(input, " from ", " to ");
+        eventEnd = ParsingTools.extractDateTime(input, " to ", " with ");
+      } else {
+        eventStart = ParsingTools.extractDateTime(input, " from ", " with ");
+      }
       String newValue = ParsingTools.extractAfterKeyword(input, " with ");
 
-      return ParseResult.editEvent(editType, property, eventSubject, eventStart, eventEnd, newValue);
+      return ParseResult.editEvent(editType, property, eventSubject, eventStart,
+              eventEnd, newValue);
     } catch (Exception e) {
       return ParseResult.error("Edit command error: " + e.getMessage());
     }
@@ -30,9 +40,9 @@ public class EditEventParser implements CommandParser {
 
   private CommandType determineEditType(String input) {
     String lower = input.toLowerCase();
-    if (lower.startsWith("edit event ")) return CommandType.EDIT_EVENT;
-    if (lower.startsWith("edit events ")) return CommandType.EDIT_EVENTS;
-    if (lower.startsWith("edit series ")) return CommandType.EDIT_SERIES;
+    if (lower.startsWith("edit event ")) {return CommandType.EDIT_EVENT;}
+    if (lower.startsWith("edit events ")) {return CommandType.EDIT_EVENTS;}
+    if (lower.startsWith("edit series ")) {return CommandType.EDIT_SERIES;}
     throw new IllegalArgumentException("Unknown edit type");
   }
 
@@ -61,7 +71,7 @@ public class EditEventParser implements CommandParser {
     boolean foundProperty = false;
     for (String part : parts) {
       if (foundProperty && !part.equalsIgnoreCase("from")) {
-        if (subject.length() > 0) subject.append(" ");
+        if (subject.length() > 0) {subject.append(" ");}
         subject.append(part);
       } else if (foundProperty && part.equalsIgnoreCase("from")) {
         break;

@@ -1,4 +1,4 @@
-package model.Enum;
+package model.enums;
 
 /**
  * A status enum that can only be public or private.

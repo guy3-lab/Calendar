@@ -1,4 +1,4 @@
-package controller.Parse;
+package controller.parse;
 
 import java.util.Arrays;
 import java.util.List;
@@ -10,6 +10,9 @@ public class CommandParserCoordinator {
 
   private final List<CommandParser> parsers;
 
+  /**
+   * Constructs the command parse coordinator.
+   */
   public CommandParserCoordinator() {
     this.parsers = Arrays.asList(
             new CreateEventParser(),
@@ -20,7 +23,7 @@ public class CommandParserCoordinator {
   }
 
   /**
-   * Parse any command by delegating to appropriate parser
+   * Parse any command by delegating to appropriate parser.
    */
   public static ParseResult parseCommand(String input) {
     return new CommandParserCoordinator().parse(input);

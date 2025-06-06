@@ -1,17 +1,17 @@
-package model.Calendar;
+package model.calendar;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import model.Enum.Location;
-import model.Enum.Status;
+import model.enums.Location;
+import model.enums.Status;
 
 /**
  * Class that represents an Event that has the fields of a subject, start time, end time,
  * description, location, which are either physical or online, and status, which are either private
  * or public.
  */
-public class Event implements IEvent{
+public class Event implements IEvent {
   private String subject;
   private LocalDateTime start;
   private LocalDateTime end;
@@ -25,7 +25,7 @@ public class Event implements IEvent{
    * @param subject the subject of the event
    * @param start the start date of the event
    */
-  public Event (String subject, LocalDateTime start) {
+  public Event(String subject, LocalDateTime start) {
     this.subject = subject;
     this.start = LocalDateTime.of(start.toLocalDate(), LocalTime.of(8, 0));
     this.end = LocalDateTime.of(start.toLocalDate(), LocalTime.of(17, 0));
@@ -183,7 +183,7 @@ public class Event implements IEvent{
     }
 
     /**
-     * Makes the Event object using the builder fields
+     * Makes the Event object using the builder fields.
      * @return an Event object
      */
     public Event build() {
@@ -196,12 +196,12 @@ public class Event implements IEvent{
     if (!(o instanceof Event)) return false;
     Event event = (Event) o;
 
-    return subject.equals(event.subject) &&
-            start.equals(event.start) &&
-            end.equals(event.end) &&
-            desc.equals(event.desc) &&
-            location == event.location &&
-            status == event.status;
+    return subject.equals(event.subject)
+            && start.equals(event.start)
+            && end.equals(event.end)
+            && desc.equals(event.desc)
+            && location == event.location
+            && status == event.status;
   }
 
   @Override

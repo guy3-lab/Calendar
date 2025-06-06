@@ -6,15 +6,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import controller.Parse.CommandParserCoordinator;
-import controller.Parse.CommandType;
-import controller.Parse.ParseResult;
-import controller.Parse.RepeatInfo;
+import controller.parse.CommandParserCoordinator;
+import controller.parse.CommandType;
+import controller.parse.ParseResult;
+import controller.parse.RepeatInfo;
 import controller.format.IOutputFormatter;
 import controller.format.OutputFormatter;
-import model.Calendar.Calendar;
-import model.Calendar.Event;
-import model.Calendar.ICalendar;
+import model.calendar.Calendar;
+import model.calendar.Event;
+import model.calendar.ICalendar;
 
 /**
  * Controller that executes parsed commands on the calendar model and formats output.
@@ -90,8 +90,9 @@ public class CalendarController {
                   repeatDays,
                   repeatInfo.getRepeatTimes()
           );
-          return formatter.formatSuccess("Created recurring event series: \"" + parseResult.getSubject() +
-                  "\" (" + repeatInfo.getRepeatTimes() + " occurrences)");
+          return formatter.formatSuccess("Created recurring event series: \""
+                  + parseResult.getSubject()
+                  + "\" (" + repeatInfo.getRepeatTimes() + " occurrences)");
         } else if (repeatInfo.hasDateLimit()) {
           calendar.createSeriesUntil(
                   parseResult.getSubject(),
@@ -100,8 +101,8 @@ public class CalendarController {
                   repeatDays,
                   repeatInfo.getRepeatUntil()
           );
-          return formatter.formatSuccess("Created recurring event series: \"" + parseResult.getSubject() +
-                  "\" (until " + repeatInfo.getRepeatUntil() + ")");
+          return formatter.formatSuccess("Created recurring event series: \""
+                  + parseResult.getSubject() + "\" (until " + repeatInfo.getRepeatUntil() + ")");
         }
       } else {
         Event event = calendar.createEvent(
@@ -111,7 +112,8 @@ public class CalendarController {
         );
 
         String eventType = parseResult.isAllDay() ? "all-day event" : "event";
-        return formatter.formatSuccess("Created " + eventType + ": \"" + parseResult.getSubject() + "\"");
+        return formatter.formatSuccess("Created "
+                + eventType + ": \"" + parseResult.getSubject() + "\"");
       }
     } catch (Exception e) {
       throw new IllegalArgumentException("Failed to create event: " + e.getMessage());
@@ -137,7 +139,8 @@ public class CalendarController {
                   parseResult.getEventEnd(),
                   parseResult.getNewValue()
           );
-          return formatter.formatSuccess("Updated event: \"" + parseResult.getEventSubject() + "\"");
+          return formatter.formatSuccess("Updated event: \""
+                  + parseResult.getEventSubject() + "\"");
 
         case EDIT_EVENTS:
           calendar.editEvents(
@@ -146,7 +149,8 @@ public class CalendarController {
                   parseResult.getEventStart(),
                   parseResult.getNewValue()
           );
-          return formatter.formatSuccess("Updated events starting from: \"" + parseResult.getEventSubject() + "\"");
+          return formatter.formatSuccess("Updated events starting from: \""
+                  + parseResult.getEventSubject() + "\"");
 
         case EDIT_SERIES:
           calendar.editSeries(
@@ -155,7 +159,8 @@ public class CalendarController {
                   parseResult.getEventStart(),
                   parseResult.getNewValue()
           );
-          return formatter.formatSuccess("Updated entire series: \"" + parseResult.getEventSubject() + "\"");
+          return formatter.formatSuccess("Updated entire series: \""
+                  + parseResult.getEventSubject() + "\"");
 
         default:
           throw new IllegalArgumentException("Unknown edit type: " + editType);
@@ -174,16 +179,10 @@ public class CalendarController {
       Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
 
       if (parseResult.isPrintRange()) {
-        return formatter.formatEventRange(
-                calendarData,
-                parseResult.getPrintStartDate(),
-                parseResult.getPrintEndDate()
-        );
+        return calendar.printEventsInterval(parseResult.getPrintStartDate(),
+                parseResult.getPrintEndDate());
       } else {
-        return formatter.formatEventsForDate(
-                calendarData,
-                parseResult.getPrintStartDate()
-        );
+        return calendar.printEvents(parseResult.getPrintStartDate().toLocalDate());
       }
     } catch (Exception e) {
       throw new IllegalArgumentException("Failed to print events: " + e.getMessage());

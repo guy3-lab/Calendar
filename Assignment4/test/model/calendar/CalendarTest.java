@@ -1,4 +1,4 @@
-package model.Calendar;
+package model.calendar;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import controller.Parse.PropertyType;
-import model.Enum.Location;
-import model.Enum.Status;
+import controller.parse.PropertyType;
+import model.enums.Location;
+import model.enums.Status;
 
 import static org.junit.Assert.assertEquals;
 
@@ -137,8 +137,15 @@ public class CalendarTest {
             repeatedDays, 3);
     List<Event> events = calendar.getSeries().get(LocalDateTime.parse("2025-12-24T05:00"));
 
+    List<Event> event24 = calendar.getCalendar().get(LocalDate.parse("2025-12-24"));
+    List<Event> event25 = calendar.getCalendar().get(LocalDate.parse("2025-12-25"));
+    List<Event> event26 = calendar.getCalendar().get(LocalDate.parse("2025-12-26"));
+
     //checks if the correct amount of events are added to the map
     assertEquals(9, events.size());
+    assertEquals(1, event24.size());
+    assertEquals(1, event25.size());
+    assertEquals(1, event26.size());
 
     //first 3 events
     assertEquals(LocalDateTime.parse("2025-12-24T08:00"), events.get(0).getStart());
@@ -183,7 +190,7 @@ public class CalendarTest {
   }
 
   @Test
-  public void createSeriesUntil() {
+  public void createSeriesUntilTest() {
     List<String> repeatedDays = new ArrayList<>(Arrays.asList("W", "R", "F"));
 
     //full day event series
@@ -444,9 +451,13 @@ public class CalendarTest {
     //string that contains only the events on the specified interval
     String eventsOnInterval = "event1, Start Time: 2000-10-10T10:00, End Time: 2000-10-11T10:00, "
             + "Location: ONLINE" + "\n" + "event2, Start Time: 2000-10-10T10:00, "
-            + "End Time: 2000-10-11T10:00, Location: ONLINE";
+            + "End Time: 2000-10-11T10:00, Location: ONLINE"
+            + "\n"
+            + "event3, Start Time: 2000-10-10T10:00, End Time: 2000-10-10T15:00, Location: ONLINE";
 
     assertEquals(eventsOnDay, calendar.printEvents(first.toLocalDate()));
-    assertEquals(eventsOnInterval, calendar.printEventsInterval(first, firstEnd));
+    assertEquals(eventsOnInterval, calendar.printEventsInterval(first, secondEnd));
+    assertEquals("available", calendar.showStatus(LocalDateTime.parse("2000-11-10T10:00")));
+    assertEquals("busy", calendar.showStatus(LocalDateTime.parse("2000-10-10T10:00")));
   }
 }
