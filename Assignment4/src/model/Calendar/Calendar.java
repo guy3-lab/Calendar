@@ -32,12 +32,15 @@ public class Calendar implements ICalendar {
   @Override
   public Event createEvent(String subject, LocalDateTime startTime, LocalDateTime endTime) {
     Event event;
+
     if (endTime == null) {
       event = new Event(subject, startTime);
     } else {
       checkEndTimeAfterStart(endTime, startTime);
       event = new Event.EventBuilder(subject, startTime).end(endTime).build();
     }
+
+    checkForDuplicateEvent(event);
     addEventHelper(event, startTime);
     return event;
   }
@@ -61,20 +64,28 @@ public class Calendar implements ICalendar {
     }
 
     List<Event> events = calendar.get(date); // get the list associated with the date key
-
-    // check and bar duplicates
-    if(date.equals(event.getStart().toLocalDate())){
-      alreadyExistsInCalendar(events, event);
-    }
-    events.add(event); // NOW we add the event to the list
+    events.add(event); // dupe check already made
   }
 
-  //checks if there's an event with the same fields
-  private void alreadyExistsInCalendar(List<Event> events, Event event) {
-    for (Event e : events) {
-      if (e != event && e.equals(event)) {
-        throw new IllegalArgumentException("Event already exists");
+  // checks for dupes
+  private void checkForDuplicateEvent(Event newEvent) {
+    LocalDate startDate = newEvent.getStart().toLocalDate();
+    LocalDate endDate = newEvent.getEnd().toLocalDate();
+
+    LocalDate currentDate = startDate;
+    while (!currentDate.isAfter(endDate)) {
+      if (calendar.containsKey(currentDate)) {
+        List<Event> events = calendar.get(currentDate);
+        for (Event existingEvent : events) {
+          if (existingEvent != newEvent &&
+                  existingEvent.getSubject().equals(newEvent.getSubject()) &&
+                  existingEvent.getStart().equals(newEvent.getStart()) &&
+                  existingEvent.getEnd().equals(newEvent.getEnd())) {
+            throw new IllegalArgumentException("Event already exists");
+          }
+        }
       }
+      currentDate = currentDate.plusDays(1);
     }
   }
 
@@ -173,8 +184,19 @@ public class Calendar implements ICalendar {
       if (e.getSubject().equals(subject) && e.getStart().equals(startTime) &&
               e.getEnd().equals(endTime)) {
         editEventHelper(e, property, value);
-        alreadyExistsInCalendar(events, e);
+        checkForDuplicateAfterEdit(e, events);
         break;
+      }
+    }
+  }
+
+  private void checkForDuplicateAfterEdit(Event editedEvent, List<Event> events) {
+    for (Event e : events) {
+      if (e != editedEvent &&
+              e.getSubject().equals(editedEvent.getSubject()) &&
+              e.getStart().equals(editedEvent.getStart()) &&
+              e.getEnd().equals(editedEvent.getEnd())) {
+        throw new IllegalArgumentException("Event already exists");
       }
     }
   }
@@ -302,7 +324,7 @@ public class Calendar implements ICalendar {
         this.series.get(start).add(e);
 
         removeAndAddToCalendar(e.getStart(), e, newDate);
-        checkEndTimeAfterStart(newDate, e.getEnd());
+        checkEndTimeAfterStart(e.getEnd(), newDate);
 
         e.setStart(LocalDateTime.of(newDate.toLocalDate(), start.toLocalTime()));
         e.setEnd(LocalDateTime.of(newDate.toLocalDate(), e.getEnd().toLocalTime()));
