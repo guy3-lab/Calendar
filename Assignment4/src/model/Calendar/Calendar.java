@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import controller.PropertyType;
+import controller.Parse.PropertyType;
 import model.Enum.Location;
 import model.Enum.Status;
 import model.Enum.WeekDays;
@@ -25,46 +25,85 @@ public class Calendar implements ICalendar {
    * Creates a calendar object that takes in a year as an argument to account for leap years.
    */
   public Calendar() {
-    this.calendar = new HashMap<LocalDate, List<Event>>();
-    this.series = new HashMap<LocalDateTime, List<Event>>();
+    this.calendar = new HashMap<>();
+    this.series = new HashMap<>();
   }
 
   @Override
   public Event createEvent(String subject, LocalDateTime startTime, LocalDateTime endTime) {
     Event event;
+
     if (endTime == null) {
       event = new Event(subject, startTime);
-      addEventHelper(event, startTime);
-      return event;
     } else {
       checkEndTimeAfterStart(endTime, startTime);
       event = new Event.EventBuilder(subject, startTime).end(endTime).build();
-      addEventHelper(event, startTime);
-      return event;
     }
+
+    checkForDuplicateEvent(event);
+    addEventHelper(event, startTime);
+    return event;
   }
 
-  //adds the events to the specific calendar date
+  // adds event to all days that are spanned (covers series logic)
   private void addEventHelper(Event event, LocalDateTime startTime) {
     LocalDate startDate = startTime.toLocalDate();
-    List<Event> events;
-    if (!calendar.containsKey(startDate)) {
-      calendar.put(startDate, new ArrayList<Event>());
-      events = calendar.get(startDate);
-      events.add(event);
-    } else {
-      events = calendar.get(startDate);
-      alreadyExistsInCalendar(events, event);
-      events.add(event);
+    LocalDate endDate = event.getEnd().toLocalDate();
+
+    LocalDate currentDate = startDate;
+    while(!currentDate.isAfter(endDate)){
+      addToCalendarDate(currentDate, event);
+      currentDate = currentDate.plusDays(1);
     }
   }
 
-  //checks if there's an event with the same fields
-  private void alreadyExistsInCalendar(List<Event> events, Event event) {
-    for (Event e : events) {
-      if (e != event && e.equals(event)) {
-        throw new IllegalArgumentException("Event already exists");
+  // adds an event to a specific date in the calendar
+  private void addToCalendarDate(LocalDate date, Event event){
+    if(!calendar.containsKey(date)){
+      calendar.put(date, new ArrayList<>());
+    }
+
+    List<Event> events = calendar.get(date); // get the list associated with the date key
+    events.add(event); // dupe check already made
+  }
+
+  // checks for dupes
+  private void checkForDuplicateEvent(Event newEvent) {
+    LocalDate startDate = newEvent.getStart().toLocalDate();
+    LocalDate endDate = newEvent.getEnd().toLocalDate();
+
+    LocalDate currentDate = startDate;
+    while (!currentDate.isAfter(endDate)) {
+      if (calendar.containsKey(currentDate)) {
+        List<Event> events = calendar.get(currentDate);
+        for (Event existingEvent : events) {
+          if (existingEvent != newEvent &&
+                  existingEvent.getSubject().equals(newEvent.getSubject()) &&
+                  existingEvent.getStart().equals(newEvent.getStart()) &&
+                  existingEvent.getEnd().equals(newEvent.getEnd())) {
+            throw new IllegalArgumentException("Event already exists");
+          }
+        }
       }
+      currentDate = currentDate.plusDays(1);
+    }
+  }
+
+  // removes ALL days that are spanned when edited to a different day/time
+  private void removeEventFromAllDates(Event event) {
+    LocalDate startDate = event.getStart().toLocalDate();
+    LocalDate endDate = event.getEnd().toLocalDate();
+
+    LocalDate currentDate = startDate;
+
+    while (!currentDate.isAfter(endDate)) {
+      if (calendar.containsKey(currentDate)) {
+        calendar.get(currentDate).remove(event);
+        if (calendar.get(currentDate).isEmpty()) {
+          calendar.remove(currentDate);
+        }
+      }
+      currentDate = currentDate.plusDays(1);
     }
   }
 
@@ -145,8 +184,19 @@ public class Calendar implements ICalendar {
       if (e.getSubject().equals(subject) && e.getStart().equals(startTime) &&
               e.getEnd().equals(endTime)) {
         editEventHelper(e, property, value);
-        alreadyExistsInCalendar(events, e);
+        checkForDuplicateAfterEdit(e, events);
         break;
+      }
+    }
+  }
+
+  private void checkForDuplicateAfterEdit(Event editedEvent, List<Event> events) {
+    for (Event e : events) {
+      if (e != editedEvent &&
+              e.getSubject().equals(editedEvent.getSubject()) &&
+              e.getStart().equals(editedEvent.getStart()) &&
+              e.getEnd().equals(editedEvent.getEnd())) {
+        throw new IllegalArgumentException("Event already exists");
       }
     }
   }
@@ -192,54 +242,65 @@ public class Calendar implements ICalendar {
     }
   }
 
-  //Removes an event from a specific day of the calendar and adds it to a new day
-  private void removeAndAddToCalendar(LocalDateTime original, Event e, LocalDateTime newDate) {
-    if (this.calendar.containsKey(original.toLocalDate()) &&
-            (!newDate.toLocalDate().equals(original.toLocalDate()))) {
-      this.calendar.get(original.toLocalDate()).remove(e);
 
-      if (this.calendar.containsKey(newDate.toLocalDate())) {
-        this.calendar.get(newDate.toLocalDate()).add(e);
-      } else {
-        List<Event> events = new ArrayList<>();
-        this.calendar.put(newDate.toLocalDate(), events);
-        this.calendar.get(newDate.toLocalDate()).add(e);
-      }
-    }
-  }
-
+  // original implementation iterated over a changing list - dangerous due to index out of bounds
   @Override
   public void editEvents(PropertyType property, String subject,
                          LocalDateTime startTime, String value) {
+    List<Event> eventsToModify = new ArrayList<>();
+    LocalDateTime seriesKey = null;
+
     for (Map.Entry<LocalDateTime, List<Event>> entry : series.entrySet()) {
-      List<Event> events = entry.getValue();
-      for (Event e : events) {
-        if (e.getStart().equals(startTime)) {
-          for (int i = events.size() - 1; i >= 0; i--) {
-            Event event = events.get(i);
+      for (Event e : entry.getValue()) {
+        if (e.getStart().equals(startTime) && e.getSubject().equals(subject)) {
+          seriesKey = entry.getKey();
+          for (Event event : entry.getValue()) {
             if (!event.getStart().isBefore(startTime) && event.getSubject().equals(subject)) {
-              editEventsHelper(event, property, entry.getKey(), startTime, value);
-              alreadyExistsInCalendar(this.calendar.get(event.getStart().toLocalDate()), event);
+              eventsToModify.add(event);
             }
           }
           break;
         }
       }
+      if (seriesKey != null) break;
+    }
+
+    for (Event event : eventsToModify) {
+      editEventsHelper(event, property, seriesKey, startTime, value);
     }
   }
 
+  // same dangerous issue as editEvents
   @Override
   public void editSeries(PropertyType property, String subject,
                          LocalDateTime startTime, String value) {
-    if (this.series.containsKey(startTime)) {
-      List<Event> events = this.series.get(startTime);
-      for (int i = events.size() - 1; i >= 0; i--) {
-        Event e = events.get(i);
-        editEventsHelper(e, property, startTime, startTime, value);
-        alreadyExistsInCalendar(this.calendar.get(e.getStart().toLocalDate()), e);
+    LocalDateTime seriesKey = null;
+    List<Event> targetSeries = null;
+
+    for (Map.Entry<LocalDateTime, List<Event>> entry : series.entrySet()) {
+      for (Event e : entry.getValue()) {
+        if (e.getStart().equals(startTime) && e.getSubject().equals(subject)) {
+          seriesKey = entry.getKey();
+          targetSeries = new ArrayList<>(entry.getValue());
+          break;
+        }
       }
-      removeSeries(property, startTime);
+      if (targetSeries != null) break;
     }
+
+    if (targetSeries == null) {
+      throw new IllegalArgumentException("Event not found in any series");
+    }
+
+    // now modify all events in the series
+    for (Event event : targetSeries) {
+      if (event.getSubject().equals(subject)) {
+        editEventsHelper(event, property, seriesKey, startTime, value);
+      }
+    }
+
+    // Clean up if needed
+    removeSeries(property, seriesKey);
   }
 
   //switch case for series
@@ -263,7 +324,7 @@ public class Calendar implements ICalendar {
         this.series.get(start).add(e);
 
         removeAndAddToCalendar(e.getStart(), e, newDate);
-        checkEndTimeAfterStart(newDate, e.getEnd());
+        checkEndTimeAfterStart(e.getEnd(), newDate);
 
         e.setStart(LocalDateTime.of(newDate.toLocalDate(), start.toLocalTime()));
         e.setEnd(LocalDateTime.of(newDate.toLocalDate(), e.getEnd().toLocalTime()));
@@ -285,6 +346,13 @@ public class Calendar implements ICalendar {
       default:
         editEventHelper(e, property, value);
     }
+  }
+
+  // removes event from span of days -> sets a new date -> adds event to span of days
+  private void removeAndAddToCalendar(LocalDateTime original, Event e, LocalDateTime newDate) {
+    removeEventFromAllDates(e);
+    e.setStart(newDate);
+    addEventHelper(e, newDate);
   }
 
   //removes a series
@@ -342,14 +410,18 @@ public class Calendar implements ICalendar {
   }
 
   @Override
-  public String showStatus(LocalDateTime day) {
-    LocalDate date = day.toLocalDate();
-    if (this.calendar.containsKey(date)) {
-      List<Event> events = this.calendar.get(date);
-      for (Event e : events) {
-        if (e.getStart().equals(day)) {
-          return "busy";
-        }
+  public String showStatus(LocalDateTime queryTime) {
+    LocalDate queryDate = queryTime.toLocalDate();
+
+    if(!this.calendar.containsKey(queryDate)){
+      return "available";
+    }
+
+    List<Event> events = this.calendar.get(queryDate);
+
+    for (Event e : events) {
+      if (!queryTime.isBefore(e.getStart()) && queryTime.isBefore(e.getEnd())) {
+        return "busy";
       }
     }
     return "available";

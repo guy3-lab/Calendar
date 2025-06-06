@@ -1,6 +1,6 @@
 package application;
 
-import controller.Execution.CalendarController;
+import controller.CalendarController;
 import view.HeadlessView;
 import view.InteractiveView;
 

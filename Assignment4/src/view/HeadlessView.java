@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-import controller.Execution.CalendarController;
+import controller.CalendarController;
 
 /**
  * Handles the headless mode user interface where commands are read from a file
