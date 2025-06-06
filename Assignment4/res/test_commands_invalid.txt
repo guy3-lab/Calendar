@@ -1,0 +1,25 @@
+# Sample command file for testing calendar application
+# This file demonstrates various commands supported by the calendar
+
+# Create some single events
+create event "Team Meeting" from 2025-06-05T10:00 to 2025-06-05T11:00
+create eent "Lunch Break" on 2025-06-05
+create event "Project Review" from 2025-06-06T14:00 to 2025-06-06T15:30
+
+# Create some recurring events
+create event "Daily Standup" from 2025-06-05T09:00 to 2025-06-05T09:30 repeats for 5 times
+create event "Weekend Workout" on 2025-06-07 repeats SU for 3 times
+
+# Print events to see what we created
+print events on 2025-0-05
+print events from 3-06-05 to 2025-06-07
+
+# Check status at specific times
+show status on 2025-06-05T10:30
+show stas on 2025-06-05T12:00
+
+# Edit an event (this will show error if edit methods aren't implemented)
+# edit event subject "Team Meeting" from 2025-06-05T10:00 to 2025-06-05T11:00 with "Weekly Team Meeting"
+
+# Must end with exit command
+exit

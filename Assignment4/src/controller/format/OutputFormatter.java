@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import model.Calendar.Event;
+import model.Event;
 import model.Enum.Location;
 
 /**

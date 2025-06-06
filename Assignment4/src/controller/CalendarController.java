@@ -12,9 +12,9 @@ import controller.Parse.ParseResult;
 import controller.Parse.RepeatInfo;
 import controller.format.IOutputFormatter;
 import controller.format.OutputFormatter;
-import model.Calendar.Calendar;
-import model.Calendar.Event;
-import model.Calendar.ICalendar;
+import model.Calendar;
+import model.Event;
+import model.ICalendar;
 
 /**
  * Controller that executes parsed commands on the calendar model and formats output.
