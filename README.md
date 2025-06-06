@@ -61,9 +61,9 @@ show status on `<dateStringTtimeString>`
 
 ## How to Use
 
-1. Choose either **interactive** or **headless** mode to run the program.  
-2. For **headless mode**, provide a text file with a list of valid commands (the last command must be `exit`).  
-3. For **interactive mode**, the user types valid commands one-by-one and sees output immediately.
+1. Choose either **interactive** or **headless** mode to run the program. `--mode interactive` or `--mode headless <command_file>`
+3. For **headless mode**, provide a text file with a list of valid commands (the last command must be `exit`).  
+4. For **interactive mode**, the user types valid commands one-by-one and sees output immediately.
 
 ---
 
