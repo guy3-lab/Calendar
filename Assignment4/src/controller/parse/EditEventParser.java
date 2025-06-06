@@ -20,9 +20,15 @@ public class EditEventParser implements CommandParser {
       CommandType editType = determineEditType(input);
       PropertyType property = extractProperty(input);
       String eventSubject = extractEventSubject(input);
-      LocalDateTime eventStart = ParsingTools.extractDateTime(input, " from ", " to ");
-      LocalDateTime eventEnd = (editType == CommandType.EDIT_EVENT && input.contains(" to ")) ?
-              ParsingTools.extractDateTime(input, " to ", " with ") : null;
+      LocalDateTime eventStart;
+      LocalDateTime eventEnd = null;
+
+      if (editType == CommandType.EDIT_EVENT && input.contains(" to ")) {
+        eventStart = ParsingTools.extractDateTime(input, " from ", " to ");
+        eventEnd = ParsingTools.extractDateTime(input, " to ", " with ");
+      } else {
+        eventStart = ParsingTools.extractDateTime(input, " from ", " with ");
+      }
       String newValue = ParsingTools.extractAfterKeyword(input, " with ");
 
       return ParseResult.editEvent(editType, property, eventSubject, eventStart,
