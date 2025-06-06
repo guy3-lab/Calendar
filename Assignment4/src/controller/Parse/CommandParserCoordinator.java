@@ -1,4 +1,4 @@
-package controller;
+package controller.Parse;
 
 import java.util.Arrays;
 import java.util.List;
