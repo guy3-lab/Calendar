@@ -3,7 +3,7 @@ package controller.format;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import model.Event;
+import model.Calendar.Event;
 
 /**
  * Interface for formatting calendar output.
