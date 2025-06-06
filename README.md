@@ -81,7 +81,8 @@ show status on `<dateStringTtimeString>`
   - End time  
   - Description  
   - Location  
-  - Status  
+  - Status
+- ✔ Create an event series where a single event spans multiple days  
 
 ---
 
@@ -89,7 +90,6 @@ show status on `<dateStringTtimeString>`
 
 - ✘ Cannot retrieve *all events in a series* as a group  
 - ✘ Cannot create two of the same events  
-- ✘ Cannot create an event series where a single event spans multiple days  
 - ✘ Cannot specify `status` or `description` at creation time  
 
 ---
@@ -97,8 +97,9 @@ show status on `<dateStringTtimeString>`
 ## Rough Distribution of Work
 
 **Krish**  
-- Controller  
-- View  
+- Controller
+- Model
+- View
 - Command Line Interface & Files  
 - Tests  
 
