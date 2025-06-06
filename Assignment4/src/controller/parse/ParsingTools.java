@@ -1,15 +1,18 @@
-package controller.Parse;
+package controller.parse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * Class that contains tools for parsing the string commands that the user will input.
+ */
 public class ParsingTools {
   private ParsingTools() {
     throw new IllegalStateException("Utility class");
   }
 
   /**
-   * Extract quoted or unquoted subject from input
+   * Extract quoted or unquoted subject from input.
    */
   public static String extractSubject(String input, String prefix) {
     if (!input.toLowerCase().startsWith(prefix.toLowerCase())) {
@@ -26,9 +29,10 @@ public class ParsingTools {
   }
 
   /**
-   * Extract datetime between two pointers
+   * Extract datetime between two pointers.
    */
-  public static LocalDateTime extractDateTime(String input, String startPointer, String endPointer) {
+  public static LocalDateTime extractDateTime(String input, String startPointer,
+                                              String endPointer) {
     int start = input.toLowerCase().indexOf(startPointer.toLowerCase());
     if (start == -1) {
       throw new IllegalArgumentException("Missing pointer: " + startPointer);
@@ -38,7 +42,7 @@ public class ParsingTools {
     int end;
     if (endPointer != null) {
       end = input.toLowerCase().indexOf(endPointer.toLowerCase(), start);
-      if (end == -1) end = input.length();
+      if (end == -1) {end = input.length();}
     } else {
       end = input.length();
     }
@@ -56,7 +60,7 @@ public class ParsingTools {
   }
 
   /**
-   * Extract date and convert to datetime - exclusively for all-day events
+   * Extract date and convert to datetime - exclusively for all-day events.
    */
   public static LocalDateTime extractDate(String input, String pointer) {
     int start = input.toLowerCase().indexOf(pointer.toLowerCase());
@@ -66,7 +70,7 @@ public class ParsingTools {
     start += pointer.length();
 
     int end = input.indexOf(" ", start);
-    if (end == -1) end = input.length();
+    if (end == -1) {end = input.length();}
 
     String dateStr = input.substring(start, end).trim();
     if (dateStr.isEmpty()) {
@@ -83,7 +87,7 @@ public class ParsingTools {
   }
 
   /**
-   * Extract value after a keyword
+   * Extract value after a keyword.
    */
   public static String extractAfterKeyword(String input, String keyword) {
     int start = input.toLowerCase().indexOf(keyword.toLowerCase()) + keyword.length();

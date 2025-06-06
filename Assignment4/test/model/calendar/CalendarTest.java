@@ -1,4 +1,4 @@
-package model.Calendar;
+package model.calendar;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import controller.Parse.PropertyType;
-import model.Enum.Location;
-import model.Enum.Status;
+import controller.parse.PropertyType;
+import model.enums.Location;
+import model.enums.Status;
 
 import static org.junit.Assert.assertEquals;
 

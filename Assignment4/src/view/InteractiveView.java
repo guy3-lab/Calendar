@@ -3,6 +3,10 @@ package view;
 import java.util.Scanner;
 import controller.CalendarController;
 
+/**
+ * Handles the interactive interface where a user can input commands one by one and get
+ * immediate reponses.
+ */
 public class InteractiveView implements IView {
   private final CalendarController controller;
   private final Scanner scanner;

@@ -1,4 +1,4 @@
-package model.Calendar;
+package model.calendar;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -9,10 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import controller.Parse.PropertyType;
-import model.Enum.Location;
-import model.Enum.Status;
-import model.Enum.WeekDays;
+import controller.parse.PropertyType;
+import model.enums.Location;
+import model.enums.Status;
+import model.enums.WeekDays;
 
 /**
  * represents a Calendar object that contains a year, and a list of months and its days.

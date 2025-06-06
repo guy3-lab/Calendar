@@ -1,9 +1,9 @@
-package model.Calendar;
+package model.calendar;
 
 import java.time.LocalDateTime;
 
-import model.Enum.Location;
-import model.Enum.Status;
+import model.enums.Location;
+import model.enums.Status;
 
 /**
  * the Event object interface that contains getter and setter methods.

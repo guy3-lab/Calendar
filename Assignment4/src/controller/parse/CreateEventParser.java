@@ -1,9 +1,12 @@
-package controller.Parse;
+package controller.parse;
 
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * The parser that parses through commands that create events.
+ */
 public class CreateEventParser implements CommandParser {
   @Override
   public boolean canHandle(String input) {

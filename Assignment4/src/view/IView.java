@@ -10,7 +10,7 @@ public interface IView {
   void run();
 
   /**
-   * Runs the view with a parameter (a command file)
+   * Runs the view with a parameter (a command file).
    */
   void run(String parameter);
 

@@ -3,7 +3,7 @@ package controller.format;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import model.Calendar.Event;
+import model.calendar.Event;
 
 /**
  * Interface for formatting calendar output.
@@ -30,7 +30,8 @@ public interface IOutputFormatter {
    * @param endDate the end date of the range (inclusive)
    * @return formatted string representation of events in the date range
    */
-  String formatEventRange(Map<LocalDate, List<Event>> calendar, LocalDate startDate, LocalDate endDate);
+  String formatEventRange(Map<LocalDate, List<Event>> calendar, LocalDate startDate,
+                          LocalDate endDate);
 
   /**
    * Formats a list of events for debugging or logging purposes.

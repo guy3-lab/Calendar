@@ -1,7 +1,10 @@
-package controller.Parse;
+package controller.parse;
 
 import java.time.LocalDate;
 
+/**
+ * class that parses the print event command input.
+ */
 public class PrintEventsParser implements CommandParser {
   @Override
   public boolean canHandle(String input) {

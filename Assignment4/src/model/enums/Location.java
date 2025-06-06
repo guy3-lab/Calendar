@@ -1,4 +1,4 @@
-package model.Enum;
+package model.enums;
 
 /**
  * A location enum that can only be online or physical.
