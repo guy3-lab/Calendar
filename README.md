@@ -10,7 +10,7 @@ create event `<eventSubject>` from `<dateStringTtimeString>` to `<dateStringTtim
 //creates an event that starts at some time and ends at some time that repeats throughout the provided weekdays for `<N>` amount of times 
 
 create event `<eventSubject>` from `<dateStringTtimeString>` to `<dateStringTtimeString>` repeats `<weekdays>` for `<N>` times
-- `<weekdays>` = comma-separated values like `M,T,W,R,F,S,U`  
+- `<weekdays>` = values without separation e.g. `MT` Valid values: `M,T,W,R,F,S,U`  
 - `<N>` = number of repetitions
 
 
