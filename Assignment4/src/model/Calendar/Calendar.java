@@ -220,38 +220,65 @@ public class Calendar implements ICalendar {
     }
   }
 
+
+  // original implementation iterated over a changing list - dangerous due to index out of bounds
   @Override
   public void editEvents(PropertyType property, String subject,
                          LocalDateTime startTime, String value) {
+    List<Event> eventsToModify = new ArrayList<>();
+    LocalDateTime seriesKey = null;
+
     for (Map.Entry<LocalDateTime, List<Event>> entry : series.entrySet()) {
-      List<Event> events = entry.getValue();
-      for (Event e : events) {
-        if (e.getStart().equals(startTime)) {
-          for (int i = events.size() - 1; i >= 0; i--) {
-            Event event = events.get(i);
+      for (Event e : entry.getValue()) {
+        if (e.getStart().equals(startTime) && e.getSubject().equals(subject)) {
+          seriesKey = entry.getKey();
+          for (Event event : entry.getValue()) {
             if (!event.getStart().isBefore(startTime) && event.getSubject().equals(subject)) {
-              editEventsHelper(event, property, entry.getKey(), startTime, value);
-              alreadyExistsInCalendar(this.calendar.get(event.getStart().toLocalDate()), event);
+              eventsToModify.add(event);
             }
           }
           break;
         }
       }
+      if (seriesKey != null) break;
+    }
+
+    for (Event event : eventsToModify) {
+      editEventsHelper(event, property, seriesKey, startTime, value);
     }
   }
 
+  // same dangerous issue as editEvents
   @Override
   public void editSeries(PropertyType property, String subject,
                          LocalDateTime startTime, String value) {
-    if (this.series.containsKey(startTime)) {
-      List<Event> events = this.series.get(startTime);
-      for (int i = events.size() - 1; i >= 0; i--) {
-        Event e = events.get(i);
-        editEventsHelper(e, property, startTime, startTime, value);
-        alreadyExistsInCalendar(this.calendar.get(e.getStart().toLocalDate()), e);
+    LocalDateTime seriesKey = null;
+    List<Event> targetSeries = null;
+
+    for (Map.Entry<LocalDateTime, List<Event>> entry : series.entrySet()) {
+      for (Event e : entry.getValue()) {
+        if (e.getStart().equals(startTime) && e.getSubject().equals(subject)) {
+          seriesKey = entry.getKey();
+          targetSeries = new ArrayList<>(entry.getValue());
+          break;
+        }
       }
-      removeSeries(property, startTime);
+      if (targetSeries != null) break;
     }
+
+    if (targetSeries == null) {
+      throw new IllegalArgumentException("Event not found in any series");
+    }
+
+    // now modify all events in the series
+    for (Event event : targetSeries) {
+      if (event.getSubject().equals(subject)) {
+        editEventsHelper(event, property, seriesKey, startTime, value);
+      }
+    }
+
+    // Clean up if needed
+    removeSeries(property, seriesKey);
   }
 
   //switch case for series
