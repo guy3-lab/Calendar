@@ -105,7 +105,6 @@ show status on `<dateStringTtimeString>`
 
 **David**  
 - Model  
-- Controller  
 - Tests  
 - Instructions  
 
