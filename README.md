@@ -83,7 +83,7 @@ show status on `<dateStringTtimeString>`
   - Location  
   - Status
 - ✔ Create an event series where a single event spans multiple days
-- ✔ Cannot retrieve *all events in a series* as a group 
+- ✔ Can retrieve *all events in a series* as a group 
 
 ---
 
