@@ -2,7 +2,15 @@ package model;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -446,7 +454,7 @@ public class CalendarEventTest {
     // Verify they are spaced 7 days apart
     for (int i = 1; i < seriesEvents.size(); i++) {
       long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(
-              seriesEvents.get(i-1).getStart().toLocalDate(),
+              seriesEvents.get(i - 1).getStart().toLocalDate(),
               seriesEvents.get(i).getStart().toLocalDate());
       assertEquals("Events should be 7 days apart", 7, daysBetween);
     }

@@ -368,7 +368,6 @@ public class CLITest {
     String commands =
             "# This is a comment\n" +
                     "\n" +
-                    "   \n" +
                     "# Another comment\n" +
                     "\t\n" +
                     "# Final comment\n";
@@ -379,7 +378,12 @@ public class CLITest {
     CalendarController controller = new CalendarController();
     HeadlessView view = new HeadlessView(controller);
 
-    view.run(commentFile.getAbsolutePath());
+    // Run and catch potential exception
+    try {
+      view.run(commentFile.getAbsolutePath());
+    } catch (Exception e) {
+      fail("view.run() should not throw an exception even if exit is missing.");
+    }
 
     String errorOutput = errorStream.toString();
     assertNotNull("Error output should not be null", errorOutput);

@@ -198,8 +198,10 @@ public class CalendarQueryTest {
     assertEquals("All-day start minutes should be 0", 0, allDayEvent.getStart().getMinute());
     assertEquals("All-day end should be 5:00 PM", 17, allDayEvent.getEnd().getHour());
     assertEquals("All-day end minutes should be 0", 0, allDayEvent.getEnd().getMinute());
-    assertEquals("All-day event should be on same date", testDate, allDayEvent.getStart().toLocalDate());
-    assertEquals("All-day event end should be on same date", testDate, allDayEvent.getEnd().toLocalDate());
+    assertEquals("All-day event should be on same date", testDate,
+            allDayEvent.getStart().toLocalDate());
+    assertEquals("All-day event end should be on same date", testDate,
+            allDayEvent.getEnd().toLocalDate());
 
     // Verify calendar state
     Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
@@ -270,8 +272,10 @@ public class CalendarQueryTest {
     LocalDateTime start = LocalDateTime.of(testDate, java.time.LocalTime.of(8, 0));
     LocalDateTime end = LocalDateTime.of(testDate, java.time.LocalTime.of(23, 59));
 
-    assertTrue("Interval should cover morning event", !event1.getStart().isBefore(start) && event1.getStart().isBefore(end));
-    assertTrue("Interval should cover afternoon event", !event2.getStart().isBefore(start) && event2.getStart().isBefore(end));
+    assertTrue("Interval should cover morning event", !event1.getStart().isBefore(start)
+            && event1.getStart().isBefore(end));
+    assertTrue("Interval should cover afternoon event", !event2.getStart().isBefore(start)
+            && event2.getStart().isBefore(end));
 
     // Test interval
     String result = calendar.printEventsInterval(start, end);
@@ -374,8 +378,10 @@ public class CalendarQueryTest {
     LocalDateTime filterEnd = LocalDateTime.of(testDate, java.time.LocalTime.of(18, 0));
 
     // Verify filter logic
-    assertTrue("Early event should start before filter", earlyEvent.getStart().isBefore(filterStart));
-    assertFalse("Late event should not start before filter", lateEvent.getStart().isBefore(filterStart));
+    assertTrue("Early event should start before filter",
+            earlyEvent.getStart().isBefore(filterStart));
+    assertFalse("Late event should not start before filter",
+            lateEvent.getStart().isBefore(filterStart));
 
     // Test filtered interval
     String result = calendar.printEventsInterval(filterStart, filterEnd);
@@ -417,18 +423,24 @@ public class CalendarQueryTest {
     // Verify calendar state - event should appear on all days it spans
     Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
     assertTrue("Calendar should contain start date", calendarData.containsKey(testDate));
-    assertTrue("Calendar should contain middle date", calendarData.containsKey(testDate.plusDays(1)));
+    assertTrue("Calendar should contain middle date",
+            calendarData.containsKey(testDate.plusDays(1)));
     assertTrue("Calendar should contain end date", calendarData.containsKey(testDate.plusDays(2)));
 
     // Verify event appears on each day
     assertEquals("Start date should have one event", 1, calendarData.get(testDate).size());
-    assertEquals("Middle date should have one event", 1, calendarData.get(testDate.plusDays(1)).size());
-    assertEquals("End date should have one event", 1, calendarData.get(testDate.plusDays(2)).size());
+    assertEquals("Middle date should have one event", 1,
+            calendarData.get(testDate.plusDays(1)).size());
+    assertEquals("End date should have one event", 1,
+            calendarData.get(testDate.plusDays(2)).size());
 
     // Verify it's the same event object on all days
-    assertEquals("Should be same event on start date", multiDayEvent, calendarData.get(testDate).get(0));
-    assertEquals("Should be same event on middle date", multiDayEvent, calendarData.get(testDate.plusDays(1)).get(0));
-    assertEquals("Should be same event on end date", multiDayEvent, calendarData.get(testDate.plusDays(2)).get(0));
+    assertEquals("Should be same event on start date", multiDayEvent,
+            calendarData.get(testDate).get(0));
+    assertEquals("Should be same event on middle date", multiDayEvent,
+            calendarData.get(testDate.plusDays(1)).get(0));
+    assertEquals("Should be same event on end date", multiDayEvent,
+            calendarData.get(testDate.plusDays(2)).get(0));
 
     // Test printing on each day
     String day1Result = calendar.printEvents(testDate);
@@ -682,8 +694,10 @@ public class CalendarQueryTest {
     LocalDateTime queryTime = LocalDateTime.of(testDate, java.time.LocalTime.of(10, 15));
 
     // Verify query time is in both events
-    assertTrue("Query should be during meeting 1", !queryTime.isBefore(meeting1Start) && queryTime.isBefore(meeting1End));
-    assertTrue("Query should be during meeting 2", !queryTime.isBefore(meeting2Start) && queryTime.isBefore(meeting2End));
+    assertTrue("Query should be during meeting 1", !queryTime.isBefore(meeting1Start)
+            && queryTime.isBefore(meeting1End));
+    assertTrue("Query should be during meeting 2", !queryTime.isBefore(meeting2Start)
+            && queryTime.isBefore(meeting2End));
 
     String status = calendar.showStatus(queryTime);
     assertNotNull("Status should not be null", status);
@@ -712,11 +726,13 @@ public class CalendarQueryTest {
 
     // Verify times are within/outside all-day event
     assertTrue("Mid-morning should be during all-day event",
-            !midMorning.isBefore(allDayEvent.getStart()) && midMorning.isBefore(allDayEvent.getEnd()));
+            !midMorning.isBefore(allDayEvent.getStart())
+                    && midMorning.isBefore(allDayEvent.getEnd()));
     assertTrue("Noon should be during all-day event",
             !noon.isBefore(allDayEvent.getStart()) && noon.isBefore(allDayEvent.getEnd()));
     assertTrue("Mid-afternoon should be during all-day event",
-            !midAfternoon.isBefore(allDayEvent.getStart()) && midAfternoon.isBefore(allDayEvent.getEnd()));
+            !midAfternoon.isBefore(allDayEvent.getStart())
+                    && midAfternoon.isBefore(allDayEvent.getEnd()));
     assertFalse("Evening should be after all-day event",
             !evening.isBefore(allDayEvent.getStart()) && evening.isBefore(allDayEvent.getEnd()));
 
@@ -728,7 +744,8 @@ public class CalendarQueryTest {
 
     // Test boundary conditions
     assertEquals("Should be busy at start", "busy", calendar.showStatus(allDayEvent.getStart()));
-    assertEquals("Should be available at end", "available", calendar.showStatus(allDayEvent.getEnd()));
+    assertEquals("Should be available at end", "available",
+            calendar.showStatus(allDayEvent.getEnd()));
   }
 
   @Test
@@ -750,11 +767,13 @@ public class CalendarQueryTest {
     // Verify calendar state
     Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
     assertTrue("Calendar should contain start date", calendarData.containsKey(testDate));
-    assertTrue("Calendar should contain middle date", calendarData.containsKey(testDate.plusDays(1)));
+    assertTrue("Calendar should contain middle date",
+            calendarData.containsKey(testDate.plusDays(1)));
     assertTrue("Calendar should contain end date", calendarData.containsKey(testDate.plusDays(2)));
 
     // Test status on middle day
-    LocalDateTime middleDayQuery = LocalDateTime.of(testDate.plusDays(1), java.time.LocalTime.of(12, 0));
+    LocalDateTime middleDayQuery = LocalDateTime.of(testDate.plusDays(1),
+            java.time.LocalTime.of(12, 0));
 
     // Verify middle day is between start and end
     assertTrue("Middle day should be after start", middleDayQuery.isAfter(start));
@@ -769,7 +788,8 @@ public class CalendarQueryTest {
     assertEquals("Should be busy on start day", "busy", calendar.showStatus(startDayQuery));
 
     // Test status on end day
-    LocalDateTime endDayQuery = LocalDateTime.of(testDate.plusDays(2), java.time.LocalTime.of(12, 0));
+    LocalDateTime endDayQuery = LocalDateTime.of(testDate.plusDays(2),
+            java.time.LocalTime.of(12, 0));
     assertEquals("Should be busy on end day", "busy", calendar.showStatus(endDayQuery));
   }
 
@@ -793,7 +813,8 @@ public class CalendarQueryTest {
             calendarData.containsKey(testDate.plusDays(1)));
 
     // Query on a different date
-    LocalDateTime differentDate = LocalDateTime.of(testDate.plusDays(1), java.time.LocalTime.of(9, 0));
+    LocalDateTime differentDate = LocalDateTime.of(testDate.plusDays(1),
+            java.time.LocalTime.of(9, 0));
 
     // Verify different date
     assertNotEquals("Query date should be different", testDate, differentDate.toLocalDate());
@@ -811,7 +832,8 @@ public class CalendarQueryTest {
 
     // Create recurring event
     List<String> repeatDays = Arrays.asList("M", "W", "F");
-    LocalDateTime seriesStart = LocalDateTime.of(testDate.plusDays(1), java.time.LocalTime.of(9, 0)); // Monday
+    LocalDateTime seriesStart = LocalDateTime.of(testDate.plusDays(1),
+            java.time.LocalTime.of(9, 0)); // Monday
     LocalDateTime seriesEnd = LocalDateTime.of(testDate.plusDays(1), java.time.LocalTime.of(10, 0));
 
     calendar.createSeriesTimes("Weekly Meeting", seriesStart, seriesEnd, repeatDays, 3);
@@ -840,8 +862,10 @@ public class CalendarQueryTest {
     LocalDateTime tuesdayQuery = LocalDateTime.of(tuesday, java.time.LocalTime.of(9, 30));
 
     // Verify query times are during event hours
-    assertTrue("Monday query should be during event", mondayQuery.getHour() == 9 && mondayQuery.getMinute() == 30);
-    assertTrue("Wednesday query should be during event", wednesdayQuery.getHour() == 9 && wednesdayQuery.getMinute() == 30);
+    assertTrue("Monday query should be during event", mondayQuery.getHour() == 9
+            && mondayQuery.getMinute() == 30);
+    assertTrue("Wednesday query should be during event",
+            wednesdayQuery.getHour() == 9 && wednesdayQuery.getMinute() == 30);
 
     String mondayStatus = calendar.showStatus(mondayQuery);
     String wednesdayStatus = calendar.showStatus(wednesdayQuery);
@@ -944,7 +968,8 @@ public class CalendarQueryTest {
     assertEquals("Location should be PHYSICAL", Location.PHYSICAL, physicalEvent.getLocation());
 
     // Add physical event to calendar manually
-    calendar.getCalendar().computeIfAbsent(testDate, k -> new java.util.ArrayList<>()).add(physicalEvent);
+    calendar.getCalendar().computeIfAbsent(testDate,
+            k -> new java.util.ArrayList<>()).add(physicalEvent);
 
     // Verify calendar state
     Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();

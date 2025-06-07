@@ -1,6 +1,11 @@
 package controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,9 +27,12 @@ import model.enums.Location;
 import model.enums.Status;
 
 /**
- * Comprehensive test suite for Command Interface Features (section 4) with extremely robust validation.
- * Tests all command parsing, validation, and execution functionality with detailed assertions at every step.
- * This test suite covers create commands, edit commands, query commands, and command validation features.
+ * Comprehensive test suite for Command Interface Features (section 4) with extremely robust
+ * validation.
+ * Tests all command parsing, validation, and execution functionality with detailed assertions at
+ * every step.
+ * This test suite covers create commands, edit commands, query commands, and command validation
+ * features.
  */
 public class CommandParseTest {
 
@@ -34,7 +42,8 @@ public class CommandParseTest {
   private LocalDateTime testDateTime;
 
   /**
-   * Sets up test environment with fresh calendar controller and test data before each test execution.
+   * Sets up test environment with fresh calendar controller and test data before each test
+   * execution.
    */
   @Before
   public void setUp() {
@@ -116,7 +125,8 @@ public class CommandParseTest {
     // Verify initial state
     assertTrue("Calendar should be empty initially", calendar.getCalendar().isEmpty());
 
-    String command = "create event \"Team Meeting & Discussion\" from 2025-06-15T14:00 to 2025-06-15T15:30";
+    String command = "create event \"Team Meeting & Discussion\" " +
+            "from 2025-06-15T14:00 to 2025-06-15T15:30";
     assertNotNull("Command should not be null", command);
     assertTrue("Command should contain quoted subject", command.contains("\""));
 
@@ -140,7 +150,8 @@ public class CommandParseTest {
 
     Event createdEvent = calendarData.get(testDate).get(0);
     assertNotNull("Created event should not be null", createdEvent);
-    assertEquals("Event subject should include special characters", "Team Meeting & Discussion", createdEvent.getSubject());
+    assertEquals("Event subject should include special characters", "Team Meeting & Discussion",
+            createdEvent.getSubject());
     assertEquals("Event start should be 2:00 PM", 14, createdEvent.getStart().getHour());
     assertEquals("Event end should be 3:30 PM", 15, createdEvent.getEnd().getHour());
     assertEquals("Event end minutes should be 30", 30, createdEvent.getEnd().getMinute());
@@ -177,8 +188,10 @@ public class CommandParseTest {
     assertTrue("Event should be all-day", createdEvent.isAllDay());
     assertEquals("All-day event should start at 8:00 AM", 8, createdEvent.getStart().getHour());
     assertEquals("All-day event should end at 5:00 PM", 17, createdEvent.getEnd().getHour());
-    assertEquals("All-day event should be on same date", testDate, createdEvent.getStart().toLocalDate());
-    assertEquals("All-day event end should be on same date", testDate, createdEvent.getEnd().toLocalDate());
+    assertEquals("All-day event should be on same date", testDate, createdEvent.getStart().
+            toLocalDate());
+    assertEquals("All-day event end should be on same date", testDate, createdEvent.getEnd().
+            toLocalDate());
   }
 
   /**
@@ -190,7 +203,8 @@ public class CommandParseTest {
     assertTrue("Calendar should be empty initially", calendar.getCalendar().isEmpty());
     assertTrue("Series should be empty initially", calendar.getSeries().isEmpty());
 
-    String command = "create event \"Weekly Standup\" from 2025-06-16T09:00 to 2025-06-16T09:30 repeats MWF for 6 times";
+    String command = "create event \"Weekly Standup\" from 2025-06-16T09:00 to 2025-06-16T09:30 " +
+            "repeats MWF for 6 times";
     assertNotNull("Command should not be null", command);
     assertTrue("Command should contain repeats keyword", command.contains(" repeats "));
     assertTrue("Command should contain 'for' keyword", command.contains(" for "));
@@ -231,7 +245,8 @@ public class CommandParseTest {
     // Verify event properties
     Event mondayEvent = calendarData.get(monday).get(0);
     assertNotNull("Monday event should exist", mondayEvent);
-    assertEquals("Monday event should have correct subject", "Weekly Standup", mondayEvent.getSubject());
+    assertEquals("Monday event should have correct subject", "Weekly Standup",
+            mondayEvent.getSubject());
     assertEquals("Monday event should start at 9:00", 9, mondayEvent.getStart().getHour());
     assertEquals("Monday event should end at 9:30", 9, mondayEvent.getEnd().getHour());
     assertEquals("Monday event should end at 30 minutes", 30, mondayEvent.getEnd().getMinute());
@@ -247,7 +262,8 @@ public class CommandParseTest {
     assertTrue("Calendar should be empty initially", calendar.getCalendar().isEmpty());
     assertTrue("Series should be empty initially", calendar.getSeries().isEmpty());
 
-    String command = "create event \"Daily Workout\" from 2025-06-16T07:00 to 2025-06-16T08:00 repeats MTWRF until 2025-06-27";
+    String command = "create event \"Daily Workout\" from 2025-06-16T07:00 to 2025-06-16T08:00 " +
+            "repeats MTWRF until 2025-06-27";
     assertNotNull("Command should not be null", command);
     assertTrue("Command should contain 'repeats' keyword", command.contains(" repeats "));
     assertTrue("Command should contain 'until' keyword", command.contains(" until "));
@@ -387,7 +403,8 @@ public class CommandParseTest {
   @Test
   public void testEditSingleEventSubject() {
     // Create initial event
-    Event originalEvent = calendar.createEvent("Old Meeting", testDateTime, testDateTime.plusHours(1));
+    Event originalEvent = calendar.createEvent("Old Meeting", testDateTime, testDateTime.
+            plusHours(1));
     assertNotNull("Original event should be created", originalEvent);
     assertEquals("Original subject should match", "Old Meeting", originalEvent.getSubject());
 
@@ -397,7 +414,8 @@ public class CommandParseTest {
     assertEquals("Should have one event", 1, calendarData.get(testDate).size());
 
     // Execute edit command
-    String command = "edit event subject Old Meeting from 2025-06-15T10:00 to 2025-06-15T11:00 with New Meeting";
+    String command = "edit event subject Old Meeting from 2025-06-15T10:00 to 2025-06-15T11:00 " +
+            "with New Meeting";
     assertNotNull("Command should not be null", command);
     assertTrue("Command should start with edit event", command.startsWith("edit event"));
     assertTrue("Command should specify subject property", command.contains("subject"));
@@ -418,7 +436,8 @@ public class CommandParseTest {
     assertNotNull("Modified event should exist", modifiedEvent);
     assertEquals("Subject should be updated", "New Meeting", modifiedEvent.getSubject());
     assertEquals("Start time should remain unchanged", testDateTime, modifiedEvent.getStart());
-    assertEquals("End time should remain unchanged", testDateTime.plusHours(1), modifiedEvent.getEnd());
+    assertEquals("End time should remain unchanged", testDateTime.plusHours(1),
+            modifiedEvent.getEnd());
     assertEquals("Location should remain unchanged", Location.ONLINE, modifiedEvent.getLocation());
     assertEquals("Status should remain unchanged", Status.PUBLIC, modifiedEvent.getStatus());
   }
@@ -438,7 +457,8 @@ public class CommandParseTest {
     assertEquals("Original end should match", originalEnd, originalEvent.getEnd());
 
     // Execute edit command to change start time
-    String command = "edit event start Meeting from 2025-06-15T10:00 to 2025-06-15T12:00 with 2025-06-15T14:00";
+    String command = "edit event start Meeting from 2025-06-15T10:00 to 2025-06-15T12:00 with " +
+            "2025-06-15T14:00";
     assertNotNull("Command should not be null", command);
     assertTrue("Command should specify start property", command.contains("start"));
 
@@ -459,7 +479,8 @@ public class CommandParseTest {
     Event modifiedEvent = events.get(0);
     assertNotNull("Modified event should exist", modifiedEvent);
     assertEquals("Subject should remain unchanged", "Meeting", modifiedEvent.getSubject());
-    assertEquals("Start time should be updated", LocalDateTime.of(2025, 6, 15, 14, 0), modifiedEvent.getStart());
+    assertEquals("Start time should be updated", LocalDateTime.of(2025, 6, 15, 14, 0),
+            modifiedEvent.getStart());
 
     // End time should be automatically adjusted to maintain duration
     LocalDateTime expectedEnd = LocalDateTime.of(2025, 6, 15, 12, 0); // 2 hours later
@@ -476,7 +497,8 @@ public class CommandParseTest {
     assertNotNull("Original event should be created", originalEvent);
 
     // Execute edit command to change end time
-    String command = "edit event end Meeting from 2025-06-15T10:00 to 2025-06-15T11:00 with 2025-06-15T12:30";
+    String command = "edit event end Meeting from 2025-06-15T10:00 to 2025-06-15T11:00 " +
+            "with 2025-06-15T12:30";
     assertNotNull("Command should not be null", command);
     assertTrue("Command should specify end property", command.contains("end"));
 
@@ -494,7 +516,8 @@ public class CommandParseTest {
     assertNotNull("Modified event should exist", modifiedEvent);
     assertEquals("Subject should remain unchanged", "Meeting", modifiedEvent.getSubject());
     assertEquals("Start time should remain unchanged", testDateTime, modifiedEvent.getStart());
-    assertEquals("End time should be updated", LocalDateTime.of(2025, 6, 15, 12, 30), modifiedEvent.getEnd());
+    assertEquals("End time should be updated", LocalDateTime.of(2025, 6, 15, 12, 30),
+            modifiedEvent.getEnd());
   }
 
   /**
@@ -505,10 +528,12 @@ public class CommandParseTest {
     // Create initial event with default location
     Event originalEvent = calendar.createEvent("Meeting", testDateTime, testDateTime.plusHours(1));
     assertNotNull("Original event should be created", originalEvent);
-    assertEquals("Original location should be ONLINE", Location.ONLINE, originalEvent.getLocation());
+    assertEquals("Original location should be ONLINE", Location.ONLINE,
+            originalEvent.getLocation());
 
     // Execute edit command to change location
-    String command = "edit event location Meeting from 2025-06-15T10:00 to 2025-06-15T11:00 with PHYSICAL";
+    String command = "edit event location Meeting from 2025-06-15T10:00 to 2025-06-15T11:00 " +
+            "with PHYSICAL";
     assertNotNull("Command should not be null", command);
     assertTrue("Command should specify location property", command.contains("location"));
     assertTrue("Command should specify new location", command.contains("PHYSICAL"));
@@ -526,7 +551,8 @@ public class CommandParseTest {
     assertNotNull("Modified event should exist", modifiedEvent);
     assertEquals("Subject should remain unchanged", "Meeting", modifiedEvent.getSubject());
     assertEquals("Location should be updated", Location.PHYSICAL, modifiedEvent.getLocation());
-    assertEquals("Other properties should remain unchanged", Status.PUBLIC, modifiedEvent.getStatus());
+    assertEquals("Other properties should remain unchanged", Status.PUBLIC,
+            modifiedEvent.getStatus());
   }
 
   /**
@@ -540,7 +566,8 @@ public class CommandParseTest {
     assertEquals("Original status should be PUBLIC", Status.PUBLIC, originalEvent.getStatus());
 
     // Execute edit command to change status
-    String command = "edit event status Meeting from 2025-06-15T10:00 to 2025-06-15T11:00 with PRIVATE";
+    String command = "edit event status Meeting from 2025-06-15T10:00 to 2025-06-15T11:00 with " +
+            "PRIVATE";
     assertNotNull("Command should not be null", command);
     assertTrue("Command should specify status property", command.contains("status"));
     assertTrue("Command should specify new status", command.contains("PRIVATE"));
@@ -558,7 +585,8 @@ public class CommandParseTest {
     assertNotNull("Modified event should exist", modifiedEvent);
     assertEquals("Subject should remain unchanged", "Meeting", modifiedEvent.getSubject());
     assertEquals("Status should be updated", Status.PRIVATE, modifiedEvent.getStatus());
-    assertEquals("Other properties should remain unchanged", Location.ONLINE, modifiedEvent.getLocation());
+    assertEquals("Other properties should remain unchanged", Location.ONLINE,
+            modifiedEvent.getLocation());
   }
 
   /**
@@ -585,7 +613,8 @@ public class CommandParseTest {
     assertTrue("Calendar should contain first Friday", calendarData.containsKey(friday1));
 
     // Execute edit command starting from Wednesday
-    String command = "edit events subject Weekly Meeting from 2025-06-18T09:00 with Updated Meeting";
+    String command = "edit events subject Weekly Meeting from 2025-06-18T09:00 with " +
+            "Updated Meeting";
     assertNotNull("Command should not be null", command);
     assertTrue("Command should start with edit events", command.startsWith("edit events"));
     assertTrue("Command should specify Wednesday start", command.contains("2025-06-18T09:00"));
@@ -606,10 +635,12 @@ public class CommandParseTest {
     assertNotNull("Friday event should exist", fridayEvent);
 
     // Monday event should remain unchanged (before start date)
-    assertEquals("Monday event should keep original subject", "Weekly Meeting", mondayEvent.getSubject());
+    assertEquals("Monday event should keep original subject", "Weekly Meeting",
+            mondayEvent.getSubject());
 
     // Wednesday and Friday events should be updated (on or after start date)
-    assertEquals("Wednesday event should be updated", "Updated Meeting", wednesdayEvent.getSubject());
+    assertEquals("Wednesday event should be updated", "Updated Meeting",
+            wednesdayEvent.getSubject());
     assertEquals("Friday event should be updated", "Updated Meeting", fridayEvent.getSubject());
   }
 
@@ -707,7 +738,8 @@ public class CommandParseTest {
 
     // Verify new series was created for the modified events
     LocalDateTime newSeriesStart = LocalDateTime.of(2025, 6, 18, 11, 0);
-    assertTrue("Should have new series with updated start time", seriesData.containsKey(newSeriesStart));
+    assertTrue("Should have new series with updated start time",
+            seriesData.containsKey(newSeriesStart));
   }
 
   // ==================== QUERY COMMANDS TESTS ====================
@@ -850,7 +882,8 @@ public class CommandParseTest {
   @Test
   public void testShowStatusBusyWithEvent() {
     // Create event at query time
-    Event event = calendar.createEvent("Important Meeting", testDateTime, testDateTime.plusHours(1));
+    Event event = calendar.createEvent("Important Meeting", testDateTime,
+            testDateTime.plusHours(1));
     assertNotNull("Event should be created", event);
     assertEquals("Event should start at query time", testDateTime, event.getStart());
 
@@ -937,7 +970,8 @@ public class CommandParseTest {
     } catch (IllegalArgumentException e) {
       assertNotNull("Exception should not be null", e);
       assertNotNull("Exception message should not be null", e.getMessage());
-      assertTrue("Exception should indicate unknown command", e.getMessage().contains("Unknown command"));
+      assertTrue("Exception should indicate unknown command",
+              e.getMessage().contains("Unknown command"));
     }
   }
 
@@ -1046,7 +1080,8 @@ public class CommandParseTest {
     // Verify calendar is empty
     assertTrue("Calendar should be empty initially", calendar.getCalendar().isEmpty());
 
-    String command = "edit event subject NonExistent from 2025-06-15T10:00 to 2025-06-15T11:00 with NewName";
+    String command = "edit event subject NonExistent from 2025-06-15T10:00 to " +
+            "2025-06-15T11:00 with NewName";
     assertNotNull("Command should not be null", command);
     assertTrue("Command should reference non-existent event", command.contains("NonExistent"));
 
@@ -1068,7 +1103,8 @@ public class CommandParseTest {
     // Create event to edit
     calendar.createEvent("Meeting", testDateTime, testDateTime.plusHours(1));
 
-    String command = "edit event invalidproperty Meeting from 2025-06-15T10:00 to 2025-06-15T11:00 with value";
+    String command = "edit event invalidproperty Meeting from 2025-06-15T10:00 to " +
+            "2025-06-15T11:00 with value";
     assertNotNull("Command should not be null", command);
     assertTrue("Command should contain invalid property", command.contains("invalidproperty"));
 
@@ -1108,7 +1144,8 @@ public class CommandParseTest {
    */
   @Test
   public void testInvalidRepeatPattern() {
-    String command = "create event Meeting from 2025-06-15T10:00 to 2025-06-15T11:00 repeats XYZ for 3 times";
+    String command = "create event Meeting from 2025-06-15T10:00 to 2025-06-15T11:00 " +
+            "repeats XYZ for 3 times";
     assertNotNull("Command should not be null", command);
     assertTrue("Command should contain invalid repeat pattern", command.contains("XYZ"));
 
@@ -1128,7 +1165,8 @@ public class CommandParseTest {
    */
   @Test
   public void testNegativeRepeatTimes() {
-    String command = "create event Meeting from 2025-06-15T10:00 to 2025-06-15T11:00 repeats M for -5 times";
+    String command = "create event Meeting from 2025-06-15T10:00 to 2025-06-15T11:00 " +
+            "repeats M for -5 times";
     assertNotNull("Command should not be null", command);
     assertTrue("Command should contain negative repeat times", command.contains("-5 times"));
 
@@ -1241,15 +1279,18 @@ public class CommandParseTest {
 
     assertNotNull("Parse result should not be null", result);
     assertTrue("Parse result should indicate success", result.isSuccess());
-    assertEquals("Command type should be CREATE_EVENT", CommandType.CREATE_EVENT, result.getCommandType());
+    assertEquals("Command type should be CREATE_EVENT", CommandType.CREATE_EVENT,
+            result.getCommandType());
     assertNull("Error message should be null for successful parse", result.getErrorMessage());
 
     // Verify parsed data
     assertEquals("Subject should be parsed correctly", "Test", result.getSubject());
     assertNotNull("Start time should be parsed", result.getStartTime());
     assertNotNull("End time should be parsed", result.getEndTime());
-    assertEquals("Start time should match", LocalDateTime.of(2025, 6, 15, 10, 0), result.getStartTime());
-    assertEquals("End time should match", LocalDateTime.of(2025, 6, 15, 11, 0), result.getEndTime());
+    assertEquals("Start time should match", LocalDateTime.of(2025, 6, 15, 10, 0),
+            result.getStartTime());
+    assertEquals("End time should match", LocalDateTime.of(2025, 6, 15, 11, 0),
+            result.getEndTime());
     assertFalse("Should not be all-day", result.isAllDay());
     assertFalse("Should not be repeating", result.isRepeating());
   }

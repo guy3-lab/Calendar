@@ -138,12 +138,14 @@ public class Calendar implements ICalendar {
 
       int difference = (dayNum - currentDay + 7) % 7;
 
-      weekdayRanges[i][0] = LocalDateTime.of(startTime.toLocalDate().plusDays(difference), startTime.toLocalTime());
+      weekdayRanges[i][0] = LocalDateTime.of(startTime.toLocalDate().plusDays(difference),
+              startTime.toLocalTime());
       if (endTime == null) {
         weekdayRanges[i][1] = null;
       } else {
         checkEventIsOneDay(startTime, endTime);
-        weekdayRanges[i][1] = LocalDateTime.of(endTime.toLocalDate().plusDays(difference), endTime.toLocalTime());
+        weekdayRanges[i][1] = LocalDateTime.of(endTime.toLocalDate().plusDays(difference),
+                endTime.toLocalTime());
       }
     }
     return weekdayRanges;
@@ -154,8 +156,8 @@ public class Calendar implements ICalendar {
                         LocalDateTime endTime, String value) {
     List<Event> events = this.calendar.get(startTime.toLocalDate());
     for (Event e : events) {
-      if (e.getSubject().equals(subject) && e.getStart().equals(startTime) &&
-              e.getEnd().equals(endTime)) {
+      if (e.getSubject().equals(subject) && e.getStart().equals(startTime)
+              && e.getEnd().equals(endTime)) {
         editEventHelper(e, property, value);
         alreadyExistsInCalendar(events, e);
         break;
@@ -201,6 +203,7 @@ public class Calendar implements ICalendar {
       case STATUS:
         e.setStatus(Status.valueOf(value.toUpperCase()));
         break;
+      default: //will have no default because it can only take in specified property
     }
   }
 
@@ -347,7 +350,7 @@ public class Calendar implements ICalendar {
     LocalDate day = start.toLocalDate();
     LocalDate endDay = end.toLocalDate();
     List<String> events = new ArrayList<>();
-    while(!day.isAfter(endDay)) {
+    while (!day.isAfter(endDay)) {
       if (this.calendar.containsKey(day)) {
         List<Event> eventList = this.calendar.get(day);
         for (Event e : eventList) {
@@ -373,7 +376,7 @@ public class Calendar implements ICalendar {
   public String showStatus(LocalDateTime queryTime) {
     LocalDate queryDate = queryTime.toLocalDate();
 
-    if(!this.calendar.containsKey(queryDate)){
+    if (!this.calendar.containsKey(queryDate)) {
       return "available";
     }
 

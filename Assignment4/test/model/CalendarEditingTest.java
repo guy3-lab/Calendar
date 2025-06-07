@@ -49,7 +49,8 @@ public class CalendarEditingTest {
     assertSame("Should be same event object", event, dayEvents.get(0));
 
     // Edit the subject
-    calendar.editEvent(PropertyType.SUBJECT, "Original Meeting", testStart, testEnd, "Updated Meeting");
+    calendar.editEvent(PropertyType.SUBJECT, "Original Meeting", testStart, testEnd,
+            "Updated Meeting");
 
     // Verify subject was changed
     assertEquals("Subject should be updated", "Updated Meeting", event.getSubject());
@@ -80,11 +81,13 @@ public class CalendarEditingTest {
     assertEquals("Initial start should be set", originalStart, event.getStart());
     assertEquals("Initial end should be set", originalEnd, event.getEnd());
     assertTrue("Should be on original date", calendar.getCalendar().containsKey(testDate));
-    assertEquals("Should have one event on original date", 1, calendar.getCalendar().get(testDate).size());
+    assertEquals("Should have one event on original date", 1,
+            calendar.getCalendar().get(testDate).size());
 
     // Edit start time to later same day
     LocalDateTime newStart = LocalDateTime.of(2025, 6, 15, 14, 0);
-    calendar.editEvent(PropertyType.START, "Meeting", originalStart, originalEnd, newStart.toString());
+    calendar.editEvent(PropertyType.START, "Meeting", originalStart,
+            originalEnd, newStart.toString());
 
     // Verify start time updated
     assertEquals("Start time should be updated", newStart, event.getStart());
@@ -104,7 +107,8 @@ public class CalendarEditingTest {
 
     // Verify initial placement
     assertTrue("Should be on original date", calendar.getCalendar().containsKey(testDate));
-    assertEquals("Should have one event on original date", 1, calendar.getCalendar().get(testDate).size());
+    assertEquals("Should have one event on original date", 1,
+            calendar.getCalendar().get(testDate).size());
 
     // Edit start time to different date
     LocalDateTime newStart = LocalDateTime.of(2025, 6, 16, 10, 0);
@@ -250,7 +254,8 @@ public class CalendarEditingTest {
     calendar.editEvent(PropertyType.SUBJECT, "Meeting", testStart, testEnd, "Important Meeting");
     assertEquals("Subject should be updated", "Important Meeting", event.getSubject());
 
-    calendar.editEvent(PropertyType.DESCRIPTION, "Important Meeting", testStart, testEnd, "Critical discussion");
+    calendar.editEvent(PropertyType.DESCRIPTION, "Important Meeting", testStart, testEnd,
+            "Critical discussion");
     assertEquals("Description should be updated", "Critical discussion", event.getDesc());
 
     calendar.editEvent(PropertyType.LOCATION, "Important Meeting", testStart, testEnd, "PHYSICAL");
@@ -286,7 +291,8 @@ public class CalendarEditingTest {
     assertTrue("Should be on day 3", calendar.getCalendar().containsKey(day3));
 
     // Edit subject
-    calendar.editEvent(PropertyType.SUBJECT, "Conference", multiStart, multiEnd, "Updated Conference");
+    calendar.editEvent(PropertyType.SUBJECT, "Conference", multiStart, multiEnd,
+            "Updated Conference");
 
     // Verify subject changed
     assertEquals("Subject should be updated", "Updated Conference", multiEvent.getSubject());
@@ -384,19 +390,23 @@ public class CalendarEditingTest {
     LocalDateTime specificEventStart = seriesEvents.get(0).getStart();
     LocalDateTime specificEventEnd = seriesEvents.get(0).getEnd();
 
-    calendar.editEvent(PropertyType.SUBJECT, "Weekly Meeting", specificEventStart, specificEventEnd, "Special Meeting");
+    calendar.editEvent(PropertyType.SUBJECT, "Weekly Meeting", specificEventStart, specificEventEnd,
+            "Special Meeting");
 
     // Verify only that specific event was changed
-    assertEquals("Specific event should be updated", "Special Meeting", seriesEvents.get(0).getSubject());
+    assertEquals("Specific event should be updated", "Special Meeting",
+            seriesEvents.get(0).getSubject());
 
     // Verify other events in series unchanged
     for (int i = 1; i < seriesEvents.size(); i++) {
-      assertEquals("Other events should remain unchanged", "Weekly Meeting", seriesEvents.get(i).getSubject());
+      assertEquals("Other events should remain unchanged", "Weekly Meeting",
+              seriesEvents.get(i).getSubject());
     }
 
     // Verify series still exists
     assertTrue("Series should still exist", calendar.getSeries().containsKey(testStart));
-    assertEquals("Series should still have all events", 9, calendar.getSeries().get(testStart).size());
+    assertEquals("Series should still have all events", 9,
+            calendar.getSeries().get(testStart).size());
   }
 
   /** Tests editing the location of a single event within a series. */
@@ -416,13 +426,18 @@ public class CalendarEditingTest {
 
     // Edit location of first event only
     Event firstEvent = seriesEvents.get(0);
-    calendar.editEvent(PropertyType.LOCATION, "Team Sync", firstEvent.getStart(), firstEvent.getEnd(), "PHYSICAL");
+    calendar.editEvent(PropertyType.LOCATION, "Team Sync", firstEvent.getStart(),
+            firstEvent.getEnd(), "PHYSICAL");
 
     // Verify only first event changed
-    assertEquals("First event should be PHYSICAL", Location.PHYSICAL, seriesEvents.get(0).getLocation());
-    assertEquals("Second event should remain ONLINE", Location.ONLINE, seriesEvents.get(1).getLocation());
-    assertEquals("Third event should remain ONLINE", Location.ONLINE, seriesEvents.get(2).getLocation());
-    assertEquals("Fourth event should remain ONLINE", Location.ONLINE, seriesEvents.get(3).getLocation());
+    assertEquals("First event should be PHYSICAL", Location.PHYSICAL,
+            seriesEvents.get(0).getLocation());
+    assertEquals("Second event should remain ONLINE", Location.ONLINE,
+            seriesEvents.get(1).getLocation());
+    assertEquals("Third event should remain ONLINE", Location.ONLINE,
+            seriesEvents.get(2).getLocation());
+    assertEquals("Fourth event should remain ONLINE", Location.ONLINE,
+            seriesEvents.get(3).getLocation());
   }
 
   /** Tests editing the time of a single event within a series. */
@@ -442,12 +457,15 @@ public class CalendarEditingTest {
 
     // Edit start time of second event
     LocalDateTime newStart = originalStart2.plusHours(1);
-    calendar.editEvent(PropertyType.START, "Weekly Check", originalStart2, seriesEvents.get(1).getEnd(), newStart.toString());
+    calendar.editEvent(PropertyType.START, "Weekly Check", originalStart2,
+            seriesEvents.get(1).getEnd(), newStart.toString());
 
     // Verify only second event time changed
-    assertEquals("First event time should remain unchanged", originalStart1, seriesEvents.get(0).getStart());
+    assertEquals("First event time should remain unchanged", originalStart1,
+            seriesEvents.get(0).getStart());
     assertEquals("Second event time should be updated", newStart, seriesEvents.get(1).getStart());
-    assertEquals("Third event time should remain unchanged", originalStart3, seriesEvents.get(2).getStart());
+    assertEquals("Third event time should remain unchanged", originalStart3,
+            seriesEvents.get(2).getStart());
 
     // Verify event moved to new calendar date if necessary
     if (!newStart.toLocalDate().equals(originalStart2.toLocalDate())) {
@@ -470,31 +488,40 @@ public class CalendarEditingTest {
 
     // All events should initially have same subject
     for (Event event : seriesEvents) {
-      assertEquals("All events should have original subject", "Bi-weekly Review", event.getSubject());
+      assertEquals("All events should have original subject", "Bi-weekly Review",
+              event.getSubject());
     }
 
-    // Get the start time of the third Monday (should be seriesEvents.get(2) since Mondays come first)
+    // Get the start time of the third Monday (should be seriesEvents.get(2) since
+    // Mondays come first)
     LocalDateTime thirdMondayStart = seriesEvents.get(2).getStart();
 
     // Edit events starting from the third Monday
-    calendar.editEvents(PropertyType.SUBJECT, "Bi-weekly Review", thirdMondayStart, "Updated Review");
+    calendar.editEvents(PropertyType.SUBJECT, "Bi-weekly Review", thirdMondayStart,
+            "Updated Review");
 
     // Verify first two Monday events unchanged
-    assertEquals("First Monday should remain unchanged", "Bi-weekly Review", seriesEvents.get(0).getSubject());
-    assertEquals("Second Monday should remain unchanged", "Bi-weekly Review", seriesEvents.get(1).getSubject());
+    assertEquals("First Monday should remain unchanged", "Bi-weekly Review",
+            seriesEvents.get(0).getSubject());
+    assertEquals("Second Monday should remain unchanged", "Bi-weekly Review",
+            seriesEvents.get(1).getSubject());
 
     // Verify events from third Monday onward are changed
-    assertEquals("Third Monday should be updated", "Updated Review", seriesEvents.get(2).getSubject());
-    assertEquals("Fourth Monday should be updated", "Updated Review", seriesEvents.get(3).getSubject());
+    assertEquals("Third Monday should be updated", "Updated Review",
+            seriesEvents.get(2).getSubject());
+    assertEquals("Fourth Monday should be updated", "Updated Review",
+            seriesEvents.get(3).getSubject());
 
     // Verify Friday events that start at or after the specified time are also changed
     // Need to check which Friday events have start times >= thirdMondayStart
     for (int i = 4; i < 8; i++) { // Friday events are at positions 4-7
       Event fridayEvent = seriesEvents.get(i);
       if (!fridayEvent.getStart().isBefore(thirdMondayStart)) {
-        assertEquals("Friday events at/after start time should be updated", "Updated Review", fridayEvent.getSubject());
+        assertEquals("Friday events at/after start time should be updated",
+                "Updated Review", fridayEvent.getSubject());
       } else {
-        assertEquals("Friday events before start time should remain unchanged", "Bi-weekly Review", fridayEvent.getSubject());
+        assertEquals("Friday events before start time should remain unchanged",
+                "Bi-weekly Review", fridayEvent.getSubject());
       }
     }
   }
@@ -513,26 +540,34 @@ public class CalendarEditingTest {
     LocalDateTime secondTuesdayStart = seriesEvents.get(1).getStart();
 
     // Edit subject starting from second Tuesday
-    calendar.editEvents(PropertyType.SUBJECT, "Team Meeting", secondTuesdayStart, "Advanced Meeting");
+    calendar.editEvents(PropertyType.SUBJECT, "Team Meeting", secondTuesdayStart,
+            "Advanced Meeting");
 
     // Edit description starting from second Tuesday
-    calendar.editEvents(PropertyType.DESCRIPTION, "Advanced Meeting", secondTuesdayStart, "Advanced topics");
+    calendar.editEvents(PropertyType.DESCRIPTION, "Advanced Meeting", secondTuesdayStart,
+            "Advanced topics");
 
     // Edit location starting from second Tuesday
     calendar.editEvents(PropertyType.LOCATION, "Advanced Meeting", secondTuesdayStart, "PHYSICAL");
 
     // Verify first Tuesday unchanged
-    assertEquals("First Tuesday subject unchanged", "Team Meeting", seriesEvents.get(0).getSubject());
+    assertEquals("First Tuesday subject unchanged", "Team Meeting",
+            seriesEvents.get(0).getSubject());
     assertEquals("First Tuesday description unchanged", "", seriesEvents.get(0).getDesc());
-    assertEquals("First Tuesday location unchanged", Location.ONLINE, seriesEvents.get(0).getLocation());
+    assertEquals("First Tuesday location unchanged", Location.ONLINE,
+            seriesEvents.get(0).getLocation());
 
     // Verify events from second Tuesday onward changed
     for (int i = 1; i < seriesEvents.size(); i++) {
       Event event = seriesEvents.get(i);
-      if (!event.getStart().isBefore(secondTuesdayStart) && event.getSubject().equals("Advanced Meeting")) {
-        assertEquals("Event should have updated subject", "Advanced Meeting", event.getSubject());
-        assertEquals("Event should have updated description", "Advanced topics", event.getDesc());
-        assertEquals("Event should have updated location", Location.PHYSICAL, event.getLocation());
+      if (!event.getStart().isBefore(secondTuesdayStart)
+              && event.getSubject().equals("Advanced Meeting")) {
+        assertEquals("Event should have updated subject", "Advanced Meeting",
+                event.getSubject());
+        assertEquals("Event should have updated description", "Advanced topics",
+                event.getDesc());
+        assertEquals("Event should have updated location", Location.PHYSICAL,
+                event.getLocation());
       }
     }
   }
@@ -555,16 +590,20 @@ public class CalendarEditingTest {
     calendar.editEvents(PropertyType.LOCATION, "Base Meeting", secondEventStart, "PHYSICAL");
 
     // Verify first event unchanged (before start time)
-    assertEquals("First event location unchanged", Location.ONLINE, seriesEvents.get(0).getLocation());
+    assertEquals("First event location unchanged", Location.ONLINE,
+            seriesEvents.get(0).getLocation());
 
     // Verify second event changed (matches subject and time criteria)
-    assertEquals("Second event location changed", Location.PHYSICAL, seriesEvents.get(1).getLocation());
+    assertEquals("Second event location changed", Location.PHYSICAL,
+            seriesEvents.get(1).getLocation());
 
     // Verify third event unchanged (different subject)
-    assertEquals("Third event location unchanged due to different subject", Location.ONLINE, seriesEvents.get(2).getLocation());
+    assertEquals("Third event location unchanged due to different subject",
+            Location.ONLINE, seriesEvents.get(2).getLocation());
 
     // Verify fourth event changed (matches subject and time criteria)
-    assertEquals("Fourth event location changed", Location.PHYSICAL, seriesEvents.get(3).getLocation());
+    assertEquals("Fourth event location changed", Location.PHYSICAL,
+            seriesEvents.get(3).getLocation());
   }
 
   // ========== EDIT ENTIRE SERIES ==========
@@ -594,7 +633,8 @@ public class CalendarEditingTest {
 
     // Verify series still exists with same key
     assertTrue("Series should still exist", calendar.getSeries().containsKey(testStart));
-    assertEquals("Series should have same number of events", 6, calendar.getSeries().get(testStart).size());
+    assertEquals("Series should have same number of events", 6,
+            calendar.getSeries().get(testStart).size());
   }
 
   @Test
@@ -608,7 +648,8 @@ public class CalendarEditingTest {
 
     // Edit multiple properties of entire series
     calendar.editSeries(PropertyType.SUBJECT, "Weekly Review", testStart, "Comprehensive Review");
-    calendar.editSeries(PropertyType.DESCRIPTION, "Comprehensive Review", testStart, "Detailed weekly analysis");
+    calendar.editSeries(PropertyType.DESCRIPTION, "Comprehensive Review", testStart,
+            "Detailed weekly analysis");
     calendar.editSeries(PropertyType.LOCATION, "Comprehensive Review", testStart, "PHYSICAL");
     calendar.editSeries(PropertyType.STATUS, "Comprehensive Review", testStart, "PRIVATE");
 
@@ -648,14 +689,20 @@ public class CalendarEditingTest {
     assertEquals("Should still have 4 events", 4, updatedEvents.size());
 
     // Verify all start times shifted by 2 hours
-    assertEquals("First Wed should be 2 hours later", originalWed1.plusHours(2), updatedEvents.get(0).getStart());
-    assertEquals("Second Wed should be 2 hours later", originalWed2.plusHours(2), updatedEvents.get(1).getStart());
-    assertEquals("First Fri should be 2 hours later", originalFri1.plusHours(2), updatedEvents.get(2).getStart());
-    assertEquals("Second Fri should be 2 hours later", originalFri2.plusHours(2), updatedEvents.get(3).getStart());
+    assertEquals("First Wed should be 2 hours later", originalWed1.plusHours(2),
+            updatedEvents.get(0).getStart());
+    assertEquals("Second Wed should be 2 hours later", originalWed2.plusHours(2),
+            updatedEvents.get(1).getStart());
+    assertEquals("First Fri should be 2 hours later", originalFri1.plusHours(2),
+            updatedEvents.get(2).getStart());
+    assertEquals("Second Fri should be 2 hours later", originalFri2.plusHours(2),
+            updatedEvents.get(3).getStart());
 
     // Verify end times also shifted
-    assertEquals("First Wed end should be 2 hours later", testEnd.plusHours(2), updatedEvents.get(0).getEnd());
-    assertEquals("First Fri end should be 2 hours later", testEnd.plusHours(2), updatedEvents.get(2).getEnd());
+    assertEquals("First Wed end should be 2 hours later", testEnd.plusHours(2),
+            updatedEvents.get(0).getEnd());
+    assertEquals("First Fri end should be 2 hours later", testEnd.plusHours(2),
+            updatedEvents.get(2).getEnd());
   }
 
   @Test
@@ -739,7 +786,8 @@ public class CalendarEditingTest {
     for (Event event : newEvents) {
       // Events should now be on Thursday pattern + weekly intervals
       int dayOfWeek = event.getStart().getDayOfWeek().getValue();
-      assertTrue("Events should be on expected days", dayOfWeek == 4 || dayOfWeek == 6); // Thu or Sat
+      // Thu or Sat
+      assertTrue("Events should be on expected days", dayOfWeek == 4 || dayOfWeek == 6);
     }
   }
 
@@ -751,7 +799,8 @@ public class CalendarEditingTest {
   public void testComplexSeriesEditingScenario() {
     // This test implements the complex example from the assignment requirements
 
-    // 1. Create an event series called "First" on May 5 2025 from 10am-11am that repeats 6 times on Mondays and Wednesdays
+    // 1. Create an event series called "First" on May 5 2025 from 10am-11am that repeats 6
+    // times on Mondays and Wednesdays
     LocalDateTime may5Start = LocalDateTime.of(2025, 5, 5, 10, 0);
     LocalDateTime may5End = LocalDateTime.of(2025, 5, 5, 11, 0);
     List<String> mondayWednesday = Arrays.asList("M", "W");
@@ -766,7 +815,8 @@ public class CalendarEditingTest {
       assertEquals("All events should have 'First' subject", "First", event.getSubject());
     }
 
-    // 2. Edit the subject of the event starting on May 12 2025 to be "Second" and specify to change all events in the series starting from this
+    // 2. Edit the subject of the event starting on May 12 2025 to be "Second" and specify
+    // to change all events in the series starting from this
     LocalDateTime may12Start = LocalDateTime.of(2025, 5, 12, 10, 0);
     calendar.editEvents(PropertyType.SUBJECT, "First", may12Start, "Second");
 
@@ -782,7 +832,8 @@ public class CalendarEditingTest {
     assertTrue("Should have some 'Second' events", secondCount > 0);
     assertEquals("Total should still be 12", 12, firstCount + secondCount);
 
-    // 3. Edit the subject of the event starting on May 5 2025 to be "Third" and specify for all events in this series to change
+    // 3. Edit the subject of the event starting on May 5 2025 to be "Third" and specify for
+    // all events in this series to change
     calendar.editSeries(PropertyType.SUBJECT, "First", may5Start, "Third");
 
     // Now all remaining "First" events should become "Third"
@@ -797,11 +848,13 @@ public class CalendarEditingTest {
     assertEquals("Total should still be 12", 12, thirdCount + secondCount2);
     assertEquals("Second count should remain same", secondCount, secondCount2);
 
-    // 4. Edit the start time of the event starting on May 12 2025 to be 10:30am and specify to change all events in the series starting from this
+    // 4. Edit the start time of the event starting on May 12 2025 to be 10:30am and specify to
+    // change all events in the series starting from this
     LocalDateTime newStartTime = LocalDateTime.of(2025, 5, 12, 10, 30);
     calendar.editEvents(PropertyType.START, "Second", may12Start, newStartTime.toString());
 
-    // This should split the series - some events remain in original series, others move to new series
+    // This should split the series - some events remain in original series,
+    // others move to new series
     assertTrue("Original series should still exist", calendar.getSeries().containsKey(may5Start));
     assertTrue("New series should be created", calendar.getSeries().containsKey(newStartTime));
 
@@ -811,7 +864,8 @@ public class CalendarEditingTest {
     assertTrue("Original series should have remaining events", originalRemaining.size() > 0);
     assertTrue("New series should have moved events", newSeries.size() > 0);
 
-    // 5. Edit the subject of the event starting on May 5 2025 to be "Fourth" and specify for all events in this series to change
+    // 5. Edit the subject of the event starting on May 5 2025 to be "Fourth" and specify for all
+    // events in this series to change
     calendar.editSeries(PropertyType.SUBJECT, "Third", may5Start, "Fourth");
 
     // All events in the original series should now be "Fourth"
@@ -819,7 +873,8 @@ public class CalendarEditingTest {
       assertEquals("Original series events should be 'Fourth'", "Fourth", event.getSubject());
     }
 
-    // 6. Edit the subject of the event starting on May 12 2025 to be "Fifth" and specify for all events in this series to change
+    // 6. Edit the subject of the event starting on May 12 2025 to be "Fifth" and specify for all
+    // events in this series to change
     calendar.editSeries(PropertyType.SUBJECT, "Second", newStartTime, "Fifth");
 
     // All events in the new series should now be "Fifth"
@@ -827,10 +882,12 @@ public class CalendarEditingTest {
       assertEquals("New series events should be 'Fifth'", "Fifth", event.getSubject());
     }
 
-    // Final verification: we should have two separate series with different subjects and start times
+    // Final verification: we should have two separate series with different subjects and start
+    // times
     assertNotEquals("Series should have different subjects",
             originalRemaining.get(0).getSubject(), newSeries.get(0).getSubject());
     assertNotEquals("Series should have different start times",
-            originalRemaining.get(0).getStart().toLocalTime(), newSeries.get(0).getStart().toLocalTime());
+            originalRemaining.get(0).getStart().toLocalTime(),
+            newSeries.get(0).getStart().toLocalTime());
   }
 }
