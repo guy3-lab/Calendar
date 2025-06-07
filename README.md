@@ -82,13 +82,13 @@ show status on `<dateStringTtimeString>`
   - Description  
   - Location  
   - Status
-- ✔ Create an event series where a single event spans multiple days  
+- ✔ Create an event series where a single event spans multiple days
+- ✔ Cannot retrieve *all events in a series* as a group 
 
 ---
 
 ## Features That Don't Work
 
-- ✘ Cannot retrieve *all events in a series* as a group  
 - ✘ Cannot create two of the same events  
 - ✘ Cannot specify `status` or `description` at creation time  
 
