@@ -43,7 +43,8 @@ public class Calendar implements ICalendar {
     return event;
   }
 
-  private void addEventHelper(Event event, LocalDateTime startTime) {
+  //adds the event to the calendar date
+  protected void addEventHelper(Event event, LocalDateTime startTime) {
     LocalDate startDate = startTime.toLocalDate();
     LocalDate endDate = event.getEnd().toLocalDate();
 
