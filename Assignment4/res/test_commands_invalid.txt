@@ -1,25 +1,54 @@
-# Sample command file for testing calendar application
-# This file demonstrates various commands supported by the calendar
+# Invalid Commands Test File
 
-# Create some single events
-create event "Team Meeting" from 2025-06-05T10:00 to 2025-06-05T11:00
-create eent "Lunch Break" on 2025-06-05
-create event "Project Review" from 2025-06-06T14:00 to 2025-06-06T15:30
+# Valid command
+create event "Good Event" from 2025-06-15T10:00 to 2025-06-15T11:00
 
-# Create some recurring events
-create event "Daily Standup" from 2025-06-05T09:00 to 2025-06-05T09:30 repeats for 5 times
-create event "Weekend Workout" on 2025-06-07 repeats SU for 3 times
+# Invalid command - completely wrong syntax
+this is not a valid command at all
 
-# Print events to see what we created
-print events on 2025-0-05
-print events from 3-06-05 to 2025-06-07
+# Valid command
+create event "Another Good Event" from 2025-06-15T14:00 to 2025-06-15T15:00
 
-# Check status at specific times
-show status on 2025-06-05T10:30
-show stas on 2025-06-05T12:00
+# Invalid command - missing required fields
+create event
 
-# Edit an event (this will show error if edit methods aren't implemented)
-# edit event subject "Team Meeting" from 2025-06-05T10:00 to 2025-06-05T11:00 with "Weekly Team Meeting"
+# Invalid command - invalid date format
+create event "Bad Date Event" from invalid-date-format to 2025-06-15T12:00
 
-# Must end with exit command
+# Valid command
+print events on 2025-06-15
+
+# Invalid command - invalid time format (25 hours)
+create event "Bad Time Event" from 2025-06-15T25:00 to 2025-06-15T26:00
+
+# Invalid command - end time before start time
+create event "Backwards Event" from 2025-06-15T15:00 to 2025-06-15T14:00
+
+# Valid command
+show status on 2025-06-15T10:30
+
+# Invalid command - invalid repeat pattern
+create event "Bad Repeat" from 2025-06-15T09:00 to 2025-06-15T10:00 repeats XYZ for 3 times
+
+# Invalid command - negative repeat times
+create event "Negative Repeat" from 2025-06-15T16:00 to 2025-06-15T17:00 repeats M for -5 times
+
+# Valid command
+create event "Final Good Event" from 2025-06-15T18:00 to 2025-06-15T19:00
+
+# Invalid command - invalid property for editing
+edit event invalidproperty "Good Event" from 2025-06-15T10:00 to 2025-06-15T11:00 with value
+
+# Invalid command - editing non-existent event
+edit event subject "Non-Existent Event" from 2025-06-15T20:00 to 2025-06-15T21:00 with "New Name"
+
+# Valid command
+print events on 2025-06-15
+
+# Invalid command - invalid status query format
+show status on invalid-datetime-format
+
+# Valid command - should still work despite previous errors
+show status on 2025-06-15T18:30
+
 exit

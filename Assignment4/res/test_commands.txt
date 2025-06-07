@@ -1,25 +1,45 @@
-# Sample command file for testing calendar application
-# This file demonstrates various commands supported by the calendar
+# Valid Commands Test File
 
-# Create some single events
-create event "Team Meeting" from 2025-06-05T10:00 to 2025-06-05T11:00
-create event "Lunch Break" on 2025-06-05
-create event "Project Review" from 2025-06-06T14:00 to 2025-06-06T15:30
+# Create single events
+create event "Morning Meeting" from 2025-06-15T09:00 to 2025-06-15T10:00
+create event Lunch from 2025-06-15T12:00 to 2025-06-15T13:00
+create event "Team Standup" from 2025-06-16T09:30 to 2025-06-16T10:00
 
-# Create some recurring events
-create event "Daily Standup" from 2025-06-05T09:00 to 2025-06-05T09:30 repeats MTWRF for 5 times
-create event "Weekend Workout" on 2025-06-07 repeats SU for 3 times
+# Create all-day events
+create event Holiday on 2025-06-20
+create event "Company Retreat" on 2025-06-25
 
-# Print events to see what we created
-print events on 2025-06-05
-print events from 2025-06-05 to 2025-06-07
+# Create recurring events with time limits
+create event "Daily Workout" from 2025-06-16T07:00 to 2025-06-16T08:00 repeats MTWRF for 5 times
+create event "Weekly Review" from 2025-06-16T15:00 to 2025-06-16T16:00 repeats F for 3 times
 
-# Check status at specific times
-show status on 2025-06-05T10:30
-show status on 2025-06-05T12:00
+# Create recurring events with date limits
+create event "Weekend Fun" on 2025-06-14 repeats SU for 4 times
+create event "Morning Jog" from 2025-06-16T06:00 to 2025-06-16T07:00 repeats MW until 2025-06-30
 
-# Edit an event (this will show error if edit methods aren't implemented)
-# edit event subject "Team Meeting" from 2025-06-05T10:00 to 2025-06-05T11:00 with "Weekly Team Meeting"
+# Query events
+print events on 2025-06-15
+print events on 2025-06-16
+print events from 2025-06-14T00:00 to 2025-06-20T23:59
 
-# Must end with exit command
+# Check availability status
+show status on 2025-06-15T09:30
+show status on 2025-06-15T11:00
+show status on 2025-06-16T07:30
+show status on 2025-06-20T12:00
+
+# Edit single events
+edit event subject Lunch from 2025-06-15T12:00 to 2025-06-15T13:00 with "Business Lunch"
+edit event location "Morning Meeting" from 2025-06-15T09:00 to 2025-06-15T10:00 with PHYSICAL
+edit event status "Team Standup" from 2025-06-16T09:30 to 2025-06-16T10:00 with PRIVATE
+
+# Edit event series
+edit series subject "Daily Workout" from 2025-06-16T07:00 with "Morning Exercise"
+edit events location "Weekly Review" from 2025-06-16T15:00 with PHYSICAL
+
+# Final queries to verify changes
+print events on 2025-06-15
+print events on 2025-06-16
+show status on 2025-06-15T12:30
+
 exit
