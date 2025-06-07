@@ -3,7 +3,7 @@ package controller.parse;
 import java.time.LocalDateTime;
 
 /**
- * Parser that parses through the commands that edit events
+ * Parser that parses through the commands that edit events.
  */
 public class EditEventParser implements CommandParser {
   @Override
@@ -40,9 +40,15 @@ public class EditEventParser implements CommandParser {
 
   private CommandType determineEditType(String input) {
     String lower = input.toLowerCase();
-    if (lower.startsWith("edit event ")) {return CommandType.EDIT_EVENT;}
-    if (lower.startsWith("edit events ")) {return CommandType.EDIT_EVENTS;}
-    if (lower.startsWith("edit series ")) {return CommandType.EDIT_SERIES;}
+    if (lower.startsWith("edit event ")) {
+      return CommandType.EDIT_EVENT;
+    }
+    if (lower.startsWith("edit events ")) {
+      return CommandType.EDIT_EVENTS;
+    }
+    if (lower.startsWith("edit series ")) {
+      return CommandType.EDIT_SERIES;
+    }
     throw new IllegalArgumentException("Unknown edit type");
   }
 
@@ -71,7 +77,9 @@ public class EditEventParser implements CommandParser {
     boolean foundProperty = false;
     for (String part : parts) {
       if (foundProperty && !part.equalsIgnoreCase("from")) {
-        if (subject.length() > 0) {subject.append(" ");}
+        if (subject.length() > 0) {
+          subject.append(" ");
+        }
         subject.append(part);
       } else if (foundProperty && part.equalsIgnoreCase("from")) {
         break;

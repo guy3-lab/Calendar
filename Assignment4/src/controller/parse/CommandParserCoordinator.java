@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Main parser that coordinates all specific parsers
+ * Main parser that coordinates all specific parsers.
  */
 public class CommandParserCoordinator {
 

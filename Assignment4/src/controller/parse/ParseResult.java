@@ -155,19 +155,25 @@ public class ParseResult {
    * returns whether or not it's a success.
    * @return true or false
    */
-  public boolean isSuccess() { return success; }
+  public boolean isSuccess() {
+    return success;
+  }
 
   /**
    * returns the command type being passed.
    * @return the command type
    */
-  public CommandType getCommandType() { return commandType; }
+  public CommandType getCommandType() {
+    return commandType;
+  }
 
   /**
    * gets the error message.
    * @return the error message as a string
    */
-  public String getErrorMessage() { return errorMessage; }
+  public String getErrorMessage() {
+    return errorMessage;
+  }
 
   // CREATE event getters
 
@@ -175,37 +181,50 @@ public class ParseResult {
    * returns the subject to make the event.
    * @return a string of the subject
    */
-  public String getSubject() { return subject; }
+  public String getSubject() {
+    return subject;
+  }
 
   /**
    * Gets the start time of the event to be made.
    * @return the localDateTime of the start time
    */
-  public java.time.LocalDateTime getStartTime() { return startTime; }
+  public java.time.LocalDateTime getStartTime() {
+    return startTime;
+  }
+
 
   /**
    * gets the end time of the event to be made.
    * @return the localDateTime of the end time
    */
-  public java.time.LocalDateTime getEndTime() { return endTime; }
+  public java.time.LocalDateTime getEndTime() {
+    return endTime;
+  }
 
   /**
    * gets the repeat info of the event.
    * @return the repeat info
    */
-  public RepeatInfo getRepeatInfo() { return repeatInfo; }
+  public RepeatInfo getRepeatInfo() {
+    return repeatInfo;
+  }
 
   /**
    * Returns whether or not the end time exists or not. If it does, it's a full day.
    * @return true or false
    */
-  public boolean isAllDay() { return endTime == null; }
+  public boolean isAllDay() {
+    return endTime == null;
+  }
 
   /**
    * Returns whether or not the event repeats.
    * @return true or false
    */
-  public boolean isRepeating() { return repeatInfo != null; }
+  public boolean isRepeating() {
+    return repeatInfo != null;
+  }
 
   // EDIT command getters
 
@@ -213,31 +232,41 @@ public class ParseResult {
    * gets the property type that is to be changed.
    * @return the property type
    */
-  public PropertyType getProperty() { return property; }
+  public PropertyType getProperty() {
+    return property;
+  }
 
   /**
    * The event's subject.
    * @return string of the subject
    */
-  public String getEventSubject() { return eventSubject; }
+  public String getEventSubject() {
+    return eventSubject;
+  }
 
   /**
    * the event's start time.
    * @return the localDateTime of the event
    */
-  public java.time.LocalDateTime getEventStart() { return eventStart; }
+  public java.time.LocalDateTime getEventStart() {
+    return eventStart;
+  }
 
   /**
    * the event's end time.
    * @return the localDateTime of the end time
    */
-  public java.time.LocalDateTime getEventEnd() { return eventEnd; }
+  public java.time.LocalDateTime getEventEnd() {
+    return eventEnd;
+  }
 
   /**
    * the new value to be changed into.
    * @return the string of the new value
    */
-  public String getNewValue() { return newValue; }
+  public String getNewValue() {
+    return newValue;
+  }
 
   // PRINT command getters
 
@@ -245,25 +274,33 @@ public class ParseResult {
    * The start time of the event that we want to print.
    * @return the start time as a localDate
    */
-  public java.time.LocalDateTime getPrintStartDate() { return printStartDate; }
+  public java.time.LocalDateTime getPrintStartDate() {
+    return printStartDate;
+  }
 
   /**
    * The end date of the event that we want to print.
    * @return the end time as a localDate
    */
-  public java.time.LocalDateTime getPrintEndDate() { return printEndDate; }
+  public java.time.LocalDateTime getPrintEndDate() {
+    return printEndDate;
+  }
 
   /**
    * Returns whether or not the end time is valid.
    * @return true or false
    */
-  public boolean isPrintRange() { return printEndDate != null; }
+  public boolean isPrintRange() {
+    return printEndDate != null;
+  }
 
   // SHOW STATUS command getters
 
   /**
-   * Returns the date time of the day we want to check the status of
+   * Returns the date time of the day we want to check the status of.
    * @return the localDateTime of the day
    */
-  public java.time.LocalDateTime getStatusDateTime() { return statusDateTime; }
+  public java.time.LocalDateTime getStatusDateTime() {
+    return statusDateTime;
+  }
 }
