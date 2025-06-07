@@ -42,7 +42,9 @@ public class ParsingTools {
     int end;
     if (endPointer != null) {
       end = input.toLowerCase().indexOf(endPointer.toLowerCase(), start);
-      if (end == -1) {end = input.length();}
+      if (end == -1) {
+        end = input.length();
+      }
     } else {
       end = input.length();
     }
@@ -70,7 +72,9 @@ public class ParsingTools {
     start += pointer.length();
 
     int end = input.indexOf(" ", start);
-    if (end == -1) {end = input.length();}
+    if (end == -1) {
+      end = input.length();
+    }
 
     String dateStr = input.substring(start, end).trim();
     if (dateStr.isEmpty()) {

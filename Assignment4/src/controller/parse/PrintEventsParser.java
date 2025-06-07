@@ -34,7 +34,9 @@ public class PrintEventsParser implements CommandParser {
     int start = input.toLowerCase().indexOf(pointer.toLowerCase()) + pointer.length();
     int end = (pointer.equals(" from ")) ?
             input.toLowerCase().indexOf(" to ", start) : input.length();
-    if (end == -1) end = input.length();
+    if (end == -1) {
+      end = input.length();
+    }
 
     String dateStr = input.substring(start, end).trim();
     if (dateStr.isEmpty()) {
@@ -53,7 +55,9 @@ public class PrintEventsParser implements CommandParser {
     int start = input.toLowerCase().indexOf(pointer.toLowerCase()) + pointer.length();
     int end = (pointer.equals(" from ")) ?
             input.toLowerCase().indexOf(" to ", start) : input.length();
-    if (end == -1) end = input.length();
+    if (end == -1) {
+      end = input.length();
+    }
 
     String dateStr = input.substring(start, end).trim();
     if (dateStr.isEmpty()) {
