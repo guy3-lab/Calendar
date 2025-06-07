@@ -114,6 +114,13 @@ public class Event implements IEvent {
     this.status = status;
   }
 
+  // for testing purposes
+  public boolean isAllDay() {
+    return start.toLocalTime().equals(LocalTime.of(8, 0)) &&
+            end.toLocalTime().equals(LocalTime.of(17, 0)) &&
+            start.toLocalDate().equals(end.toLocalDate());
+  }
+
   /**
    * Event builder class to make building more convenient.
    */
