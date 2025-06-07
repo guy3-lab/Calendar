@@ -1,8 +1,12 @@
 package view;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import java.io.ByteArrayInputStream;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -10,7 +14,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Scanner;
+
 
 import org.junit.After;
 import org.junit.Before;
@@ -210,7 +214,8 @@ public class CLITest {
     assertNotNull("Output should not be null", output);
     assertTrue("Output should contain headless mode indicator", output.contains("Headless Mode"));
     assertTrue("Output should contain file path", output.contains(commandFile.getAbsolutePath()));
-    assertTrue("Output should contain command execution traces", output.contains("Currently executing:"));
+    assertTrue("Output should contain command execution traces",
+            output.contains("Currently executing:"));
     assertTrue("Output should contain exit confirmation", output.contains("Exit command found"));
 
     String errorOutput = errorStream.toString();
@@ -243,7 +248,8 @@ public class CLITest {
     String output = outputStream.toString();
     assertNotNull("Output should not be null", output);
     assertTrue("Output should contain event creation", output.contains("Created event"));
-    assertFalse("Output should not contain comment lines", output.contains("Currently executing: #"));
+    assertFalse("Output should not contain comment lines",
+            output.contains("Currently executing: #"));
 
     String[] lines = output.split("\n");
     for (String line : lines) {
@@ -287,7 +293,8 @@ public class CLITest {
     assertTrue("Error output should contain line number references",
             errorOutput.contains("Line 2:") || errorOutput.contains("Line 4:"));
 
-    assertTrue("Should contain exit confirmation despite errors", output.contains("Exit command found"));
+    assertTrue("Should contain exit confirmation despite errors",
+            output.contains("Exit command found"));
   }
 
   /**
@@ -447,15 +454,18 @@ public class CLITest {
             "create event \"Morning Standup\" from 2025-06-16T09:00 to 2025-06-16T09:30\n" +
                     "create event Lunch from 2025-06-16T12:00 to 2025-06-16T13:00\n" +
                     "create event \"Team Meeting\" from 2025-06-16T14:00 to 2025-06-16T15:00\n" +
-                    "create event \"Daily Workout\" from 2025-06-16T07:00 to 2025-06-16T08:00 repeats MTWRF for 3 times\n" +
+                    "create event \"Daily Workout\" from 2025-06-16T07:00 to 2025-06-16T08:00 " +
+                    "repeats MTWRF for 3 times\n" +
                     "create event \"Weekend Fun\" on 2025-06-14 repeats SU for 2 times\n" +
                     "print events on 2025-06-16\n" +
                     "print events from 2025-06-14T00:00 to 2025-06-20T23:59\n" +
                     "show status on 2025-06-16T09:15\n" +
                     "show status on 2025-06-16T10:00\n" +
                     "show status on 2025-06-16T12:30\n" +
-                    "edit event subject Lunch from 2025-06-16T12:00 to 2025-06-16T13:00 with \"Business Lunch\"\n" +
-                    "edit event location \"Team Meeting\" from 2025-06-16T14:00 to 2025-06-16T15:00 with PHYSICAL\n" +
+                    "edit event subject Lunch from 2025-06-16T12:00 to " +
+                    "2025-06-16T13:00 with \"Business Lunch\"\n" +
+                    "edit event location \"Team Meeting\" from 2025-06-16T14:00 to " +
+                    "2025-06-16T15:00 with PHYSICAL\n" +
                     "print events on 2025-06-16\n" +
                     "exit\n";
 
@@ -568,7 +578,8 @@ public class CLITest {
     String output = outputStream.toString();
     assertTrue("Should complete stress test", output.contains("Exit command found"));
     assertTrue("Execution should complete in reasonable time", executionTime < 3000);
-    assertTrue("Should attempt to create events", output.contains("Currently executing: create event"));
+    assertTrue("Should attempt to create events", output.contains("Currently executing: " +
+            "create event"));
   }
 
   private File createTestCommandFile(String filename, String content) {

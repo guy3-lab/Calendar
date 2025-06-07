@@ -15,7 +15,12 @@ import model.calendar.Event;
 import model.enums.Location;
 import model.enums.Status;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Comprehensive test class that tests the model of the calendar application.
@@ -78,7 +83,7 @@ public class CalendarTest {
 
     //throws an exception when editing an event to an existing event
     try {
-      calendar.editEvent(PropertyType.SUBJECT,"different", LocalDateTime.parse("2025-10-05T10:00"),
+      calendar.editEvent(PropertyType.SUBJECT, "different", LocalDateTime.parse("2025-10-05T10:00"),
               LocalDateTime.parse("2025-10-05T15:00"), "test");
       fail("Should throw exception when editing to duplicate");
     } catch (Exception e) {
@@ -128,16 +133,20 @@ public class CalendarTest {
     assertTrue("Nov 2 should contain multi-day event", nov02Events.contains(multiDayEvent));
 
     //checks the endTime and startTime field to ensure it has the proper end date
-    assertEquals("End time should match", LocalDateTime.parse("2025-11-02T15:00"), multiDayEvent.getEnd());
-    assertEquals("Start time should match", LocalDateTime.parse("2025-10-31T10:00"), multiDayEvent.getStart());
+    assertEquals("End time should match", LocalDateTime.parse("2025-11-02T15:00"),
+            multiDayEvent.getEnd());
+    assertEquals("Start time should match", LocalDateTime.parse("2025-10-31T10:00"),
+            multiDayEvent.getStart());
 
     //creates an event without an end field, which therefore is a full day event
     Event allDayEvent = calendar.createEvent("test", LocalDateTime.parse("2025-02-27T05:00"), null);
     LocalDate feb27 = LocalDate.parse("2025-02-27");
     List<Event> feb27Events = calendar.getCalendar().get(feb27);
     assertTrue("Feb 27 should contain all-day event", feb27Events.contains(allDayEvent));
-    assertEquals("All-day should end at 5:00 PM", LocalDateTime.parse("2025-02-27T17:00"), allDayEvent.getEnd());
-    assertEquals("All-day should start at 8:00 AM", LocalDateTime.parse("2025-02-27T08:00"), allDayEvent.getStart());
+    assertEquals("All-day should end at 5:00 PM", LocalDateTime.parse("2025-02-27T17:00"),
+            allDayEvent.getEnd());
+    assertEquals("All-day should start at 8:00 AM", LocalDateTime.parse("2025-02-27T08:00"),
+            allDayEvent.getStart());
     assertTrue("Should be identified as all-day", allDayEvent.isAllDay());
   }
 
@@ -187,24 +196,36 @@ public class CalendarTest {
     assertEquals("Dec 26 should have 1 event", 1, event26.size());
 
     //first 3 events
-    assertEquals("First Wed should start at 8:00 AM", LocalDateTime.parse("2025-12-24T08:00"), events.get(0).getStart());
-    assertEquals("First Thu should start at 8:00 AM", LocalDateTime.parse("2025-12-25T08:00"), events.get(3).getStart());
-    assertEquals("First Fri should start at 8:00 AM", LocalDateTime.parse("2025-12-26T08:00"), events.get(6).getStart());
+    assertEquals("First Wed should start at 8:00 AM", LocalDateTime.parse("2025-12-24T08:00"),
+            events.get(0).getStart());
+    assertEquals("First Thu should start at 8:00 AM", LocalDateTime.parse("2025-12-25T08:00"),
+            events.get(3).getStart());
+    assertEquals("First Fri should start at 8:00 AM", LocalDateTime.parse("2025-12-26T08:00"),
+            events.get(6).getStart());
 
     //first 3 end times
-    assertEquals("First Wed should end at 5:00 PM", LocalDateTime.parse("2025-12-24T17:00"), events.get(0).getEnd());
-    assertEquals("First Thu should end at 5:00 PM", LocalDateTime.parse("2025-12-25T17:00"), events.get(3).getEnd());
-    assertEquals("First Fri should end at 5:00 PM", LocalDateTime.parse("2025-12-26T17:00"), events.get(6).getEnd());
+    assertEquals("First Wed should end at 5:00 PM", LocalDateTime.parse("2025-12-24T17:00"),
+            events.get(0).getEnd());
+    assertEquals("First Thu should end at 5:00 PM", LocalDateTime.parse("2025-12-25T17:00"),
+            events.get(3).getEnd());
+    assertEquals("First Fri should end at 5:00 PM", LocalDateTime.parse("2025-12-26T17:00"),
+            events.get(6).getEnd());
 
     //second repeat
-    assertEquals("Second Wed should be next week", LocalDateTime.parse("2025-12-31T08:00"), events.get(1).getStart());
-    assertEquals("Second Thu should be next week", LocalDateTime.parse("2026-01-01T08:00"), events.get(4).getStart());
-    assertEquals("Second Fri should be next week", LocalDateTime.parse("2026-01-02T08:00"), events.get(7).getStart());
+    assertEquals("Second Wed should be next week", LocalDateTime.parse("2025-12-31T08:00"),
+            events.get(1).getStart());
+    assertEquals("Second Thu should be next week", LocalDateTime.parse("2026-01-01T08:00"),
+            events.get(4).getStart());
+    assertEquals("Second Fri should be next week", LocalDateTime.parse("2026-01-02T08:00"),
+            events.get(7).getStart());
 
     //third repeat
-    assertEquals("Third Wed should be two weeks later", LocalDateTime.parse("2026-01-07T08:00"), events.get(2).getStart());
-    assertEquals("Third Thu should be two weeks later", LocalDateTime.parse("2026-01-08T08:00"), events.get(5).getStart());
-    assertEquals("Third Fri should be two weeks later", LocalDateTime.parse("2026-01-09T08:00"), events.get(8).getStart());
+    assertEquals("Third Wed should be two weeks later", LocalDateTime.parse("2026-01-07T08:00"),
+            events.get(2).getStart());
+    assertEquals("Third Thu should be two weeks later", LocalDateTime.parse("2026-01-08T08:00"),
+            events.get(5).getStart());
+    assertEquals("Third Fri should be two weeks later", LocalDateTime.parse("2026-01-09T08:00"),
+            events.get(8).getStart());
 
     //Events with an end time
     List<String> repeatedDays2 = new ArrayList<>(Arrays.asList("W", "F"));
@@ -216,16 +237,22 @@ public class CalendarTest {
     assertEquals("Should have 4 timed series events", 4, events2.size());
 
     //first 2 events
-    assertEquals("First Wed timed should start correctly", LocalDateTime.parse("2025-12-24T05:00"), events2.get(0).getStart());
-    assertEquals("First Fri timed should start correctly", LocalDateTime.parse("2025-12-26T05:00"), events2.get(2).getStart());
+    assertEquals("First Wed timed should start correctly", LocalDateTime.parse("2025-12-24T05:00"),
+            events2.get(0).getStart());
+    assertEquals("First Fri timed should start correctly", LocalDateTime.parse("2025-12-26T05:00"),
+            events2.get(2).getStart());
 
     //first 2 end times
-    assertEquals("First Wed timed should end correctly", LocalDateTime.parse("2025-12-24T06:00"), events2.get(0).getEnd());
-    assertEquals("First Fri timed should end correctly", LocalDateTime.parse("2025-12-26T06:00"), events2.get(2).getEnd());
+    assertEquals("First Wed timed should end correctly", LocalDateTime.parse("2025-12-24T06:00"),
+            events2.get(0).getEnd());
+    assertEquals("First Fri timed should end correctly", LocalDateTime.parse("2025-12-26T06:00"),
+            events2.get(2).getEnd());
 
     //second repeat
-    assertEquals("Second Wed timed should be next week", LocalDateTime.parse("2025-12-31T05:00"), events2.get(1).getStart());
-    assertEquals("Second Fri timed should be next week", LocalDateTime.parse("2026-01-02T05:00"), events2.get(3).getStart());
+    assertEquals("Second Wed timed should be next week", LocalDateTime.parse("2025-12-31T05:00"),
+            events2.get(1).getStart());
+    assertEquals("Second Fri timed should be next week", LocalDateTime.parse("2026-01-02T05:00"),
+            events2.get(3).getStart());
   }
 
   @Test
@@ -239,19 +266,28 @@ public class CalendarTest {
     assertEquals("Should have 6 events until Jan 3", 6, events.size());
 
     //first 3 events
-    assertEquals("First Wed should start at 8:00 AM", LocalDateTime.parse("2025-12-24T08:00"), events.get(0).getStart());
-    assertEquals("First Thu should start at 8:00 AM", LocalDateTime.parse("2025-12-25T08:00"), events.get(2).getStart());
-    assertEquals("First Fri should start at 8:00 AM", LocalDateTime.parse("2025-12-26T08:00"), events.get(4).getStart());
+    assertEquals("First Wed should start at 8:00 AM", LocalDateTime.parse("2025-12-24T08:00"),
+            events.get(0).getStart());
+    assertEquals("First Thu should start at 8:00 AM", LocalDateTime.parse("2025-12-25T08:00"),
+            events.get(2).getStart());
+    assertEquals("First Fri should start at 8:00 AM", LocalDateTime.parse("2025-12-26T08:00"),
+            events.get(4).getStart());
 
     //first 3 end times
-    assertEquals("First Wed should end at 5:00 PM", LocalDateTime.parse("2025-12-24T17:00"), events.get(0).getEnd());
-    assertEquals("First Thu should end at 5:00 PM", LocalDateTime.parse("2025-12-25T17:00"), events.get(2).getEnd());
-    assertEquals("First Fri should end at 5:00 PM", LocalDateTime.parse("2025-12-26T17:00"), events.get(4).getEnd());
+    assertEquals("First Wed should end at 5:00 PM", LocalDateTime.parse("2025-12-24T17:00"),
+            events.get(0).getEnd());
+    assertEquals("First Thu should end at 5:00 PM", LocalDateTime.parse("2025-12-25T17:00"),
+            events.get(2).getEnd());
+    assertEquals("First Fri should end at 5:00 PM", LocalDateTime.parse("2025-12-26T17:00"),
+            events.get(4).getEnd());
 
     //second repeat
-    assertEquals("Second Wed should be next week", LocalDateTime.parse("2025-12-31T08:00"), events.get(1).getStart());
-    assertEquals("Second Thu should be next week", LocalDateTime.parse("2026-01-01T08:00"), events.get(3).getStart());
-    assertEquals("Second Fri should be next week", LocalDateTime.parse("2026-01-02T08:00"), events.get(5).getStart());
+    assertEquals("Second Wed should be next week", LocalDateTime.parse("2025-12-31T08:00"),
+            events.get(1).getStart());
+    assertEquals("Second Thu should be next week", LocalDateTime.parse("2026-01-01T08:00"),
+            events.get(3).getStart());
+    assertEquals("Second Fri should be next week", LocalDateTime.parse("2026-01-02T08:00"),
+            events.get(5).getStart());
 
     //Events with an end time
     List<String> repeatedDays2 = new ArrayList<>(Arrays.asList("W", "F"));
@@ -263,15 +299,20 @@ public class CalendarTest {
     assertEquals("Should have 3 events until Jan 1", 3, events2.size());
 
     //first 2 events
-    assertEquals("First Wed timed should start correctly", LocalDateTime.parse("2025-12-24T05:00"), events2.get(0).getStart());
-    assertEquals("First Fri timed should start correctly", LocalDateTime.parse("2025-12-26T05:00"), events2.get(2).getStart());
+    assertEquals("First Wed timed should start correctly", LocalDateTime.parse("2025-12-24T05:00"),
+            events2.get(0).getStart());
+    assertEquals("First Fri timed should start correctly", LocalDateTime.parse("2025-12-26T05:00"),
+            events2.get(2).getStart());
 
     //first 2 end times
-    assertEquals("First Wed timed should end correctly", LocalDateTime.parse("2025-12-24T06:00"), events2.get(0).getEnd());
-    assertEquals("First Fri timed should end correctly", LocalDateTime.parse("2025-12-26T06:00"), events2.get(2).getEnd());
+    assertEquals("First Wed timed should end correctly", LocalDateTime.parse("2025-12-24T06:00"),
+            events2.get(0).getEnd());
+    assertEquals("First Fri timed should end correctly", LocalDateTime.parse("2025-12-26T06:00"),
+            events2.get(2).getEnd());
 
     //second repeat
-    assertEquals("Second Wed should be next week", LocalDateTime.parse("2025-12-31T05:00"), events2.get(1).getStart());
+    assertEquals("Second Wed should be next week", LocalDateTime.parse("2025-12-31T05:00"),
+            events2.get(1).getStart());
   }
 
   @Test
@@ -295,11 +336,13 @@ public class CalendarTest {
     //changes time
     calendar.editEvent(PropertyType.START, "New name", start, end, "2025-10-05T05:00");
     start = LocalDateTime.parse("2025-10-05T05:00");
-    assertEquals("Start time should be updated", LocalDateTime.parse("2025-10-05T05:00"), event1.getStart());
+    assertEquals("Start time should be updated", LocalDateTime.parse("2025-10-05T05:00"),
+            event1.getStart());
 
     calendar.editEvent(PropertyType.END, "New name", start, end, "2025-10-05T12:00");
     end = LocalDateTime.parse("2025-10-05T12:00");
-    assertEquals("End time should be updated", LocalDateTime.parse("2025-10-05T12:00"), event1.getEnd());
+    assertEquals("End time should be updated", LocalDateTime.parse("2025-10-05T12:00"),
+            event1.getEnd());
 
     //change by a whole day
     calendar.editEvent(PropertyType.START, "New name", start, end, "2025-10-06T10:00");
@@ -317,8 +360,10 @@ public class CalendarTest {
     assertSame("Moved event should be event1", event1, events06.get(0));
 
     //checks that the times got updated correctly
-    assertEquals("Start time should be updated", LocalDateTime.parse("2025-10-06T10:00"), events06.get(0).getStart());
-    assertEquals("End time should be updated", LocalDateTime.parse("2025-10-06T12:00"), events06.get(0).getEnd());
+    assertEquals("Start time should be updated", LocalDateTime.parse("2025-10-06T10:00"),
+            events06.get(0).getStart());
+    assertEquals("End time should be updated", LocalDateTime.parse("2025-10-06T12:00"),
+            events06.get(0).getEnd());
 
     //change by a whole day backwards
     calendar.editEvent(PropertyType.START, "test", start2, end2, "2025-10-04T05:00");
@@ -449,14 +494,14 @@ public class CalendarTest {
     List<Event> dec26Series = calendar.getSeries().get(LocalDateTime.parse("2025-12-26T05:00"));
     assertEquals("New series should have 4 events", 4, dec26Series.size());
 
-    Event dec26 = new Event.EventBuilder("Series", LocalDateTime.parse("2025-12-26T05:00")).
-            end(LocalDateTime.parse("2025-12-26T06:00")).build();
-    Event dec28 = new Event.EventBuilder("Series", LocalDateTime.parse("2025-12-28T05:00")).
-            end(LocalDateTime.parse("2025-12-28T06:00")).build();
-    Event jan2 = new Event.EventBuilder("Series", LocalDateTime.parse("2026-01-02T05:00")).
-            end(LocalDateTime.parse("2026-01-02T06:00")).build();
-    Event jan4 = new Event.EventBuilder("Series", LocalDateTime.parse("2026-01-04T05:00")).
-            end(LocalDateTime.parse("2026-01-04T06:00")).build();
+    Event dec26 = new Event.EventBuilder("Series", LocalDateTime.parse("2025-12-26T05:00"))
+            .end(LocalDateTime.parse("2025-12-26T06:00")).build();
+    Event dec28 = new Event.EventBuilder("Series", LocalDateTime.parse("2025-12-28T05:00"))
+            .end(LocalDateTime.parse("2025-12-28T06:00")).build();
+    Event jan2 = new Event.EventBuilder("Series", LocalDateTime.parse("2026-01-02T05:00"))
+            .end(LocalDateTime.parse("2026-01-02T06:00")).build();
+    Event jan4 = new Event.EventBuilder("Series", LocalDateTime.parse("2026-01-04T05:00"))
+            .end(LocalDateTime.parse("2026-01-04T06:00")).build();
 
     //checks to see if the series contains all the correct events
     assertTrue("Should contain Dec 26 event", dec26Series.contains(dec26));
@@ -473,7 +518,8 @@ public class CalendarTest {
     assertEquals("Subject should be updated", "new Series", dec26Series.get(3).getSubject());
 
     //changes to the location
-    assertEquals("Initial location should be ONLINE", Location.ONLINE, dec26Series.get(0).getLocation());
+    assertEquals("Initial location should be ONLINE", Location.ONLINE,
+            dec26Series.get(0).getLocation());
     calendar.editSeries(PropertyType.LOCATION, "new Series", newStart, "physical");
     assertEquals("Location should be updated", Location.PHYSICAL, dec26Series.get(0).getLocation());
     assertEquals("Location should be updated", Location.PHYSICAL, dec26Series.get(1).getLocation());
@@ -538,7 +584,8 @@ public class CalendarTest {
     assertEquals("Dec 28 should have empty description", "", dec26Events.get(2).getDesc());
     assertEquals("Jan 4 should have 'hello'", "hello", dec26Events.get(3).getDesc());
 
-    //Edits the start time of a series that start on Jan 2 to Jan 5, and alters all corresponding events.
+    //Edits the start time of a series that start on Jan 2 to Jan 5, and alters all
+    // corresponding events.
     calendar.editEvents(PropertyType.START, "Series", LocalDateTime.parse("2026-01-02T05:00"),
             "2026-01-05T06:00");
     List<Event> jan5Events = calendar.getSeries().get(LocalDateTime.parse("2026-01-05T06:00"));
@@ -578,13 +625,19 @@ public class CalendarTest {
             + "\n"
             + "event3, Start Time: 2000-10-10T10:00, End Time: 2000-10-10T15:00, Location: ONLINE";
 
-    assertEquals("Print events should match expected format", eventsOnDay, calendar.printEvents(first.toLocalDate()));
-    assertEquals("Print events interval should match expected format", eventsOnInterval, calendar.printEventsInterval(first, secondEnd));
+    assertEquals("Print events should match expected format", eventsOnDay,
+            calendar.printEvents(first.toLocalDate()));
+    assertEquals("Print events interval should match expected format",
+            eventsOnInterval, calendar.printEventsInterval(first, secondEnd));
 
-    assertEquals("Should be available on unscheduled day", "available", calendar.showStatus(LocalDateTime.parse("2000-11-10T10:00")));
-    assertEquals("Should be busy during scheduled event", "busy", calendar.showStatus(LocalDateTime.parse("2000-10-10T10:00")));
-    assertEquals("Should be busy during multi-day event", "busy", calendar.showStatus(LocalDateTime.parse("2000-10-10T12:00")));
-    assertEquals("Should be busy during multi-day events", "busy", calendar.showStatus(LocalDateTime.parse("2000-10-10T16:00")));
+    assertEquals("Should be available on unscheduled day", "available",
+            calendar.showStatus(LocalDateTime.parse("2000-11-10T10:00")));
+    assertEquals("Should be busy during scheduled event", "busy",
+            calendar.showStatus(LocalDateTime.parse("2000-10-10T10:00")));
+    assertEquals("Should be busy during multi-day event", "busy",
+            calendar.showStatus(LocalDateTime.parse("2000-10-10T12:00")));
+    assertEquals("Should be busy during multi-day events", "busy",
+            calendar.showStatus(LocalDateTime.parse("2000-10-10T16:00")));
   }
 
   @Test
