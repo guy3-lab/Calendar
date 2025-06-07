@@ -537,7 +537,8 @@ public class CalendarEditingTest {
               event.getSubject());
     }
 
-    // Get the start time of the third Monday (should be seriesEvents.get(2) since Mondays come first)
+    // Get the start time of the third Monday (should be seriesEvents.get(2) since Mondays
+    // come first)
     LocalDateTime thirdMondayStart = seriesEvents.get(2).getStart();
 
     // Edit events starting from the third Monday
@@ -597,7 +598,8 @@ public class CalendarEditingTest {
     calendar.editEvents(PropertyType.LOCATION, "Advanced Meeting", secondTuesdayStart, "PHYSICAL");
 
     // Verify first Tuesday unchanged
-    assertEquals("First Tuesday subject unchanged", "Team Meeting", seriesEvents.get(0).getSubject());
+    assertEquals("First Tuesday subject unchanged", "Team Meeting",
+            seriesEvents.get(0).getSubject());
     assertEquals("First Tuesday description unchanged", "", seriesEvents.get(0).getDesc());
     assertEquals("First Tuesday location unchanged", Location.ONLINE,
             seriesEvents.get(0).getLocation());
