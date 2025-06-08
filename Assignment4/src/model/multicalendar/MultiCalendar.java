@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +57,7 @@ public class MultiCalendar implements IMultiCalendar {
     for (SpecificCalendar calendar : calendars) {
       if (calendar.getName().equals(name)) {
         this.current = calendar;
+        break;
       }
     }
   }
@@ -72,10 +74,12 @@ public class MultiCalendar implements IMultiCalendar {
     for (SpecificCalendar calendar : calendars) {
       if (calendar.getName().equals(calendarName)) {
         long betweenDays = ChronoUnit.DAYS.between(date, targetDate);
-        long betweenMinutes = ChronoUnit.MINUTES.between(date, targetDate);
+        long betweenMinutes = ChronoUnit.MINUTES.between(date.toLocalTime(),
+                targetDate.toLocalTime());
         LocalDateTime newEndTime = endTime.plusDays(betweenDays).plusMinutes(betweenMinutes);
 
         calendar.fullCreate(eventName, targetDate, newEndTime, desc, location, status);
+        break;
       }
     }
   }
@@ -125,10 +129,29 @@ public class MultiCalendar implements IMultiCalendar {
   private void copyEventsHelper(SpecificCalendar currentCalendar, LocalDate date,
                                 String calendarName, LocalDate targetDate) {
     List<Event> currentEvents = currentCalendar.getCalendar().get(date);
+
+    SpecificCalendar targetCalendar = null;
+    for (SpecificCalendar calendar : calendars) {
+      if (calendar.getName().equals(calendarName)) {
+        targetCalendar = calendar;
+        break;
+      }
+    }
+
+    if (targetCalendar == null) {
+      throw new IllegalArgumentException("Target calendar not found: " + calendarName);
+    }
+
+    ZoneId currentZoneID = currentCalendar.getTimeZone();
+    ZoneId targetZoneID = targetCalendar.getTimeZone();
+
     for (Event event : currentEvents) {
       String eventName = event.getSubject();
       LocalDateTime eventDate = event.getStart();
-      LocalTime endTime = event.getStart().toLocalTime();
+      ZonedDateTime dateWithZoneID = eventDate.atZone(currentZoneID);
+      ZonedDateTime targetDateWithZoneID = dateWithZoneID.withZoneSameInstant(targetZoneID);
+
+      LocalTime endTime = targetDateWithZoneID.toLocalTime();
       LocalDateTime newDate = LocalDateTime.of(targetDate, endTime);
 
       copyEvent(eventName, eventDate, calendarName, newDate);

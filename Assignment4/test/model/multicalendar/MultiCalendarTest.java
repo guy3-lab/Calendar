@@ -87,6 +87,7 @@ public class MultiCalendarTest {
     SpecificCalendar c1 = calendars.get(0);
     SpecificCalendar c2 = calendars.get(1);
 
+    //all full day events
     c1.createEvent("event1", LocalDateTime.parse("2000-10-10T10:00"), null);
     c1.createEvent("event2", LocalDateTime.parse("2000-10-10T11:00"), null);
     c1.createEvent("event3", LocalDateTime.parse("2000-10-10T12:00"), null);
@@ -98,7 +99,14 @@ public class MultiCalendarTest {
     assertEquals("c1", mc.getCurrent().getName());
 
     mc.copyEvents(LocalDate.parse("2000-10-10"), "c2", LocalDate.parse("2000-10-12"));
+
+    //checks the correct times that are copied over to a different time zone
     assertTrue(c2.getCalendar().containsKey(LocalDate.parse("2000-10-12")));
+    assertEquals(LocalDateTime.parse("2000-10-12T17:00"),
+            c2.getCalendar().get(LocalDate.parse("2000-10-12")).get(0).getStart());
+    assertEquals(LocalDateTime.parse("2000-10-13T02:00"),
+            c2.getCalendar().get(LocalDate.parse("2000-10-12")).get(0).getEnd());
+
     assertEquals(4, c2.getCalendar().get(LocalDate.parse("2000-10-12")).size());
   }
 
