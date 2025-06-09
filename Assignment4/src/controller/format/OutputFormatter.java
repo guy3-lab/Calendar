@@ -127,7 +127,6 @@ public class OutputFormatter implements IOutputFormatter {
     if (event.getLocation() != null && event.getLocation() != Location.ONLINE) {
       bullet.append(" - Location: ").append(formatLocation(event.getLocation()));
     }
-
     if (event.getDesc() != null && !event.getDesc().trim().isEmpty()) {
       bullet.append(" - ").append(event.getDesc());
     }
