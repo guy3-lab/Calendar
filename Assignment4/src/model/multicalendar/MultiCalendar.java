@@ -71,12 +71,12 @@ public class MultiCalendar implements IMultiCalendar {
     Location location = event.getLocation();
     Status status = event.getStatus();
 
+    int count = 0;
     ZoneId current = this.current.getTimeZone();
     SpecificCalendar targetCalendar = null;
     for (SpecificCalendar calendar : calendars) {
       if (calendar.getName().equals(calendarName)) {
         targetCalendar = calendar;
-        break;
       }
     }
 
@@ -96,13 +96,22 @@ public class MultiCalendar implements IMultiCalendar {
   private Event getEventFromCurrent(String eventName, LocalDateTime date) {
     isCalendarChosen();
     SpecificCalendar currentCalendar = this.current;
+    Event currentEvent = null;
+    int count = 0;
     List<Event> currentEvents = currentCalendar.getCalendar().get(date.toLocalDate());
     for (Event event : currentEvents) {
       if (event.getSubject().equals(eventName) && event.getStart().equals(date)) {
-        return event;
+        currentEvent = event;
+        count++;
       }
     }
-    throw new IllegalArgumentException("Event doesn't exist in current");
+    if (count > 1) {
+      throw new IllegalArgumentException("Multiple events found");
+    } else if (currentEvent == null) {
+      throw new IllegalArgumentException("No event found");
+    } else {
+      return currentEvent;
+    }
   }
 
   private void isCalendarChosen() {
@@ -144,9 +153,11 @@ public class MultiCalendar implements IMultiCalendar {
         for (Event event : currentEvents) {
           String eventName = event.getSubject();
           LocalDateTime eventDate = event.getStart();
+
           ZonedDateTime dateWithZoneID = eventDate.atZone(currentZoneID);
           ZonedDateTime newZonedDateTime = dateWithZoneID.withZoneSameInstant(targetZoneID);
           LocalDateTime targetDateTime = newZonedDateTime.toLocalDateTime();
+
           long betweenDays = ChronoUnit.DAYS.between(targetDateTime.toLocalDate(), targetDate);
 
           copyEvent(eventName, eventDate, calendarName, targetDateTime.plusDays(betweenDays));
