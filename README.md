@@ -57,8 +57,33 @@ print events from `<dateStringTtimeString>` to `<dateStringTtimeString>`
 show status on `<dateStringTtimeString>`
 
 
----
+//create a new calendar with a unique name and timezone as specified by the user.
 
+create calendar --name `<calName>` --timezone `<area/location>`
+- `<calName>`: The name of the calendar
+- `<area/location>`: The timezone in the area/location format.
+
+//used to change/modify an existing property ( name or timezone ) of the calendar. The command is invalid if the property being changed is absent or the value is invalid in the context of the property.
+
+edit calendar --name `<name-of-calendar>` --property `<property-name>` `<new-property-value>`
+
+//set the calendar context
+
+use calendar --name `<name-of-calendar>`
+
+//copy a specific event with the given name and start date/time from the current calendar to the target calendar to start at the specified date/time.
+
+copy event `<eventName>` on `<dateStringTtimeString>` --target `<calendarName>` to `<dateStringTtimeString>`
+
+//same behavior as the copy event above, except it copies all events scheduled on that day. The times remain the same, except they are converted to the timezone of the target calendar.
+
+copy events on `<dateString>` --target `<calendarName>` to `<dateString>`
+
+//copies all events scheduled in the specified date interval.
+
+copy events between `<dateString>` and `<dateString>` --target `<calendarName>` to `<dateString>`
+
+---
 ## How to Use
 
 1. Choose either **interactive** or **headless** mode to run the program. `--mode interactive` or `--mode headless <command_file>`
