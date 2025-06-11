@@ -26,29 +26,63 @@ public class MultiCalendar implements IMultiCalendar {
    * Constructs a multi calendar with an empty list of calendars.
    */
   public MultiCalendar() {
-    calendars = new ArrayList<SpecificCalendar>();
+    calendars = new ArrayList<>();
   }
 
   @Override
   public void addCalendar(String name, ZoneId timezone) {
+    // check if this calendar already exists
+    for(SpecificCalendar cal: calendars){
+      if(cal.getName().equals(name)){
+        throw new IllegalArgumentException("Calendar with name " + name + " already exists.");
+      }
+    }
+
+    // throw if timezone isn't valid
+    try {
+      ZoneId.of(timezone.getId());
+    } catch(Exception e){
+        throw new IllegalArgumentException("Invalid timezone: " + timezone);
+    }
+
     SpecificCalendar calendar = new SpecificCalendar(name, timezone);
     this.calendars.add(calendar);
   }
 
   @Override
   public void editCalendar(String name, String property, String value) {
+    SpecificCalendar found = null;
+    // find the calendar
     for (SpecificCalendar calendar : calendars) {
       if (calendar.getName().equals(name)) {
-        switch (property) {
-          case "name":
-            calendar.setName(value);
-            break;
-          case "timezone":
-            calendar.setTimeZone(ZoneId.of(value));
-            break;
-          default: //no default as the controller ensures that only valid inputs can be put
-        }
+        found = calendar;
+        break;
       }
+    }
+    // throw if it doesn't exist
+    if (found == null) {
+      throw new IllegalArgumentException("Calendar " + name + " not found.");
+    }
+
+    switch (property.toLowerCase()) {
+      case "name":
+        // check for duplicate name
+        for (SpecificCalendar cal : calendars) {
+          if (!cal.equals(found) && cal.getName().equals(value)) {
+            throw new IllegalArgumentException("Calendar with name " + value + " already exists.");
+          }
+        }
+        found.setName(value);
+        break;
+      case "timezone":
+        try {
+          found.setTimeZone(ZoneId.of(value));
+        } catch (Exception e) {
+          throw new IllegalArgumentException("Invalid timezone: " + value);
+        }
+        break;
+      default:
+        throw new IllegalArgumentException("Invalid property: " + property);
     }
   }
 
@@ -60,6 +94,7 @@ public class MultiCalendar implements IMultiCalendar {
         break;
       }
     }
+    throw new IllegalArgumentException("Calendar " + name + " not found.");
   }
 
   @Override
