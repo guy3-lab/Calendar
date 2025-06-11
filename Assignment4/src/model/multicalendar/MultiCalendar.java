@@ -91,10 +91,10 @@ public class MultiCalendar implements IMultiCalendar {
     for (SpecificCalendar calendar : calendars) {
       if (calendar.getName().equals(name)) {
         this.current = calendar;
-        break;
+        return;
       }
     }
-    throw new IllegalArgumentException("Calendar " + name + " not found.");
+    throw new IllegalArgumentException("Calendar " + name + " not found");
   }
 
   @Override
