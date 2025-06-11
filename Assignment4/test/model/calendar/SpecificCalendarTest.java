@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.HashMap;
 import java.util.List;
 
 import model.enums.Location;
@@ -50,6 +51,11 @@ public class SpecificCalendarTest {
   @Test
   public void getTimezoneTest() {
     assertEquals(ZoneId.of("America/Los_Angeles"), cal.getTimeZone());
+  }
+
+  @Test
+  public void getOldToNewTest() {
+    assertEquals(new HashMap<>(), cal.getOldToNewSeries());
   }
 
   @Test

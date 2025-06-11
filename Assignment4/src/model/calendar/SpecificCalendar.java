@@ -25,7 +25,7 @@ public class SpecificCalendar extends Calendar implements ISpecificCalendar {
     super();
     this.name = name;
     this.timeZone = timeZone;
-    oldToNewSeries = new HashMap<>();
+    this.oldToNewSeries = new HashMap<>();
   }
 
 
