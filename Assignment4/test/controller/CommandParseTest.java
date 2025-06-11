@@ -23,6 +23,7 @@ import controller.format.OutputFormatter;
 import model.calendar.Calendar;
 import model.calendar.Event;
 import model.calendar.ICalendar;
+import model.calendar.IEvent;
 import model.enums.Location;
 import model.enums.Status;
 
@@ -70,7 +71,7 @@ public class CommandParseTest {
     assertEquals("Test datetime should be 10:00 AM", 10, testDateTime.getHour());
 
     // Verify calendar is empty initially
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertNotNull("Calendar data should not be null", calendarData);
     assertTrue("Calendar should be empty initially", calendarData.isEmpty());
   }
@@ -99,22 +100,21 @@ public class CommandParseTest {
     assertTrue("Result should contain event name", result.contains("Meeting"));
 
     // Verify calendar state
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertFalse("Calendar should not be empty after creation", calendarData.isEmpty());
     assertTrue("Calendar should contain test date", calendarData.containsKey(testDate));
 
-    List<Event> dayEvents = calendarData.get(testDate);
+    List<IEvent> dayEvents = calendarData.get(testDate);
     assertNotNull("Day events should not be null", dayEvents);
     assertEquals("Should have exactly one event", 1, dayEvents.size());
 
-    Event createdEvent = dayEvents.get(0);
+    IEvent createdEvent = dayEvents.get(0);
     assertNotNull("Created event should not be null", createdEvent);
     assertEquals("Event subject should match", "Meeting", createdEvent.getSubject());
     assertEquals("Event start time should match", testDateTime, createdEvent.getStart());
     assertEquals("Event end time should match", testDateTime.plusHours(1), createdEvent.getEnd());
     assertEquals("Default location should be ONLINE", Location.ONLINE, createdEvent.getLocation());
     assertEquals("Default status should be PUBLIC", Status.PUBLIC, createdEvent.getStatus());
-    assertFalse("Event should not be all-day", createdEvent.isAllDay());
   }
 
   /**
@@ -145,10 +145,10 @@ public class CommandParseTest {
     assertTrue("Result should contain full subject", result.contains("Team Meeting & Discussion"));
 
     // Verify calendar state
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertTrue("Calendar should contain test date", calendarData.containsKey(testDate));
 
-    Event createdEvent = calendarData.get(testDate).get(0);
+    IEvent createdEvent = calendarData.get(testDate).get(0);
     assertNotNull("Created event should not be null", createdEvent);
     assertEquals("Event subject should include special characters", "Team Meeting & Discussion",
             createdEvent.getSubject());
@@ -179,13 +179,12 @@ public class CommandParseTest {
     assertTrue("Result should contain event name", result.contains("Holiday"));
 
     // Verify calendar state
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertTrue("Calendar should contain test date", calendarData.containsKey(testDate));
 
-    Event createdEvent = calendarData.get(testDate).get(0);
+    IEvent createdEvent = calendarData.get(testDate).get(0);
     assertNotNull("Created event should not be null", createdEvent);
     assertEquals("Event subject should match", "Holiday", createdEvent.getSubject());
-    assertTrue("Event should be all-day", createdEvent.isAllDay());
     assertEquals("All-day event should start at 8:00 AM", 8, createdEvent.getStart().getHour());
     assertEquals("All-day event should end at 5:00 PM", 17, createdEvent.getEnd().getHour());
     assertEquals("All-day event should be on same date", testDate, createdEvent.getStart().
@@ -224,11 +223,11 @@ public class CommandParseTest {
     assertTrue("Result should contain occurrence count", result.contains("6 occurrences"));
 
     // Verify calendar state
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertFalse("Calendar should not be empty after creation", calendarData.isEmpty());
 
     // Verify series state
-    Map<LocalDateTime, List<Event>> seriesData = calendar.getSeries();
+    Map<LocalDateTime, List<IEvent>> seriesData = calendar.getSeries();
     assertFalse("Series should not be empty after creation", seriesData.isEmpty());
     assertEquals("Should have one series", 1, seriesData.size());
 
@@ -243,14 +242,13 @@ public class CommandParseTest {
     assertTrue("Calendar should contain Friday", calendarData.containsKey(friday));
 
     // Verify event properties
-    Event mondayEvent = calendarData.get(monday).get(0);
+    IEvent mondayEvent = calendarData.get(monday).get(0);
     assertNotNull("Monday event should exist", mondayEvent);
     assertEquals("Monday event should have correct subject", "Weekly Standup",
             mondayEvent.getSubject());
     assertEquals("Monday event should start at 9:00", 9, mondayEvent.getStart().getHour());
     assertEquals("Monday event should end at 9:30", 9, mondayEvent.getEnd().getHour());
     assertEquals("Monday event should end at 30 minutes", 30, mondayEvent.getEnd().getMinute());
-    assertFalse("Monday event should not be all-day", mondayEvent.isAllDay());
   }
 
   /**
@@ -281,11 +279,11 @@ public class CommandParseTest {
     assertTrue("Result should contain until date", result.contains("until 2025-06-27"));
 
     // Verify series creation
-    Map<LocalDateTime, List<Event>> seriesData = calendar.getSeries();
+    Map<LocalDateTime, List<IEvent>> seriesData = calendar.getSeries();
     assertFalse("Series should not be empty", seriesData.isEmpty());
 
     // Verify calendar has events
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertFalse("Calendar should not be empty", calendarData.isEmpty());
 
     // Check specific dates within the range
@@ -302,7 +300,7 @@ public class CommandParseTest {
     assertTrue("Should have event on final Friday", calendarData.containsKey(friday2));
 
     // Verify event properties
-    Event workoutEvent = calendarData.get(monday1).get(0);
+    IEvent workoutEvent = calendarData.get(monday1).get(0);
     assertNotNull("Workout event should exist", workoutEvent);
     assertEquals("Event subject should match", "Daily Workout", workoutEvent.getSubject());
     assertEquals("Event should start at 7:00 AM", 7, workoutEvent.getStart().getHour());
@@ -333,7 +331,7 @@ public class CommandParseTest {
     assertTrue("Result should contain occurrence count", result.contains("4 occurrences"));
 
     // Verify calendar has events
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertFalse("Calendar should not be empty", calendarData.isEmpty());
 
     // Calculate expected dates (SU = Saturday, Sunday starting from June 14)
@@ -344,10 +342,9 @@ public class CommandParseTest {
     assertTrue("Should have event on first Sunday", calendarData.containsKey(sunday1));
 
     // Verify all-day properties
-    Event saturdayEvent = calendarData.get(saturday1).get(0);
+    IEvent saturdayEvent = calendarData.get(saturday1).get(0);
     assertNotNull("Saturday event should exist", saturdayEvent);
     assertEquals("Event subject should match", "Weekend Fun", saturdayEvent.getSubject());
-    assertTrue("Event should be all-day", saturdayEvent.isAllDay());
     assertEquals("All-day event should start at 8:00 AM", 8, saturdayEvent.getStart().getHour());
     assertEquals("All-day event should end at 5:00 PM", 17, saturdayEvent.getEnd().getHour());
   }
@@ -376,7 +373,7 @@ public class CommandParseTest {
     assertTrue("Result should contain until date", result.contains("until 2025-08-15"));
 
     // Verify calendar has events
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertFalse("Calendar should not be empty", calendarData.isEmpty());
 
     // Verify specific Sunday occurrences
@@ -389,10 +386,11 @@ public class CommandParseTest {
     assertTrue("Should have event on third Sunday", calendarData.containsKey(sunday3));
 
     // Verify all events are all-day
-    Event reviewEvent = calendarData.get(sunday1).get(0);
+    IEvent reviewEvent = calendarData.get(sunday1).get(0);
     assertNotNull("Review event should exist", reviewEvent);
     assertEquals("Event subject should match", "Monthly Review", reviewEvent.getSubject());
-    assertTrue("Event should be all-day", reviewEvent.isAllDay());
+    assertEquals("All-day event should start at 8:00 AM", 8, reviewEvent.getStart().getHour());
+    assertEquals("All-day event should end at 5:00 PM", 17, reviewEvent.getEnd().getHour());
   }
 
   // ==================== EDIT COMMANDS TESTS ====================
@@ -403,13 +401,13 @@ public class CommandParseTest {
   @Test
   public void testEditSingleEventSubject() {
     // Create initial event
-    Event originalEvent = calendar.createEvent("Old Meeting", testDateTime, testDateTime.
+    IEvent originalEvent = calendar.createEvent("Old Meeting", testDateTime, testDateTime.
             plusHours(1));
     assertNotNull("Original event should be created", originalEvent);
     assertEquals("Original subject should match", "Old Meeting", originalEvent.getSubject());
 
     // Verify initial calendar state
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertTrue("Calendar should contain test date", calendarData.containsKey(testDate));
     assertEquals("Should have one event", 1, calendarData.get(testDate).size());
 
@@ -429,10 +427,10 @@ public class CommandParseTest {
     assertTrue("Result should reference old event name", result.contains("Old Meeting"));
 
     // Verify event was modified
-    List<Event> events = calendarData.get(testDate);
+    List<IEvent> events = calendarData.get(testDate);
     assertEquals("Should still have one event", 1, events.size());
 
-    Event modifiedEvent = events.get(0);
+    IEvent modifiedEvent = events.get(0);
     assertNotNull("Modified event should exist", modifiedEvent);
     assertEquals("Subject should be updated", "New Meeting", modifiedEvent.getSubject());
     assertEquals("Start time should remain unchanged", testDateTime, modifiedEvent.getStart());
@@ -450,7 +448,7 @@ public class CommandParseTest {
     // Create initial event
     LocalDateTime originalStart = testDateTime;
     LocalDateTime originalEnd = testDateTime.plusHours(2);
-    Event originalEvent = calendar.createEvent("Meeting", originalStart, originalEnd);
+    IEvent originalEvent = calendar.createEvent("Meeting", originalStart, originalEnd);
 
     assertNotNull("Original event should be created", originalEvent);
     assertEquals("Original start should match", originalStart, originalEvent.getStart());
@@ -469,14 +467,14 @@ public class CommandParseTest {
     assertTrue("Result should indicate success", result.contains("Updated event"));
 
     // Verify event was moved to new date
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
 
     // Original date should still have the event (moved within same day)
     assertTrue("Calendar should still contain test date", calendarData.containsKey(testDate));
-    List<Event> events = calendarData.get(testDate);
+    List<IEvent> events = calendarData.get(testDate);
     assertEquals("Should have one event", 1, events.size());
 
-    Event modifiedEvent = events.get(0);
+    IEvent modifiedEvent = events.get(0);
     assertNotNull("Modified event should exist", modifiedEvent);
     assertEquals("Subject should remain unchanged", "Meeting", modifiedEvent.getSubject());
     assertEquals("Start time should be updated", LocalDateTime.of(2025, 6, 15, 14, 0),
@@ -493,7 +491,7 @@ public class CommandParseTest {
   @Test
   public void testEditSingleEventEndTime() {
     // Create initial event
-    Event originalEvent = calendar.createEvent("Meeting", testDateTime, testDateTime.plusHours(1));
+    IEvent originalEvent = calendar.createEvent("Meeting", testDateTime, testDateTime.plusHours(1));
     assertNotNull("Original event should be created", originalEvent);
 
     // Execute edit command to change end time
@@ -509,9 +507,9 @@ public class CommandParseTest {
     assertTrue("Result should indicate success", result.contains("Updated event"));
 
     // Verify event modification
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
-    List<Event> events = calendarData.get(testDate);
-    Event modifiedEvent = events.get(0);
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
+    List<IEvent> events = calendarData.get(testDate);
+    IEvent modifiedEvent = events.get(0);
 
     assertNotNull("Modified event should exist", modifiedEvent);
     assertEquals("Subject should remain unchanged", "Meeting", modifiedEvent.getSubject());
@@ -526,7 +524,7 @@ public class CommandParseTest {
   @Test
   public void testEditSingleEventLocation() {
     // Create initial event with default location
-    Event originalEvent = calendar.createEvent("Meeting", testDateTime, testDateTime.plusHours(1));
+    IEvent originalEvent = calendar.createEvent("Meeting", testDateTime, testDateTime.plusHours(1));
     assertNotNull("Original event should be created", originalEvent);
     assertEquals("Original location should be ONLINE", Location.ONLINE,
             originalEvent.getLocation());
@@ -545,8 +543,8 @@ public class CommandParseTest {
     assertTrue("Result should indicate success", result.contains("Updated event"));
 
     // Verify location change
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
-    Event modifiedEvent = calendarData.get(testDate).get(0);
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
+    IEvent modifiedEvent = calendarData.get(testDate).get(0);
 
     assertNotNull("Modified event should exist", modifiedEvent);
     assertEquals("Subject should remain unchanged", "Meeting", modifiedEvent.getSubject());
@@ -561,7 +559,7 @@ public class CommandParseTest {
   @Test
   public void testEditSingleEventStatus() {
     // Create initial event with default status
-    Event originalEvent = calendar.createEvent("Meeting", testDateTime, testDateTime.plusHours(1));
+    IEvent originalEvent = calendar.createEvent("Meeting", testDateTime, testDateTime.plusHours(1));
     assertNotNull("Original event should be created", originalEvent);
     assertEquals("Original status should be PUBLIC", Status.PUBLIC, originalEvent.getStatus());
 
@@ -579,8 +577,8 @@ public class CommandParseTest {
     assertTrue("Result should indicate success", result.contains("Updated event"));
 
     // Verify status change
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
-    Event modifiedEvent = calendarData.get(testDate).get(0);
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
+    IEvent modifiedEvent = calendarData.get(testDate).get(0);
 
     assertNotNull("Modified event should exist", modifiedEvent);
     assertEquals("Subject should remain unchanged", "Meeting", modifiedEvent.getSubject());
@@ -600,10 +598,10 @@ public class CommandParseTest {
             java.util.Arrays.asList("M", "W", "F"), 4);
 
     // Verify series was created
-    Map<LocalDateTime, List<Event>> seriesData = calendar.getSeries();
+    Map<LocalDateTime, List<IEvent>> seriesData = calendar.getSeries();
     assertFalse("Series should not be empty", seriesData.isEmpty());
 
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     LocalDate monday1 = LocalDate.of(2025, 6, 16);
     LocalDate wednesday1 = LocalDate.of(2025, 6, 18);
     LocalDate friday1 = LocalDate.of(2025, 6, 20);
@@ -626,9 +624,9 @@ public class CommandParseTest {
     assertTrue("Result should indicate success", result.contains("Updated events starting from"));
 
     // Verify selective updates
-    Event mondayEvent = calendarData.get(monday1).get(0);
-    Event wednesdayEvent = calendarData.get(wednesday1).get(0);
-    Event fridayEvent = calendarData.get(friday1).get(0);
+    IEvent mondayEvent = calendarData.get(monday1).get(0);
+    IEvent wednesdayEvent = calendarData.get(wednesday1).get(0);
+    IEvent fridayEvent = calendarData.get(friday1).get(0);
 
     assertNotNull("Monday event should exist", mondayEvent);
     assertNotNull("Wednesday event should exist", wednesdayEvent);
@@ -655,7 +653,7 @@ public class CommandParseTest {
             java.util.Arrays.asList("M", "T", "W", "R", "F"), 3);
 
     // Verify series creation
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     LocalDate monday = LocalDate.of(2025, 6, 16);
     LocalDate tuesday = LocalDate.of(2025, 6, 17);
     LocalDate wednesday = LocalDate.of(2025, 6, 18);
@@ -677,9 +675,9 @@ public class CommandParseTest {
     assertTrue("Result should indicate success", result.contains("Updated entire series"));
 
     // Verify all events in series are updated
-    Event mondayEvent = calendarData.get(monday).get(0);
-    Event tuesdayEvent = calendarData.get(tuesday).get(0);
-    Event wednesdayEvent = calendarData.get(wednesday).get(0);
+    IEvent mondayEvent = calendarData.get(monday).get(0);
+    IEvent tuesdayEvent = calendarData.get(tuesday).get(0);
+    IEvent wednesdayEvent = calendarData.get(wednesday).get(0);
 
     assertNotNull("Monday event should exist", mondayEvent);
     assertNotNull("Tuesday event should exist", tuesdayEvent);
@@ -706,7 +704,7 @@ public class CommandParseTest {
             java.util.Arrays.asList("M", "W"), 3);
 
     // Verify initial series state
-    Map<LocalDateTime, List<Event>> seriesData = calendar.getSeries();
+    Map<LocalDateTime, List<IEvent>> seriesData = calendar.getSeries();
     assertTrue("Should have series with original start time", seriesData.containsKey(seriesStart));
 
     // Execute edit to change start time for events starting from Wednesday
@@ -720,15 +718,15 @@ public class CommandParseTest {
     assertTrue("Result should indicate success", result.contains("Updated events starting from"));
 
     // Verify series split
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     LocalDate monday1 = LocalDate.of(2025, 6, 16);
     LocalDate wednesday1 = LocalDate.of(2025, 6, 18);
 
     assertTrue("Calendar should contain Monday", calendarData.containsKey(monday1));
     assertTrue("Calendar should contain Wednesday", calendarData.containsKey(wednesday1));
 
-    Event mondayEvent = calendarData.get(monday1).get(0);
-    Event wednesdayEvent = calendarData.get(wednesday1).get(0);
+    IEvent mondayEvent = calendarData.get(monday1).get(0);
+    IEvent wednesdayEvent = calendarData.get(wednesday1).get(0);
 
     // Monday should retain original time
     assertEquals("Monday event should keep original time", 10, mondayEvent.getStart().getHour());
@@ -750,10 +748,10 @@ public class CommandParseTest {
   @Test
   public void testPrintEventsOnSpecificDate() {
     // Create test events
-    Event morning = calendar.createEvent("Morning Meeting",
+    IEvent morning = calendar.createEvent("Morning Meeting",
             LocalDateTime.of(testDate, java.time.LocalTime.of(9, 0)),
             LocalDateTime.of(testDate, java.time.LocalTime.of(10, 0)));
-    Event afternoon = calendar.createEvent("Lunch",
+    IEvent afternoon = calendar.createEvent("Lunch",
             LocalDateTime.of(testDate, java.time.LocalTime.of(12, 0)),
             LocalDateTime.of(testDate, java.time.LocalTime.of(13, 0)));
 
@@ -1053,7 +1051,7 @@ public class CommandParseTest {
     assertTrue("First creation should succeed", result1.contains("Created event"));
 
     // Verify event was created
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertTrue("Calendar should contain test date", calendarData.containsKey(testDate));
     assertEquals("Should have one event", 1, calendarData.get(testDate).size());
 

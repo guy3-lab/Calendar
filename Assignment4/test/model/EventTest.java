@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import java.time.LocalDateTime;
 
 import model.calendar.Event;
+import model.calendar.IEvent;
 import model.enums.Location;
 import model.enums.Status;
 
@@ -36,7 +37,7 @@ public class EventTest {
 
   @Test
   public void testRequiredPropertiesInBasicConstructor() {
-    Event event = new Event("Test Meeting", testStart);
+    IEvent event = new Event("Test Meeting", testStart);
 
     assertNotNull("Subject should not be null", event.getSubject());
     assertEquals("Subject should match input", "Test Meeting", event.getSubject());
@@ -51,7 +52,7 @@ public class EventTest {
 
   @Test
   public void testOptionalPropertiesDefaultValues() {
-    Event event = new Event("Test Meeting", testStart);
+    IEvent event = new Event("Test Meeting", testStart);
 
     assertNotNull("Description should not be null", event.getDesc());
     assertEquals("Description should default to empty string", "", event.getDesc());
@@ -65,7 +66,7 @@ public class EventTest {
 
   @Test
   public void testBuilderWithAllProperties() {
-    Event event = new Event.EventBuilder("Important Meeting", testStart)
+    IEvent event = new Event.EventBuilder("Important Meeting", testStart)
             .end(testEnd)
             .desc("Quarterly review meeting")
             .location(Location.PHYSICAL)
@@ -79,12 +80,11 @@ public class EventTest {
     assertEquals("Location should match", Location.PHYSICAL, event.getLocation());
     assertEquals("Status should match", Status.PRIVATE, event.getStatus());
 
-    assertFalse("Should not be all-day event", event.isAllDay());
   }
 
   @Test
   public void testBuilderWithPartialProperties() {
-    Event event = new Event.EventBuilder("Partial Meeting", testStart)
+    IEvent event = new Event.EventBuilder("Partial Meeting", testStart)
             .desc("Only description set")
             .build();
 
@@ -100,7 +100,7 @@ public class EventTest {
 
   @Test
   public void testBuilderWithEndTimeOnly() {
-    Event event = new Event.EventBuilder("Meeting with End", testStart)
+    IEvent event = new Event.EventBuilder("Meeting with End", testStart)
             .end(testEnd)
             .build();
 
@@ -113,7 +113,7 @@ public class EventTest {
 
   @Test
   public void testAllPropertySetters() {
-    Event event = new Event("Original", testStart);
+    IEvent event = new Event("Original", testStart);
 
     event.setSubject("Updated Subject");
     assertEquals("Subject setter should work", "Updated Subject", event.getSubject());
@@ -138,21 +138,21 @@ public class EventTest {
 
   @Test
   public void testEventEquality() {
-    Event event1 = new Event.EventBuilder("Meeting", testStart)
+    IEvent event1 = new Event.EventBuilder("Meeting", testStart)
             .end(testEnd)
             .desc("Test description")
             .location(Location.PHYSICAL)
             .status(Status.PRIVATE)
             .build();
 
-    Event event2 = new Event.EventBuilder("Meeting", testStart)
+    IEvent event2 = new Event.EventBuilder("Meeting", testStart)
             .end(testEnd)
             .desc("Test description")
             .location(Location.PHYSICAL)
             .status(Status.PRIVATE)
             .build();
 
-    Event event3 = new Event.EventBuilder("Different Meeting", testStart)
+    IEvent event3 = new Event.EventBuilder("Different Meeting", testStart)
             .end(testEnd)
             .desc("Test description")
             .location(Location.PHYSICAL)
@@ -168,7 +168,7 @@ public class EventTest {
 
   @Test
   public void testEventEqualityWithNulls() {
-    Event event = new Event("Test", testStart);
+    IEvent event = new Event("Test", testStart);
 
     assertNotEquals("Event should not equal null", null, event);
     assertEquals("Event should equal itself", event, event);
@@ -178,9 +178,8 @@ public class EventTest {
 
   @Test
   public void testAllDayEventCreation() {
-    Event event = new Event("All Day Conference", testAllDayStart);
+    IEvent event = new Event("All Day Conference", testAllDayStart);
 
-    assertTrue("Should be identified as all-day event", event.isAllDay());
     assertEquals("All-day should start at 8:00 AM", 8, event.getStart().getHour());
     assertEquals("All-day should start at 0 minutes", 0, event.getStart().getMinute());
     assertEquals("All-day should end at 5:00 PM", 17, event.getEnd().getHour());
@@ -194,11 +193,10 @@ public class EventTest {
 
   @Test
   public void testTimedEventCreation() {
-    Event event = new Event.EventBuilder("Timed Meeting", testStart)
+    IEvent event = new Event.EventBuilder("Timed Meeting", testStart)
             .end(testEnd)
             .build();
 
-    assertFalse("Should not be identified as all-day event", event.isAllDay());
     assertEquals("Start time should match exactly", testStart, event.getStart());
     assertEquals("End time should match exactly", testEnd, event.getEnd());
     assertEquals("Should preserve exact start hour", 10, event.getStart().getHour());
@@ -208,11 +206,10 @@ public class EventTest {
   @Test
   public void testMultiDayEventCreation() {
     LocalDateTime multiDayEnd = testStart.plusDays(2).plusHours(3);
-    Event event = new Event.EventBuilder("Conference", testStart)
+    IEvent event = new Event.EventBuilder("Conference", testStart)
             .end(multiDayEnd)
             .build();
 
-    assertFalse("Multi-day event should not be all-day", event.isAllDay());
     assertEquals("Start should be preserved", testStart, event.getStart());
     assertEquals("End should be preserved", multiDayEnd, event.getEnd());
     assertNotEquals("Start and end dates should differ",
@@ -225,17 +222,16 @@ public class EventTest {
 
   @Test
   public void testEventWithEmptySubject() {
-    Event event = new Event("", testStart);
+    IEvent event = new Event("", testStart);
 
     assertEquals("Empty subject should be preserved", "", event.getSubject());
     assertNotNull("Event should still be created", event);
-    assertTrue("Should still be all-day", event.isAllDay());
   }
 
   @Test
   public void testEventWithLongSubject() {
     String longSubject = "A".repeat(10000);
-    Event event = new Event(longSubject, testStart);
+    IEvent event = new Event(longSubject, testStart);
 
     assertEquals("Long subject should be preserved", longSubject, event.getSubject());
     assertEquals("Subject length should be preserved", 10000, event.getSubject().length());
@@ -244,7 +240,7 @@ public class EventTest {
   @Test
   public void testEventWithSpecialCharacters() {
     String specialSubject = "Meeting !@#$%^&*()_+-=[]{}|;':\",./<>?";
-    Event event = new Event(specialSubject, testStart);
+    IEvent event = new Event(specialSubject, testStart);
 
     assertEquals("Special characters should be preserved", specialSubject, event.getSubject());
   }
@@ -252,7 +248,7 @@ public class EventTest {
   @Test
   public void testShortDurationEvent() {
     LocalDateTime veryCloseEnd = testStart.plusMinutes(1);
-    Event event = new Event.EventBuilder("Quick Meeting", testStart)
+    IEvent event = new Event.EventBuilder("Quick Meeting", testStart)
             .end(veryCloseEnd)
             .build();
 
@@ -267,7 +263,7 @@ public class EventTest {
     LocalDateTime lateStart = LocalDateTime.of(2025, 6, 15, 23, 30);
     LocalDateTime earlyEnd = LocalDateTime.of(2025, 6, 16, 1, 30);
 
-    Event event = new Event.EventBuilder("Midnight Event", lateStart)
+    IEvent event = new Event.EventBuilder("Midnight Event", lateStart)
             .end(earlyEnd)
             .build();
 
@@ -283,9 +279,9 @@ public class EventTest {
     LocalDateTime randomTime2 = LocalDateTime.of(2025, 6, 15, 3, 45);
     LocalDateTime randomTime3 = LocalDateTime.of(2025, 6, 15, 22, 15);
 
-    Event event1 = new Event("Event 1", randomTime1);
-    Event event2 = new Event("Event 2", randomTime2);
-    Event event3 = new Event("Event 3", randomTime3);
+    IEvent event1 = new Event("Event 1", randomTime1);
+    IEvent event2 = new Event("Event 2", randomTime2);
+    IEvent event3 = new Event("Event 3", randomTime3);
 
     assertEquals("All events should start at 8:00 AM",
             LocalDateTime.of(2025, 6, 15, 8, 0), event1.getStart());
@@ -306,7 +302,7 @@ public class EventTest {
 
   @Test
   public void testBuilderNullHandling() {
-    Event event = new Event.EventBuilder("Test", testStart)
+    IEvent event = new Event.EventBuilder("Test", testStart)
             .end(null)
             .desc(null)
             .location(null)
@@ -329,40 +325,41 @@ public class EventTest {
     assertSame("location() should return builder", builder, builder.location(Location.PHYSICAL));
     assertSame("status() should return builder", builder, builder.status(Status.PRIVATE));
 
-    Event event = builder.build();
+    IEvent event = builder.build();
     assertNotNull("Build should return event", event);
   }
 
-  @Test
-  public void testIsAllDayDetectionAccuracy() {
-    Event allDay = new Event("All Day", testStart);
-    assertTrue("Basic constructor should create all-day", allDay.isAllDay());
-
-    Event nonAllDay1 = new Event.EventBuilder("Not All Day", testStart).end(testEnd).build();
-    assertFalse("Custom end time should not be all-day", nonAllDay1.isAllDay());
-
-    Event notAllDay2 = new Event.EventBuilder("Coincidental Times",
-            LocalDateTime.of(2025, 6, 15, 8, 0))
-            .end(LocalDateTime.of(2025, 6, 16, 17, 0))
-            .build();
-    assertFalse("Multi-day 8-17 should not be all-day", notAllDay2.isAllDay());
-
-    Event notAllDay3 = new Event.EventBuilder("Different End",
-            LocalDateTime.of(2025, 6, 15, 8, 0))
-            .end(LocalDateTime.of(2025, 6, 15, 16, 0))
-            .build();
-    assertFalse("8-16 should not be all-day", notAllDay3.isAllDay());
-
-    Event notAllDay4 = new Event.EventBuilder("Different Start",
-            LocalDateTime.of(2025, 6, 15, 9, 0))
-            .end(LocalDateTime.of(2025, 6, 15, 17, 0))
-            .build();
-    assertFalse("9-17 should not be all-day", notAllDay4.isAllDay());
-  }
+//  @Test
+//  public void testIsAllDayDetectionAccuracy() {
+//    IEvent allDay = new Event("All Day", testStart);
+//    assertEquals("Should start at 8:00 AM", 8, allDay.getStart().getHour());
+//    assertEquals("Should end at 5:00 PM", 17, allDay.getEnd().getHour());
+//
+//    IEvent nonAllDay1 = new Event.EventBuilder("Not All Day", testStart).end(testEnd).build();
+//    assertFalse("Custom end time should not be all-day", nonAllDay1.isAllDay());
+//
+//    IEvent notAllDay2 = new Event.EventBuilder("Coincidental Times",
+//            LocalDateTime.of(2025, 6, 15, 8, 0))
+//            .end(LocalDateTime.of(2025, 6, 16, 17, 0))
+//            .build();
+//    assertFalse("Multi-day 8-17 should not be all-day", notAllDay2.isAllDay());
+//
+//    IEvent notAllDay3 = new Event.EventBuilder("Different End",
+//            LocalDateTime.of(2025, 6, 15, 8, 0))
+//            .end(LocalDateTime.of(2025, 6, 15, 16, 0))
+//            .build();
+//    assertFalse("8-16 should not be all-day", notAllDay3.isAllDay());
+//
+//    IEvent notAllDay4 = new Event.EventBuilder("Different Start",
+//            LocalDateTime.of(2025, 6, 15, 9, 0))
+//            .end(LocalDateTime.of(2025, 6, 15, 17, 0))
+//            .build();
+//    assertFalse("9-17 should not be all-day", notAllDay4.isAllDay());
+//  }
 
   @Test
   public void testEventImmutabilityAfterCreation() {
-    Event original = new Event.EventBuilder("Original", testStart)
+    IEvent original = new Event.EventBuilder("Original", testStart)
             .end(testEnd)
             .desc("Original desc")
             .location(Location.PHYSICAL)

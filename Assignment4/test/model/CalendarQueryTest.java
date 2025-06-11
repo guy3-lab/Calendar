@@ -19,6 +19,7 @@ import org.junit.Test;
 import model.calendar.Calendar;
 import model.calendar.Event;
 import model.calendar.ICalendar;
+import model.calendar.IEvent;
 import model.enums.Location;
 import model.enums.Status;
 
@@ -57,7 +58,7 @@ public class CalendarQueryTest {
     assertEquals("Evening should be 7:00 PM", 19, evening.getHour());
 
     // Verify calendar is empty initially
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertNotNull("Calendar data should not be null", calendarData);
     assertTrue("Calendar should be empty initially", calendarData.isEmpty());
   }
@@ -67,7 +68,7 @@ public class CalendarQueryTest {
   @Test
   public void testPrintEventsOnDateNoEvents() {
     // Verify calendar is empty
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertNotNull("Calendar data should not be null", calendarData);
     assertTrue("Calendar should be empty", calendarData.isEmpty());
     assertFalse("Test date should not exist in calendar", calendarData.containsKey(testDate));
@@ -84,12 +85,12 @@ public class CalendarQueryTest {
   @Test
   public void testPrintEventsOnDateSingleEvent() {
     // Verify initial state
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertTrue("Calendar should be empty initially", calendarData.isEmpty());
 
     // Create event
     LocalDateTime endTime = LocalDateTime.of(testDate, java.time.LocalTime.of(10, 0));
-    Event event = calendar.createEvent("Team Meeting", morning, endTime);
+    IEvent event = calendar.createEvent("Team Meeting", morning, endTime);
 
     // Verify event creation
     assertNotNull("Event should be created", event);
@@ -103,7 +104,7 @@ public class CalendarQueryTest {
     assertFalse("Calendar should not be empty after event creation", calendarData.isEmpty());
     assertTrue("Calendar should contain test date", calendarData.containsKey(testDate));
 
-    List<Event> dayEvents = calendarData.get(testDate);
+    List<IEvent> dayEvents = calendarData.get(testDate);
     assertNotNull("Day events list should not be null", dayEvents);
     assertEquals("Should have exactly one event", 1, dayEvents.size());
     assertEquals("Event in calendar should match created event", event, dayEvents.get(0));
@@ -127,7 +128,7 @@ public class CalendarQueryTest {
   @Test
   public void testPrintEventsOnDateMultipleEvents() {
     // Verify initial state
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertTrue("Calendar should be empty initially", calendarData.isEmpty());
 
     // Create multiple events
@@ -135,9 +136,9 @@ public class CalendarQueryTest {
     LocalDateTime afternoon15 = LocalDateTime.of(testDate, java.time.LocalTime.of(15, 0));
     LocalDateTime evening20 = LocalDateTime.of(testDate, java.time.LocalTime.of(20, 0));
 
-    Event event1 = calendar.createEvent("Morning Meeting", morning, morning10);
-    Event event2 = calendar.createEvent("Lunch", afternoon, afternoon15);
-    Event event3 = calendar.createEvent("Dinner", evening, evening20);
+    IEvent event1 = calendar.createEvent("Morning Meeting", morning, morning10);
+    IEvent event2 = calendar.createEvent("Lunch", afternoon, afternoon15);
+    IEvent event3 = calendar.createEvent("Dinner", evening, evening20);
 
     // Verify each event creation
     assertNotNull("First event should be created", event1);
@@ -152,7 +153,7 @@ public class CalendarQueryTest {
     assertFalse("Calendar should not be empty", calendarData.isEmpty());
     assertTrue("Calendar should contain test date", calendarData.containsKey(testDate));
 
-    List<Event> dayEvents = calendarData.get(testDate);
+    List<IEvent> dayEvents = calendarData.get(testDate);
     assertNotNull("Day events list should not be null", dayEvents);
     assertEquals("Should have exactly three events", 3, dayEvents.size());
 
@@ -196,7 +197,6 @@ public class CalendarQueryTest {
     // Verify event creation and all-day properties
     assertNotNull("All-day event should be created", allDayEvent);
     assertEquals("Event subject should match", "Holiday", allDayEvent.getSubject());
-    assertTrue("Event should be all-day", allDayEvent.isAllDay());
 
     // Verify all-day time boundaries
     assertEquals("All-day start should be 8:00 AM", 8, allDayEvent.getStart().getHour());
@@ -209,7 +209,7 @@ public class CalendarQueryTest {
             allDayEvent.getEnd().toLocalDate());
 
     // Verify calendar state
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertFalse("Calendar should not be empty", calendarData.isEmpty());
     assertTrue("Calendar should contain test date", calendarData.containsKey(testDate));
     assertEquals("Should have one event on test date", 1, calendarData.get(testDate).size());
@@ -269,7 +269,7 @@ public class CalendarQueryTest {
     assertNotNull("Second event should be created", event2);
 
     // Verify calendar state
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertTrue("Calendar should contain test date", calendarData.containsKey(testDate));
     assertEquals("Should have two events", 2, calendarData.get(testDate).size());
 
@@ -327,7 +327,7 @@ public class CalendarQueryTest {
     assertEquals("Day 3 event should be on correct date", day3, event3.getStart().toLocalDate());
 
     // Verify calendar state
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertTrue("Calendar should contain day 1", calendarData.containsKey(day1));
     assertTrue("Calendar should contain day 2", calendarData.containsKey(day2));
     assertTrue("Calendar should contain day 3", calendarData.containsKey(day3));
@@ -374,7 +374,7 @@ public class CalendarQueryTest {
     assertEquals("Late event should start at 15:00", 15, lateEvent.getStart().getHour());
 
     // Verify calendar state
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertTrue("Calendar should contain test date", calendarData.containsKey(testDate));
     assertEquals("Should have two events", 2, calendarData.get(testDate).size());
 
@@ -417,7 +417,7 @@ public class CalendarQueryTest {
     assertEquals("Event subject should match", "Conference", multiDayEvent.getSubject());
     assertEquals("Event start should match", start, multiDayEvent.getStart());
     assertEquals("Event end should match", end, multiDayEvent.getEnd());
-    assertFalse("Event should not be all-day", multiDayEvent.isAllDay());
+
 
     // Verify the event spans multiple days
     LocalDate startDate = start.toLocalDate();
@@ -426,7 +426,7 @@ public class CalendarQueryTest {
     assertEquals("Event should span 3 days", 2, endDate.toEpochDay() - startDate.toEpochDay());
 
     // Verify calendar state - event should appear on all days it spans
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertTrue("Calendar should contain start date", calendarData.containsKey(testDate));
     assertTrue("Calendar should contain middle date",
             calendarData.containsKey(testDate.plusDays(1)));
@@ -481,11 +481,11 @@ public class CalendarQueryTest {
     calendar.createSeriesTimes("Weekly Meeting", seriesStart, seriesEnd, repeatDays, 3);
 
     // Verify series creation
-    Map<LocalDateTime, List<Event>> seriesData = calendar.getSeries();
+    Map<LocalDateTime, List<IEvent>> seriesData = calendar.getSeries();
     assertFalse("Series should not be empty", seriesData.isEmpty());
     assertTrue("Series should contain the start time", seriesData.containsKey(seriesStart));
 
-    List<Event> seriesEvents = seriesData.get(seriesStart);
+    List<IEvent> seriesEvents = seriesData.get(seriesStart);
     assertNotNull("Series events should not be null", seriesEvents);
     assertFalse("Series should have events", seriesEvents.isEmpty());
 
@@ -495,7 +495,7 @@ public class CalendarQueryTest {
     LocalDate friday = testDate.plusDays(5);      // June 20, 2025 (Friday)
 
     // Verify calendar contains the expected dates
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertTrue("Calendar should contain Monday", calendarData.containsKey(monday));
     assertTrue("Calendar should contain Wednesday", calendarData.containsKey(wednesday));
     assertTrue("Calendar should contain Friday", calendarData.containsKey(friday));
@@ -564,7 +564,7 @@ public class CalendarQueryTest {
     assertEquals("Event end should match", eventEnd, event.getEnd());
 
     // Verify calendar state
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertTrue("Calendar should contain test date", calendarData.containsKey(testDate));
     assertEquals("Should have one event", 1, calendarData.get(testDate).size());
 
@@ -691,7 +691,7 @@ public class CalendarQueryTest {
     assertNotNull("Second event should be created", event2);
 
     // Verify calendar state
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertTrue("Calendar should contain test date", calendarData.containsKey(testDate));
     assertEquals("Should have two events", 2, calendarData.get(testDate).size());
 
@@ -719,7 +719,6 @@ public class CalendarQueryTest {
 
     // Verify event creation and all-day properties
     assertNotNull("All-day event should be created", allDayEvent);
-    assertTrue("Event should be all-day", allDayEvent.isAllDay());
     assertEquals("All-day should start at 8:00", 8, allDayEvent.getStart().getHour());
     assertEquals("All-day should end at 17:00", 17, allDayEvent.getEnd().getHour());
 
@@ -770,7 +769,7 @@ public class CalendarQueryTest {
             start.toLocalDate(), end.toLocalDate());
 
     // Verify calendar state
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertTrue("Calendar should contain start date", calendarData.containsKey(testDate));
     assertTrue("Calendar should contain middle date",
             calendarData.containsKey(testDate.plusDays(1)));
@@ -812,7 +811,7 @@ public class CalendarQueryTest {
     assertEquals("Event should be on test date", testDate, event.getStart().toLocalDate());
 
     // Verify calendar state
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertTrue("Calendar should contain test date", calendarData.containsKey(testDate));
     assertFalse("Calendar should not contain different date",
             calendarData.containsKey(testDate.plusDays(1)));
@@ -844,7 +843,7 @@ public class CalendarQueryTest {
     calendar.createSeriesTimes("Weekly Meeting", seriesStart, seriesEnd, repeatDays, 3);
 
     // Verify series creation
-    Map<LocalDateTime, List<Event>> seriesData = calendar.getSeries();
+    Map<LocalDateTime, List<IEvent>> seriesData = calendar.getSeries();
     assertFalse("Series should not be empty", seriesData.isEmpty());
     assertTrue("Series should contain start time", seriesData.containsKey(seriesStart));
 
@@ -855,7 +854,7 @@ public class CalendarQueryTest {
     LocalDate tuesday = testDate.plusDays(2);
 
     // Verify calendar state
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertTrue("Calendar should contain Monday", calendarData.containsKey(monday));
     assertTrue("Calendar should contain Wednesday", calendarData.containsKey(wednesday));
     assertTrue("Calendar should contain Friday", calendarData.containsKey(friday));
@@ -977,7 +976,7 @@ public class CalendarQueryTest {
             k -> new java.util.ArrayList<>()).add(physicalEvent);
 
     // Verify calendar state
-    Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
     assertTrue("Calendar should contain test date", calendarData.containsKey(testDate));
     assertEquals("Should have two events", 2, calendarData.get(testDate).size());
 

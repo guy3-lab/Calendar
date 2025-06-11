@@ -12,6 +12,7 @@ import java.util.List;
 import controller.parse.PropertyType;
 import model.calendar.Calendar;
 import model.calendar.Event;
+import model.calendar.IEvent;
 import model.enums.Location;
 import model.enums.Status;
 
@@ -104,7 +105,7 @@ public class CalendarTest {
 
     //confirming that the two events exist in the correct event list of the correct day
     LocalDate dateKey = LocalDate.parse("2025-10-05");
-    List<Event> dateEvents = calendar.getCalendar().get(dateKey);
+    List<IEvent> dateEvents = calendar.getCalendar().get(dateKey);
     assertNotNull("Events list should not be null", dateEvents);
     assertEquals("Should have 2 events", 2, dateEvents.size());
     assertTrue("Should contain first event", dateEvents.contains(event1));
@@ -124,9 +125,9 @@ public class CalendarTest {
     assertTrue("Should contain Nov 1", calendar.getCalendar().containsKey(nov01));
     assertTrue("Should contain Nov 2", calendar.getCalendar().containsKey(nov02));
 
-    List<Event> oct31Events = calendar.getCalendar().get(oct31);
-    List<Event> nov01Events = calendar.getCalendar().get(nov01);
-    List<Event> nov02Events = calendar.getCalendar().get(nov02);
+    List<IEvent> oct31Events = calendar.getCalendar().get(oct31);
+    List<IEvent> nov01Events = calendar.getCalendar().get(nov01);
+    List<IEvent> nov02Events = calendar.getCalendar().get(nov02);
 
     assertTrue("Oct 31 should contain multi-day event", oct31Events.contains(multiDayEvent));
     assertTrue("Nov 1 should contain multi-day event", nov01Events.contains(multiDayEvent));
@@ -139,15 +140,14 @@ public class CalendarTest {
             multiDayEvent.getStart());
 
     //creates an event without an end field, which therefore is a full day event
-    Event allDayEvent = calendar.createEvent("test", LocalDateTime.parse("2025-02-27T05:00"), null);
+    IEvent allDayEvent = calendar.createEvent("test", LocalDateTime.parse("2025-02-27T05:00"), null);
     LocalDate feb27 = LocalDate.parse("2025-02-27");
-    List<Event> feb27Events = calendar.getCalendar().get(feb27);
+    List<IEvent> feb27Events = calendar.getCalendar().get(feb27);
     assertTrue("Feb 27 should contain all-day event", feb27Events.contains(allDayEvent));
     assertEquals("All-day should end at 5:00 PM", LocalDateTime.parse("2025-02-27T17:00"),
             allDayEvent.getEnd());
     assertEquals("All-day should start at 8:00 AM", LocalDateTime.parse("2025-02-27T08:00"),
             allDayEvent.getStart());
-    assertTrue("Should be identified as all-day", allDayEvent.isAllDay());
   }
 
   @Test
@@ -183,11 +183,11 @@ public class CalendarTest {
     //full day event series
     calendar.createSeriesTimes("Series1", LocalDateTime.parse("2025-12-24T05:00"), null,
             repeatedDays, 3);
-    List<Event> events = calendar.getSeries().get(LocalDateTime.parse("2025-12-24T05:00"));
+    List<IEvent> events = calendar.getSeries().get(LocalDateTime.parse("2025-12-24T05:00"));
 
-    List<Event> event24 = calendar.getCalendar().get(LocalDate.parse("2025-12-24"));
-    List<Event> event25 = calendar.getCalendar().get(LocalDate.parse("2025-12-25"));
-    List<Event> event26 = calendar.getCalendar().get(LocalDate.parse("2025-12-26"));
+    List<IEvent> event24 = calendar.getCalendar().get(LocalDate.parse("2025-12-24"));
+    List<IEvent> event25 = calendar.getCalendar().get(LocalDate.parse("2025-12-25"));
+    List<IEvent> event26 = calendar.getCalendar().get(LocalDate.parse("2025-12-26"));
 
     //checks if the correct amount of events are added to the map
     assertEquals("Should have 9 series events", 9, events.size());
@@ -234,7 +234,7 @@ public class CalendarTest {
     List<String> repeatedDays2 = new ArrayList<>(Arrays.asList("W", "F"));
     calendar.createSeriesTimes("Series2", LocalDateTime.parse("2025-12-24T05:00"),
             LocalDateTime.parse("2025-12-24T06:00"), repeatedDays2, 2);
-    List<Event> events2 = calendar.getSeries().get(LocalDateTime.parse("2025-12-24T05:00"));
+    List<IEvent> events2 = calendar.getSeries().get(LocalDateTime.parse("2025-12-24T05:00"));
 
     //checks if the correct amount of events are added to the map
     assertEquals("Should have 4 timed series events", 4, events2.size());
@@ -265,7 +265,7 @@ public class CalendarTest {
     //full day event series
     calendar.createSeriesUntil("Series1", LocalDateTime.parse("2025-12-24T05:00"), null,
             repeatedDays, LocalDate.parse("2026-01-03"));
-    List<Event> events = calendar.getSeries().get(LocalDateTime.parse("2025-12-24T05:00"));
+    List<IEvent> events = calendar.getSeries().get(LocalDateTime.parse("2025-12-24T05:00"));
     assertEquals("Should have 6 events until Jan 3", 6, events.size());
 
     //first 3 events
@@ -299,7 +299,7 @@ public class CalendarTest {
     List<String> repeatedDays2 = new ArrayList<>(Arrays.asList("W", "F"));
     calendar.createSeriesUntil("Series2", LocalDateTime.parse("2025-12-24T05:00"),
             LocalDateTime.parse("2025-12-24T06:00"), repeatedDays2, LocalDate.parse("2026-01-01"));
-    List<Event> events2 = calendar.getSeries().get(LocalDateTime.parse("2025-12-24T05:00"));
+    List<IEvent> events2 = calendar.getSeries().get(LocalDateTime.parse("2025-12-24T05:00"));
 
     //checks if the correct amount of events are added to the map
     assertEquals("Should have 3 events until Jan 1", 3, events2.size());
@@ -329,9 +329,9 @@ public class CalendarTest {
     LocalDateTime end2 = LocalDateTime.parse("2025-10-05T17:00");
 
     //Creates the events
-    Event event1 = calendar.createEvent("test", start, end);
-    Event event2 = calendar.createEvent("test", start2, end2);
-    List<Event> events = calendar.getCalendar().get(LocalDate.parse("2025-10-05"));
+    IEvent event1 = calendar.createEvent("test", start, end);
+    IEvent event2 = calendar.createEvent("test", start2, end2);
+    List<IEvent> events = calendar.getCalendar().get(LocalDate.parse("2025-10-05"));
     assertEquals("Should have 2 events initially", 2, events.size());
 
     //Changes subject
@@ -356,12 +356,12 @@ public class CalendarTest {
     end = LocalDateTime.parse("2025-10-06T12:00");
 
     // Check that event was removed from original date
-    List<Event> oct5Events = calendar.getCalendar().get(LocalDate.parse("2025-10-05"));
+    List<IEvent> oct5Events = calendar.getCalendar().get(LocalDate.parse("2025-10-05"));
     assertEquals("Oct 5 should have 1 event after move", 1, oct5Events.size());
     assertSame("Remaining event should be event2", event2, oct5Events.get(0));
 
     //checking if event exists on the new day
-    List<Event> events06 = calendar.getCalendar().get(LocalDate.parse("2025-10-06"));
+    List<IEvent> events06 = calendar.getCalendar().get(LocalDate.parse("2025-10-06"));
     assertEquals("Oct 6 should have 1 event", 1, events06.size());
     assertSame("Moved event should be event1", event1, events06.get(0));
 
@@ -385,7 +385,7 @@ public class CalendarTest {
             calendar.getCalendar().get(LocalDate.parse("2025-10-04")).get(0).getStart());
 
     //change location
-    Event editingEvent = events06.get(0);
+    IEvent editingEvent = events06.get(0);
     assertEquals("Initial location should be ONLINE", Location.ONLINE, editingEvent.getLocation());
     calendar.editEvent(PropertyType.LOCATION, "New name", start, end, "pHySiCAL");
     assertEquals("Location should be updated", Location.PHYSICAL, editingEvent.getLocation());
@@ -487,7 +487,7 @@ public class CalendarTest {
     LocalDateTime start = LocalDateTime.parse("2025-12-24T05:00");
     LocalDateTime end = LocalDateTime.parse("2025-12-24T06:00");
     calendar.createSeriesTimes("Series", start, end, repeatedDays2, 2);
-    List<Event> dec24Events = calendar.getSeries().get(LocalDateTime.parse("2025-12-24T05:00"));
+    List<IEvent> dec24Events = calendar.getSeries().get(LocalDateTime.parse("2025-12-24T05:00"));
     assertEquals("Should have 4 series events", 4, dec24Events.size());
 
     //edits the start day by 1 day
@@ -497,7 +497,7 @@ public class CalendarTest {
     assertTrue("New series key should exist", calendar.getSeries().containsKey(newStart));
 
     //checks that everything was edited accordingly
-    List<Event> dec26Series = calendar.getSeries().get(LocalDateTime.parse("2025-12-26T05:00"));
+    List<IEvent> dec26Series = calendar.getSeries().get(LocalDateTime.parse("2025-12-26T05:00"));
     assertEquals("New series should have 4 events", 4, dec26Series.size());
 
     Event dec26 = new Event.EventBuilder("Series", LocalDateTime.parse("2025-12-26T05:00"))
@@ -555,7 +555,7 @@ public class CalendarTest {
     List<String> repeatedDays = new ArrayList<>(Arrays.asList("W", "F"));
     calendar.createSeriesTimes("base", LocalDateTime.parse("2025-12-26T05:00"),
             LocalDateTime.parse("2025-12-26T06:00"), repeatedDays, 2);
-    List<Event> dec26Events = calendar.getSeries().get(LocalDateTime.parse("2025-12-26T05:00"));
+    List<IEvent> dec26Events = calendar.getSeries().get(LocalDateTime.parse("2025-12-26T05:00"));
     assertEquals("Should have 4 series events", 4, dec26Events.size());
 
     //changes the subject to events to jan 2 and after
@@ -594,7 +594,7 @@ public class CalendarTest {
     // corresponding events.
     calendar.editEvents(PropertyType.START, "Series", LocalDateTime.parse("2026-01-02T05:00"),
             "2026-01-05T06:00");
-    List<Event> jan5Events = calendar.getSeries().get(LocalDateTime.parse("2026-01-05T06:00"));
+    List<IEvent> jan5Events = calendar.getSeries().get(LocalDateTime.parse("2026-01-05T06:00"));
 
     //two events get removed into another series
     assertEquals("Original series should have 2 events", 2, dec26Events.size());

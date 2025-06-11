@@ -10,6 +10,7 @@ import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 
+import model.calendar.ISpecificCalendar;
 import model.calendar.SpecificCalendar;
 
 import static org.junit.Assert.assertEquals;
@@ -42,7 +43,7 @@ public class MultiCalendarTest {
   @Test
   public void editCalendarTest() {
     mc.addCalendar("c2", ZoneId.of("Europe/Paris"));
-    List<SpecificCalendar> calendars = mc.getCalendars();
+    List<ISpecificCalendar> calendars = mc.getCalendars();
     assertEquals("c1", calendars.get(0).getName());
     mc.editCalendar("c1", "name", "newC1");
     assertEquals("newC1", calendars.get(0).getName());
@@ -86,9 +87,9 @@ public class MultiCalendarTest {
   @Test
   public void copyEventTest() {
     mc.addCalendar("c2", ZoneId.of("Europe/Paris"));
-    List<SpecificCalendar> calendars = mc.getCalendars();
-    SpecificCalendar c1 = calendars.get(0);
-    SpecificCalendar c2 = calendars.get(1);
+    List<ISpecificCalendar> calendars = mc.getCalendars();
+    ISpecificCalendar c1 = calendars.get(0);
+    ISpecificCalendar c2 = calendars.get(1);
 
     //full day event
     c1.createEvent("event1", LocalDateTime.parse("2000-10-10T10:00"), null);
@@ -137,9 +138,9 @@ public class MultiCalendarTest {
   @Test
   public void copyEventsTest() {
     mc.addCalendar("c2", ZoneId.of("Europe/Paris"));
-    List<SpecificCalendar> calendars = mc.getCalendars();
-    SpecificCalendar c1 = calendars.get(0);
-    SpecificCalendar c2 = calendars.get(1);
+    List<ISpecificCalendar> calendars = mc.getCalendars();
+    ISpecificCalendar c1 = calendars.get(0);
+    ISpecificCalendar c2 = calendars.get(1);
 
     //all full day events
     c1.createEvent("event1", LocalDateTime.parse("2000-10-10T10:00"), null);
@@ -175,9 +176,9 @@ public class MultiCalendarTest {
   @Test
   public void copyEventsIntervalTest() {
     mc.addCalendar("c2", ZoneId.of("Europe/Paris"));
-    List<SpecificCalendar> calendars = mc.getCalendars();
-    SpecificCalendar c1 = calendars.get(0);
-    SpecificCalendar c2 = calendars.get(1);
+    List<ISpecificCalendar> calendars = mc.getCalendars();
+    ISpecificCalendar c1 = calendars.get(0);
+    ISpecificCalendar c2 = calendars.get(1);
 
     c1.createEvent("event1", LocalDateTime.parse("2000-10-10T10:00"), null);
     c1.createEvent("event2", LocalDateTime.parse("2000-10-11T11:00"), null);

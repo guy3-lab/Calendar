@@ -15,6 +15,7 @@ import controller.format.OutputFormatter;
 import model.calendar.Calendar;
 import model.calendar.Event;
 import model.calendar.ICalendar;
+import model.calendar.IEvent;
 
 /**
  * Controller that executes parsed commands on the calendar model and formats output.
@@ -176,7 +177,7 @@ public class CalendarController {
    */
   private String executePrintEvents(ParseResult parseResult) {
     try {
-      Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+      Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
 
       if (parseResult.isPrintRange()) {
         return calendar.printEventsInterval(parseResult.getPrintStartDate(),
@@ -195,7 +196,7 @@ public class CalendarController {
   private String executeShowStatus(ParseResult parseResult) {
     try {
       LocalDateTime queryTime = parseResult.getStatusDateTime();
-      Map<LocalDate, List<Event>> calendarData = calendar.getCalendar();
+      Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
 
       boolean isBusy = checkIfBusy(calendarData, queryTime);
       return isBusy ? "busy" : "available";
@@ -216,16 +217,16 @@ public class CalendarController {
    * @param queryTime the specific moment to check
    * @return true if busy, false if available
    */
-  private boolean checkIfBusy(Map<LocalDate, List<Event>> calendarData, LocalDateTime queryTime) {
+  private boolean checkIfBusy(Map<LocalDate, List<IEvent>> calendarData, LocalDateTime queryTime) {
     LocalDate queryDate = queryTime.toLocalDate();
 
     if (!calendarData.containsKey(queryDate)) {
       return false;
     }
 
-    List<Event> dayEvents = calendarData.get(queryDate);
+    List<IEvent> dayEvents = calendarData.get(queryDate);
 
-    for (Event event : dayEvents) {
+    for (IEvent event : dayEvents) {
       // check if query time falls within event time range [start, end)
       if (!queryTime.isBefore(event.getStart()) && queryTime.isBefore(event.getEnd())) {
         return true; // found overlapping event

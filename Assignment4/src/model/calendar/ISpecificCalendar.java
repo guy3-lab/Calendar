@@ -10,7 +10,7 @@ import model.enums.Status;
 /**
  * Interface of a specific calendar and the methods it'll need.
  */
-public interface ISpecificCalendar {
+public interface ISpecificCalendar extends ICalendar{
 
   /**
    * creates a full creation of an event.

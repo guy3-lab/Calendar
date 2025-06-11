@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import model.calendar.Event;
+import model.calendar.IEvent;
 import model.multicalendar.MultiCalendar;
 import model.multicalendar.IMultiCalendar;
 import static org.junit.Assert.assertTrue;
@@ -341,7 +342,7 @@ public class MultiCalendarCommandsTest {
 
     // Verify all properties preserved
     controller.executeCommand("use calendar --name Target");
-    Event copiedEvent = multiCalendar.getCurrent().getCalendar()
+    IEvent copiedEvent = multiCalendar.getCurrent().getCalendar()
             .get(LocalDate.of(2025, 1, 20)).get(0);
     assertEquals("Meeting", copiedEvent.getSubject());
     assertEquals("Important client meeting", copiedEvent.getDesc());
@@ -374,7 +375,7 @@ public class MultiCalendarCommandsTest {
             "--target Target to 2025-01-20");
 
     controller.executeCommand("use calendar --name Target");
-    List<Event> copiedEvents = multiCalendar.getCurrent().getCalendar()
+    List<IEvent> copiedEvents = multiCalendar.getCurrent().getCalendar()
             .get(LocalDate.of(2025, 1, 20));
     assertEquals(3, copiedEvents.size());
   }
@@ -398,7 +399,7 @@ public class MultiCalendarCommandsTest {
             "to 2025-01-15");
 
     controller.executeCommand("use calendar --name PST");
-    Event copiedEvent = multiCalendar.getCurrent().getCalendar()
+    IEvent copiedEvent = multiCalendar.getCurrent().getCalendar()
             .get(LocalDate.of(2025, 1, 15)).get(0);
     // 2pm EST = 11am PST
     assertEquals(LocalDateTime.of(2025, 1, 15, 11, 0),
@@ -514,11 +515,11 @@ public class MultiCalendarCommandsTest {
             "from 2025-02-01T10:00 with UpdatedMeeting");
 
     // All occurrences should be updated
-    List<Event> feb1 = multiCalendar.getCurrent().getCalendar()
+    List<IEvent> feb1 = multiCalendar.getCurrent().getCalendar()
             .get(LocalDate.of(2025, 2, 1));
-    List<Event> feb8 = multiCalendar.getCurrent().getCalendar()
+    List<IEvent> feb8 = multiCalendar.getCurrent().getCalendar()
             .get(LocalDate.of(2025, 2, 8));
-    List<Event> feb15 = multiCalendar.getCurrent().getCalendar()
+    List<IEvent> feb15 = multiCalendar.getCurrent().getCalendar()
             .get(LocalDate.of(2025, 2, 15));
 
     assertEquals("UpdatedMeeting", feb1.get(0).getSubject());
@@ -605,7 +606,7 @@ public class MultiCalendarCommandsTest {
             "--target London to 2025-01-15T09:00");
 
     controller.executeCommand("use calendar --name London");
-    Event copiedEvent = multiCalendar.getCurrent().getCalendar()
+    IEvent copiedEvent = multiCalendar.getCurrent().getCalendar()
             .get(LocalDate.of(2025, 1, 15)).get(0);
     assertEquals(LocalDateTime.of(2025, 1, 15, 9, 0),
             copiedEvent.getStart());
@@ -641,8 +642,9 @@ public class MultiCalendarCommandsTest {
             "--target Target to 2025-01-20T08:00");
 
     controller.executeCommand("use calendar --name Target");
-    Event copiedEvent = multiCalendar.getCurrent().getCalendar()
+    IEvent copiedEvent = multiCalendar.getCurrent().getCalendar()
             .get(LocalDate.of(2025, 1, 20)).get(0);
-    assertTrue(copiedEvent.isAllDay());
+    assertEquals("Should start at 8:00 AM", 8, copiedEvent.getStart().getHour());
+    assertEquals("Should end at 5:00 PM", 17, copiedEvent.getEnd().getHour());
   }
 }
