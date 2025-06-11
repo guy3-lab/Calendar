@@ -30,10 +30,18 @@ public class MultiCalendarTest {
     assertEquals(1, mc.getCalendars().size());
     mc.addCalendar("c2", ZoneId.of("Europe/Paris"));
     assertEquals(2, mc.getCalendars().size());
+
+    //tries adding a calendar that already exists
+    try {
+      mc.addCalendar("c2", ZoneId.of("Europe/Paris"));
+    } catch (IllegalArgumentException e) {
+      assertEquals("Calendar with name c2 already exists.", e.getMessage());
+    }
   }
 
   @Test
   public void editCalendarTest() {
+    mc.addCalendar("c2", ZoneId.of("Europe/Paris"));
     List<SpecificCalendar> calendars = mc.getCalendars();
     assertEquals("c1", calendars.get(0).getName());
     mc.editCalendar("c1", "name", "newC1");
@@ -42,6 +50,27 @@ public class MultiCalendarTest {
     assertEquals(ZoneId.of("America/Los_Angeles"), calendars.get(0).getTimeZone());
     mc.editCalendar("newC1", "timezone", "Europe/Paris");
     assertEquals(ZoneId.of("Europe/Paris"), calendars.get(0).getTimeZone());
+
+    //tries editing a calendar that doesn't exist
+    try {
+      mc.editCalendar("doesn't exist", "timezone", "Europe/Paris");
+    } catch (IllegalArgumentException e) {
+     assertEquals("Calendar doesn't exist not found.", e.getMessage());
+    }
+
+    //tries editing calendar name to existing calendar
+    try {
+      mc.editCalendar("newC1", "name", "c2");
+    } catch (IllegalArgumentException e) {
+      assertEquals("Calendar with name c2 already exists.", e.getMessage());
+    }
+
+    //invalid property
+    try {
+      mc.editCalendar("newC1", "test", "c2");
+    } catch (IllegalArgumentException e) {
+      assertEquals("Invalid property: test", e.getMessage());
+    }
   }
 
   @Test
@@ -79,6 +108,30 @@ public class MultiCalendarTest {
             c2.getCalendar().get(LocalDate.parse("2000-10-10")).get(0).getStart());
     assertEquals(LocalDateTime.parse("2000-10-10T19:00"),
             c2.getCalendar().get(LocalDate.parse("2000-10-10")).get(0).getEnd());
+
+    //tries copying the event again even though the event already exists
+    try {
+      mc.copyEvent("event1", LocalDateTime.parse("2000-10-10T08:00"), "c2",
+              LocalDateTime.parse("2000-10-10T10:00"));
+    } catch (IllegalArgumentException e) {
+      assertEquals("Event already exists", e.getMessage());
+    }
+
+    //tries copying the event to a nonexistent calendar
+    try {
+      mc.copyEvent("event1", LocalDateTime.parse("2000-10-10T08:00"), "c3",
+              LocalDateTime.parse("2000-10-10T10:00"));
+    } catch (IllegalArgumentException e) {
+      assertEquals("No target calendar found", e.getMessage());
+    }
+
+    //tries copying an event that doesn't exist
+    try {
+      mc.copyEvent("test", LocalDateTime.parse("2000-10-10T08:00"), "c3",
+              LocalDateTime.parse("2000-10-10T10:00"));
+    } catch (IllegalArgumentException e) {
+      assertEquals("No event found", e.getMessage());
+    }
   }
 
   @Test

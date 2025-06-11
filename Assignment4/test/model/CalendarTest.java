@@ -226,7 +226,10 @@ public class CalendarTest {
             events.get(5).getStart());
     assertEquals("Third Fri should be two weeks later", LocalDateTime.parse("2026-01-09T08:00"),
             events.get(8).getStart());
+  }
 
+  @Test
+  public void testCreateSeriesTimes2() {
     //Events with an end time
     List<String> repeatedDays2 = new ArrayList<>(Arrays.asList("W", "F"));
     calendar.createSeriesTimes("Series2", LocalDateTime.parse("2025-12-24T05:00"),
@@ -288,7 +291,10 @@ public class CalendarTest {
             events.get(3).getStart());
     assertEquals("Second Fri should be next week", LocalDateTime.parse("2026-01-02T08:00"),
             events.get(5).getStart());
+  }
 
+  @Test
+  public void testCreateSeriesUntil2() {
     //Events with an end time
     List<String> repeatedDays2 = new ArrayList<>(Arrays.asList("W", "F"));
     calendar.createSeriesUntil("Series2", LocalDateTime.parse("2025-12-24T05:00"),

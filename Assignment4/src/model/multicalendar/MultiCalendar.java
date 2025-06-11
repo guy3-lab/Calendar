@@ -67,6 +67,10 @@ public class MultiCalendar implements IMultiCalendar {
     switch (property.toLowerCase()) {
       case "name":
         // check for duplicate name
+        if (found.getName().equals(value)) {
+          break;
+        }
+
         for (SpecificCalendar cal : calendars) {
           if (!cal.equals(found) && cal.getName().equals(value)) {
             throw new IllegalArgumentException("Calendar with name " + value + " already exists.");
@@ -131,7 +135,6 @@ public class MultiCalendar implements IMultiCalendar {
               desc(desc).location(location).status(status).build();
       putIntoSeries(originalSeriesKey, eventInSeries, targetCalendar);
     }
-
     targetCalendar.fullCreate(eventName, targetDate, newEndTime, desc, location, status);
   }
 
@@ -188,6 +191,7 @@ public class MultiCalendar implements IMultiCalendar {
     }
   }
 
+  //checks whether a calendar is chosen or being used
   private void isCalendarChosen() {
     if (current == null) {
       throw new IllegalStateException("Current calendar is not yet chosen");

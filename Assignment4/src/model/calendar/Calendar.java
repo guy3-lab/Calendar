@@ -292,8 +292,17 @@ public class Calendar implements ICalendar {
           this.series.get(key).remove(e);
         }
 
-        //adds into a new series
-        if (!this.series.containsKey(start)) {
+        // Check if target series already exists
+        if (this.series.containsKey(start)) {
+          // Check if any existing event in target series is from a different original series
+          for (Event existingEvent : this.series.get(start)) {
+            if (existingEvent.getSeriesKey() != null && !key.equals(existingEvent.getSeriesKey())) {
+              throw new IllegalArgumentException("Cannot add event from different series. " +
+                      "Target series contains events from series: " + existingEvent.getSeriesKey());
+            }
+          }
+        } else {
+          // Create new series if it doesn't exist
           this.series.put(start, new ArrayList<>());
         }
         this.series.get(start).add(e);

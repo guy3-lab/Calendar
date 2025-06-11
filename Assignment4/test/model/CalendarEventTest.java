@@ -497,7 +497,7 @@ public class CalendarEventTest {
       fail("Should prevent duplicate events in series");
     } catch (IllegalArgumentException e) {
       assertEquals("Should have specific error message",
-              "Event already exists", e.getMessage());
+              "Series already exists at this startTime", e.getMessage());
     }
   }
 

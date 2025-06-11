@@ -47,6 +47,12 @@ public interface IEvent {
   Status getStatus();
 
   /**
+   * Gets the series key.
+   * @return the original series it was in
+   */
+  LocalDateTime getSeriesKey();
+
+  /**
    * sets the status field.
    * @param status the status to be changed
    */
