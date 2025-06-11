@@ -2,12 +2,12 @@ package model.multicalendar;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 import model.calendar.Event;
@@ -71,8 +71,6 @@ public class MultiCalendar implements IMultiCalendar {
     Location location = event.getLocation();
     Status status = event.getStatus();
 
-    int count = 0;
-    ZoneId current = this.current.getTimeZone();
     SpecificCalendar targetCalendar = null;
     for (SpecificCalendar calendar : calendars) {
       if (calendar.getName().equals(calendarName)) {
@@ -88,6 +86,16 @@ public class MultiCalendar implements IMultiCalendar {
     long betweenMinutes = ChronoUnit.MINUTES.between(date.toLocalTime(),
             targetDate.toLocalTime());
     LocalDateTime newEndTime = endTime.plusDays(betweenDays).plusMinutes(betweenMinutes);
+
+    LocalDateTime originalSeriesKey = inSeries(eventName, date);
+    if (originalSeriesKey != null) {
+      if (ChronoUnit.DAYS.between(targetDate.toLocalDate(), endTime.toLocalDate()) >= 0) {
+        throw new IllegalArgumentException("Event spans more than one day");
+      }
+      Event eventInSeries = new Event.EventBuilder(eventName, targetDate).end(newEndTime).
+              desc(desc).location(location).status(status).build();
+      putIntoSeries(originalSeriesKey, eventInSeries, targetCalendar);
+    }
 
     targetCalendar.fullCreate(eventName, targetDate, newEndTime, desc, location, status);
   }
@@ -111,6 +119,37 @@ public class MultiCalendar implements IMultiCalendar {
       throw new IllegalArgumentException("No event found");
     } else {
       return currentEvent;
+    }
+  }
+
+  //checks whether an event is in a series
+  private LocalDateTime inSeries(String eventName, LocalDateTime date) {
+    isCalendarChosen();
+    SpecificCalendar currentCalendar = this.current;
+    for (Map.Entry<LocalDateTime, List<Event>> series : currentCalendar.getSeries().entrySet()) {
+      for (Event event : series.getValue()) {
+        if (event.getSubject().equals(eventName) && event.getStart().equals(date)) {
+          return series.getKey();
+        }
+      }
+    }
+    return null;
+  }
+
+  //Checks if there's a corresponding key to the original key for the series, and if so, add the
+  //event to the existing series for the target calendar. Otherwise, create that new series with
+  //this event startTime as the key.
+  private void putIntoSeries(LocalDateTime originalSeriesKey, Event event,
+                             SpecificCalendar targetCalendar) {
+    if (targetCalendar.getOldToNewSeries().containsKey(originalSeriesKey)) {
+      LocalDateTime newKey = targetCalendar.getOldToNewSeries().get(originalSeriesKey);
+      targetCalendar.getSeries().get(newKey).add(event);
+    } else {
+      targetCalendar.getOldToNewSeries().put(originalSeriesKey, event.getStart());
+
+      List<Event> newSeries = new ArrayList<>();
+      newSeries.add(event);
+      targetCalendar.getSeries().put(event.getStart(), newSeries);
     }
   }
 

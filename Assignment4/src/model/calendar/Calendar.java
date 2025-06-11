@@ -79,6 +79,9 @@ public class Calendar implements ICalendar {
   @Override
   public void createSeriesTimes(String subject, LocalDateTime startTime, LocalDateTime endTime,
                                 List<String> repeatDays, int times) {
+    if (this.series.containsKey(startTime)) {
+      throw new IllegalArgumentException("Series already exists at this startTime");
+    }
     this.series.put(startTime, new ArrayList<Event>());
     LocalDateTime[][] weekdayRanges = createSeriesHelper(repeatDays, startTime, endTime);
 
@@ -99,6 +102,9 @@ public class Calendar implements ICalendar {
   @Override
   public void createSeriesUntil(String subject, LocalDateTime startTime, LocalDateTime endTime,
                                 List<String> repeatDays, LocalDate until) {
+    if (this.series.containsKey(startTime)) {
+      throw new IllegalArgumentException("Series already exists at this startTime");
+    }
     this.series.put(startTime, new ArrayList<Event>());
     LocalDateTime[][] weekdayRanges = createSeriesHelper(repeatDays, startTime, endTime);
 

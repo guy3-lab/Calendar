@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.List;
 
 import model.calendar.SpecificCalendar;
@@ -91,7 +92,11 @@ public class MultiCalendarTest {
     c1.createEvent("event1", LocalDateTime.parse("2000-10-10T10:00"), null);
     c1.createEvent("event2", LocalDateTime.parse("2000-10-10T11:00"), null);
     c1.createEvent("event3", LocalDateTime.parse("2000-10-10T12:00"), null);
-    c1.createEvent("event4", LocalDateTime.parse("2000-10-10T15:00"), null);
+
+    //creates a valid series that can be converted
+    List<String> days = Arrays.asList("T", "W");
+    c1.createSeriesTimes("event4", LocalDateTime.parse("2000-10-10T08:00"),
+            LocalDateTime.parse("2000-10-10T09:00"), days, 2);
 
     //checking if all events made properly
     assertEquals(4 ,c1.getCalendar().get(LocalDate.parse("2000-10-10")).size());
@@ -107,6 +112,10 @@ public class MultiCalendarTest {
     assertEquals(LocalDateTime.parse("2000-10-13T02:00"),
             c2.getCalendar().get(LocalDate.parse("2000-10-12")).get(0).getEnd());
 
+    //checks if the event that's in a series gets added
+    assertTrue(c2.getOldToNewSeries().containsKey(LocalDateTime.parse("2000-10-10T08:00")));
+    assertTrue(c2.getSeries().containsKey(LocalDateTime.parse("2000-10-12T17:00")));
+
     assertEquals(4, c2.getCalendar().get(LocalDate.parse("2000-10-12")).size());
   }
 
@@ -119,8 +128,11 @@ public class MultiCalendarTest {
 
     c1.createEvent("event1", LocalDateTime.parse("2000-10-10T10:00"), null);
     c1.createEvent("event2", LocalDateTime.parse("2000-10-11T11:00"), null);
-    c1.createEvent("event3", LocalDateTime.parse("2000-10-12T12:00"), null);
-    c1.createEvent("event4", LocalDateTime.parse("2000-10-13T15:00"), null);
+
+    //creates a valid series that can be converted
+    List<String> days = Arrays.asList("R", "F");
+    c1.createSeriesTimes("event3", LocalDateTime.parse("2000-10-12T08:00"),
+            LocalDateTime.parse("2000-10-12T09:00"), days, 2);
 
     //checking if all events made properly
     assertTrue(c1.getCalendar().containsKey(LocalDate.parse("2000-10-10")));
@@ -131,7 +143,7 @@ public class MultiCalendarTest {
     mc.useCalendar("c1");
     assertEquals("c1", mc.getCurrent().getName());
 
-    mc.copyEventsInterval(LocalDate.parse("2000-10-11"), LocalDate.parse("2000-10-12"),
+    mc.copyEventsInterval(LocalDate.parse("2000-10-11"), LocalDate.parse("2000-10-13"),
             "c2", LocalDate.parse("2000-10-12"));
     mc.useCalendar("c2");
     assertEquals("c2", mc.getCurrent().getName());
@@ -143,8 +155,18 @@ public class MultiCalendarTest {
 
     assertTrue(c2.getCalendar().containsKey(LocalDate.parse("2000-10-13")));
     assertEquals(LocalDateTime.parse("2000-10-13T17:00"),
-            c2.getCalendar().get(LocalDate.parse("2000-10-13")).get(0).getStart());
-    assertEquals(LocalDateTime.parse("2000-10-14T02:00"),
-            c2.getCalendar().get(LocalDate.parse("2000-10-13")).get(0).getEnd());
+            c2.getCalendar().get(LocalDate.parse("2000-10-13")).get(1).getStart());
+    assertEquals(LocalDateTime.parse("2000-10-13T18:00"),
+            c2.getCalendar().get(LocalDate.parse("2000-10-13")).get(1).getEnd());
+
+    assertTrue(c2.getCalendar().containsKey(LocalDate.parse("2000-10-14")));
+    assertEquals(LocalDateTime.parse("2000-10-14T17:00"),
+            c2.getCalendar().get(LocalDate.parse("2000-10-14")).get(0).getStart());
+    assertEquals(LocalDateTime.parse("2000-10-14T18:00"),
+            c2.getCalendar().get(LocalDate.parse("2000-10-14")).get(0).getEnd());
+
+    //checking if c2 calendar succesfully created series
+    assertTrue(c2.getOldToNewSeries().containsKey(LocalDateTime.parse("2000-10-12T08:00")));
+    assertEquals(2, c2.getSeries().get(LocalDateTime.parse("2000-10-13T17:00")).size());
   }
 }

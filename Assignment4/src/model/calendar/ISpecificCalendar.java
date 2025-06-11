@@ -2,6 +2,7 @@ package model.calendar;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Map;
 
 import model.enums.Location;
 import model.enums.Status;
@@ -34,6 +35,12 @@ public interface ISpecificCalendar {
    * @return the ZoneId of the timezone
    */
   ZoneId getTimeZone();
+
+  /**
+   * Gets the corresponding key of the target calendar to the current calendar's series
+   * @return the corresponding key
+   */
+  Map<LocalDateTime, LocalDateTime> getOldToNewSeries();
 
   /**
    * sets the name field to a new name.
