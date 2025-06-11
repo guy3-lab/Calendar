@@ -3,7 +3,8 @@ package controller.parse;
 import java.time.LocalDateTime;
 
 /**
- * Parser that parses through the commands that edit events.
+ * Takes the user input if it's an edit event command and extracts the necessary information to
+ * pass to the model to edit the event(s).
  */
 public class EditEventParser implements CommandParser {
   @Override
