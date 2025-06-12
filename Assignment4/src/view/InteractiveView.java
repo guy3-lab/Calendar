@@ -5,7 +5,7 @@ import controller.CalendarController;
 
 /**
  * Handles the interactive interface where a user can input commands one by one and get
- * immediate reponses.
+ * immediate responses.
  */
 public class InteractiveView implements IView {
   private final CalendarController controller;
