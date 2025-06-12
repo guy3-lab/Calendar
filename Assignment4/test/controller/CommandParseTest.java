@@ -57,7 +57,7 @@ public class CommandParseTest {
     assertNotNull("Formatter should be initialized", formatter);
 
     // Verify controller components
-    assertEquals("Controller should use provided calendar", calendar, controller.getCalendar());
+    assertEquals("Controller should use provided calendar", calendar, controller.getMultiCalendar());
     assertEquals("Controller should use provided formatter", formatter, controller.getFormatter());
 
     // Set up test dates

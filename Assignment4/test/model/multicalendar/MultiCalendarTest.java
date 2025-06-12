@@ -143,8 +143,8 @@ public class MultiCalendarTest {
 
     assertTrue(c2.getCalendar().containsKey(LocalDate.parse("2000-10-13")));
     assertEquals(LocalDateTime.parse("2000-10-13T17:00"),
-            c2.getCalendar().get(LocalDate.parse("2000-10-13")).get(0).getStart());
+            c2.getCalendar().get(LocalDate.parse("2000-10-13")).get(1).getStart());
     assertEquals(LocalDateTime.parse("2000-10-14T02:00"),
-            c2.getCalendar().get(LocalDate.parse("2000-10-13")).get(0).getEnd());
+            c2.getCalendar().get(LocalDate.parse("2000-10-13")).get(1).getEnd());
   }
 }

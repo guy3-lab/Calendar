@@ -1,5 +1,9 @@
 package controller.parse;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
 /**
  * Contains a mass of values extracted from the parsing that will be passed into the model methods.
  */
@@ -10,32 +14,51 @@ public class ParseResult {
 
   // CREATE event fields
   private final String subject;
-  private final java.time.LocalDateTime startTime;
-  private final java.time.LocalDateTime endTime;
+  private final LocalDateTime startTime;
+  private final LocalDateTime endTime;
   private final RepeatInfo repeatInfo;
 
   // EDIT command fields
   private final PropertyType property;
   private final String eventSubject;
-  private final java.time.LocalDateTime eventStart;
-  private final java.time.LocalDateTime eventEnd;
+  private final LocalDateTime eventStart;
+  private final LocalDateTime eventEnd;
   private final String newValue;
 
   // PRINT command fields
-  private final java.time.LocalDateTime printStartDate;
-  private final java.time.LocalDateTime printEndDate;
+  private final LocalDateTime printStartDate;
+  private final LocalDateTime printEndDate;
 
   // SHOW STATUS command fields
-  private final java.time.LocalDateTime statusDateTime;
+  private final LocalDateTime statusDateTime;
+
+  // CALENDAR command fields
+  private final String calendarName;
+  private final ZoneId timezone;
+  private final String propertyName;
+  private final String propertyValue;
+
+  // COPY command fields
+  private final String targetCalendarName;
+  private final LocalDateTime targetDateTime;
+  private final LocalDate sourceDate;
+  private final LocalDate targetDate;
+  private final LocalDate copyStartDate;
+  private final LocalDate copyEndDate;
 
   private ParseResult(boolean success, CommandType commandType, String errorMessage,
-                      String subject, java.time.LocalDateTime startTime,
-                      java.time.LocalDateTime endTime, RepeatInfo repeatInfo,
+                      String subject, LocalDateTime startTime,
+                      LocalDateTime endTime, RepeatInfo repeatInfo,
                       PropertyType property, String eventSubject,
-                      java.time.LocalDateTime eventStart,
-                      java.time.LocalDateTime eventEnd, String newValue,
-                      java.time.LocalDateTime printStartDate, java.time.LocalDateTime printEndDate,
-                      java.time.LocalDateTime statusDateTime) {
+                      LocalDateTime eventStart,
+                      LocalDateTime eventEnd, String newValue,
+                      LocalDateTime printStartDate, LocalDateTime printEndDate,
+                      LocalDateTime statusDateTime,
+                      String calendarName, ZoneId timezone,
+                      String propertyName, String propertyValue,
+                      String targetCalendarName, LocalDateTime targetDateTime,
+                      LocalDate sourceDate, LocalDate targetDate,
+                      LocalDate copyStartDate, LocalDate copyEndDate) {
     this.success = success;
     this.commandType = commandType;
     this.errorMessage = errorMessage;
@@ -51,6 +74,16 @@ public class ParseResult {
     this.printStartDate = printStartDate;
     this.printEndDate = printEndDate;
     this.statusDateTime = statusDateTime;
+    this.calendarName = calendarName;
+    this.timezone = timezone;
+    this.propertyName = propertyName;
+    this.propertyValue = propertyValue;
+    this.targetCalendarName = targetCalendarName;
+    this.targetDateTime = targetDateTime;
+    this.sourceDate = sourceDate;
+    this.targetDate = targetDate;
+    this.copyStartDate = copyStartDate;
+    this.copyEndDate = copyEndDate;
   }
 
   /**
@@ -61,12 +94,15 @@ public class ParseResult {
    * @param repeatInfo the repeat days
    * @return a new event
    */
-  public static ParseResult createEvent(String subject, java.time.LocalDateTime startTime,
-                                        java.time.LocalDateTime endTime, RepeatInfo repeatInfo) {
+  public static ParseResult createEvent(String subject, LocalDateTime startTime,
+                                        LocalDateTime endTime, RepeatInfo repeatInfo) {
     return new ParseResult(true, CommandType.CREATE_EVENT, null,
             subject, startTime, endTime, repeatInfo,
             null, null, null, null, null,
-            null, null, null);
+            null, null, null,
+            null, null, null, null,
+            null, null, null, null,
+            null, null);
   }
 
   /**
@@ -80,12 +116,15 @@ public class ParseResult {
    * @return an edited event
    */
   public static ParseResult editEvent(CommandType editType, PropertyType property,
-                                      String eventSubject, java.time.LocalDateTime eventStart,
-                                      java.time.LocalDateTime eventEnd, String newValue) {
+                                      String eventSubject, LocalDateTime eventStart,
+                                      LocalDateTime eventEnd, String newValue) {
     return new ParseResult(true, editType, null,
             null, null, null, null,
             property, eventSubject, eventStart, eventEnd, newValue,
-            null, null, null);
+            null, null, null,
+            null, null, null, null,
+            null, null, null, null,
+            null, null);
   }
 
   /**
@@ -94,12 +133,15 @@ public class ParseResult {
    * @param endDate the end date of the event
    * @return the event to be printed
    */
-  public static ParseResult printEventsInterval(java.time.LocalDateTime startDate,
-                                        java.time.LocalDateTime endDate) {
+  public static ParseResult printEventsInterval(LocalDateTime startDate,
+                                                LocalDateTime endDate) {
     return new ParseResult(true, CommandType.PRINT_EVENTS, null,
             null, null, null, null,
             null, null, null, null, null,
-            startDate, endDate, null);
+            startDate, endDate, null,
+            null, null, null, null,
+            null, null, null, null,
+            null, null);
   }
 
   /**
@@ -107,11 +149,14 @@ public class ParseResult {
    * @param startDate the start date of the event
    * @return the event to be printed
    */
-  public static ParseResult printEventsDay(java.time.LocalDate startDate) {
+  public static ParseResult printEventsDay(LocalDate startDate) {
     return new ParseResult(true, CommandType.PRINT_EVENTS, null,
             null, null, null, null,
             null, null, null, null, null,
-            startDate.atStartOfDay(), null, null);
+            startDate.atStartOfDay(), null, null,
+            null, null, null, null,
+            null, null, null, null,
+            null, null);
   }
 
   /**
@@ -119,11 +164,119 @@ public class ParseResult {
    * @param dateTime the day to check
    * @return the status of the date
    */
-  public static ParseResult showStatus(java.time.LocalDateTime dateTime) {
+  public static ParseResult showStatus(LocalDateTime dateTime) {
     return new ParseResult(true, CommandType.SHOW_STATUS, null,
             null, null, null, null,
             null, null, null, null, null,
-            null, null, dateTime);
+            null, null, dateTime,
+            null, null, null, null,
+            null, null, null, null,
+            null, null);
+  }
+
+  /**
+   * Creates a new calendar.
+   * @param calendarName the name of the calendar
+   * @param timezone the timezone of the calendar
+   * @return create calendar command result
+   */
+  public static ParseResult createCalendar(String calendarName, ZoneId timezone) {
+    return new ParseResult(true, CommandType.CREATE_CALENDAR, null,
+            null, null, null, null,
+            null, null, null, null, null,
+            null, null, null,
+            calendarName, timezone, null, null,
+            null, null, null, null,
+            null, null);
+  }
+
+  /**
+   * Edits an existing calendar.
+   * @param calendarName the name of the calendar to edit
+   * @param propertyName the property to change
+   * @param propertyValue the new value
+   * @return edit calendar command result
+   */
+  public static ParseResult editCalendar(String calendarName, String propertyName,
+                                         String propertyValue) {
+    return new ParseResult(true, CommandType.EDIT_CALENDAR, null,
+            null, null, null, null,
+            null, null, null, null, null,
+            null, null, null,
+            calendarName, null, propertyName, propertyValue,
+            null, null, null, null,
+            null, null);
+  }
+
+  /**
+   * Sets the active calendar.
+   * @param calendarName the name of the calendar to use
+   * @return use calendar command result
+   */
+  public static ParseResult useCalendar(String calendarName) {
+    return new ParseResult(true, CommandType.USE_CALENDAR, null,
+            null, null, null, null,
+            null, null, null, null, null,
+            null, null, null,
+            calendarName, null, null, null,
+            null, null, null, null,
+            null, null);
+  }
+
+  /**
+   * Copies a single event.
+   * @param eventName the event name
+   * @param sourceDateTime the source event date/time
+   * @param targetCalendarName the target calendar
+   * @param targetDateTime the target date/time
+   * @return copy event command result
+   */
+  public static ParseResult copySingleEvent(String eventName, LocalDateTime sourceDateTime,
+                                            String targetCalendarName,
+                                            LocalDateTime targetDateTime) {
+    return new ParseResult(true, CommandType.COPY_SINGLE_EVENT, null,
+            eventName, sourceDateTime, null, null,
+            null, null, null, null, null,
+            null, null, null,
+            null, null, null, null,
+            targetCalendarName, targetDateTime, null, null,
+            null, null);
+  }
+
+  /**
+   * Copies all events on a day.
+   * @param sourceDate the source date
+   * @param targetCalendarName the target calendar
+   * @param targetDate the target date
+   * @return copy events command result
+   */
+  public static ParseResult copyEventsOnDay(LocalDate sourceDate, String targetCalendarName,
+                                            LocalDate targetDate) {
+    return new ParseResult(true, CommandType.COPY_EVENTS_ON_DAY, null,
+            null, null, null, null,
+            null, null, null, null, null,
+            null, null, null,
+            null, null, null, null,
+            targetCalendarName, null, sourceDate, targetDate,
+            null, null);
+  }
+
+  /**
+   * Copies events between dates.
+   * @param startDate the start date
+   * @param endDate the end date
+   * @param targetCalendarName the target calendar
+   * @param targetDate the target start date
+   * @return copy events between command result
+   */
+  public static ParseResult copyEventsBetween(LocalDate startDate, LocalDate endDate,
+                                              String targetCalendarName, LocalDate targetDate) {
+    return new ParseResult(true, CommandType.COPY_EVENTS_BETWEEN, null,
+            null, null, null, null,
+            null, null, null, null, null,
+            null, null, null,
+            null, null, null, null,
+            targetCalendarName, null, null, targetDate, startDate, endDate);
   }
 
   /**
@@ -134,7 +287,10 @@ public class ParseResult {
     return new ParseResult(true, CommandType.EXIT, null,
             null, null, null, null,
             null, null, null, null, null,
-            null, null, null);
+            null, null, null,
+            null, null, null, null,
+            null, null, null, null,
+            null, null);
   }
 
   /**
@@ -146,10 +302,13 @@ public class ParseResult {
     return new ParseResult(false, null, errorMessage,
             null, null, null, null,
             null, null, null, null, null,
-            null, null, null);
+            null, null, null,
+            null, null, null, null,
+            null, null, null, null,
+            null, null);
   }
 
-  // getters
+  // Existing getters...
 
   /**
    * returns whether or not it's a success.
@@ -189,16 +348,15 @@ public class ParseResult {
    * Gets the start time of the event to be made.
    * @return the localDateTime of the start time
    */
-  public java.time.LocalDateTime getStartTime() {
+  public LocalDateTime getStartTime() {
     return startTime;
   }
-
 
   /**
    * gets the end time of the event to be made.
    * @return the localDateTime of the end time
    */
-  public java.time.LocalDateTime getEndTime() {
+  public LocalDateTime getEndTime() {
     return endTime;
   }
 
@@ -248,7 +406,7 @@ public class ParseResult {
    * the event's start time.
    * @return the localDateTime of the event
    */
-  public java.time.LocalDateTime getEventStart() {
+  public LocalDateTime getEventStart() {
     return eventStart;
   }
 
@@ -256,7 +414,7 @@ public class ParseResult {
    * the event's end time.
    * @return the localDateTime of the end time
    */
-  public java.time.LocalDateTime getEventEnd() {
+  public LocalDateTime getEventEnd() {
     return eventEnd;
   }
 
@@ -274,7 +432,7 @@ public class ParseResult {
    * The start time of the event that we want to print.
    * @return the start time as a localDate
    */
-  public java.time.LocalDateTime getPrintStartDate() {
+  public LocalDateTime getPrintStartDate() {
     return printStartDate;
   }
 
@@ -282,7 +440,7 @@ public class ParseResult {
    * The end date of the event that we want to print.
    * @return the end time as a localDate
    */
-  public java.time.LocalDateTime getPrintEndDate() {
+  public LocalDateTime getPrintEndDate() {
     return printEndDate;
   }
 
@@ -300,7 +458,91 @@ public class ParseResult {
    * Returns the date time of the day we want to check the status of.
    * @return the localDateTime of the day
    */
-  public java.time.LocalDateTime getStatusDateTime() {
+  public LocalDateTime getStatusDateTime() {
     return statusDateTime;
+  }
+
+  // CALENDAR command getters
+
+  /**
+   * Gets the calendar name.
+   * @return the calendar name
+   */
+  public String getCalendarName() {
+    return calendarName;
+  }
+
+  /**
+   * Gets the timezone.
+   * @return the timezone
+   */
+  public ZoneId getTimezone() {
+    return timezone;
+  }
+
+  /**
+   * Gets the property name for edit calendar.
+   * @return the property name
+   */
+  public String getPropertyName() {
+    return propertyName;
+  }
+
+  /**
+   * Gets the property value for edit calendar.
+   * @return the property value
+   */
+  public String getPropertyValue() {
+    return propertyValue;
+  }
+
+  // COPY command getters
+
+  /**
+   * Gets the target calendar name.
+   * @return the target calendar name
+   */
+  public String getTargetCalendarName() {
+    return targetCalendarName;
+  }
+
+  /**
+   * Gets the target date/time for copy event.
+   * @return the target date/time
+   */
+  public LocalDateTime getTargetDateTime() {
+    return targetDateTime;
+  }
+
+  /**
+   * Gets the source date for copy events.
+   * @return the source date
+   */
+  public LocalDate getSourceDate() {
+    return sourceDate;
+  }
+
+  /**
+   * Gets the target date for copy events.
+   * @return the target date
+   */
+  public LocalDate getTargetDate() {
+    return targetDate;
+  }
+
+  /**
+   * Gets the start date for copy between.
+   * @return the start date
+   */
+  public LocalDate getCopyStartDate() {
+    return copyStartDate;
+  }
+
+  /**
+   * Gets the end date for copy between.
+   * @return the end date
+   */
+  public LocalDate getCopyEndDate() {
+    return copyEndDate;
   }
 }

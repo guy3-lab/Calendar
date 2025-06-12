@@ -18,7 +18,11 @@ public class CommandParserCoordinator {
             new CreateEventParser(),
             new EditEventParser(),
             new PrintEventsParser(),
-            new ShowStatusParser()
+            new ShowStatusParser(),
+            new CreateCalendarParser(),
+            new EditCalendarParser(),
+            new UseCalendarParser(),
+            new CopyEventParser()
     );
   }
 
