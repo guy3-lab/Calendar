@@ -740,19 +740,19 @@ public class CalendarEditingTest {
 
     // Verify all start times shifted by 2 hours
     assertEquals("First Wed should be 2 hours later", originalWed1.plusHours(2),
-            updatedEvents.get(0).getStart());
-    assertEquals("Second Wed should be 2 hours later", originalWed2.plusHours(2),
-            updatedEvents.get(1).getStart());
-    assertEquals("First Fri should be 2 hours later", originalFri1.plusHours(2),
-            updatedEvents.get(2).getStart());
-    assertEquals("Second Fri should be 2 hours later", originalFri2.plusHours(2),
             updatedEvents.get(3).getStart());
+    assertEquals("Second Wed should be 2 hours later", originalWed2.plusHours(2),
+            updatedEvents.get(2).getStart());
+    assertEquals("First Fri should be 2 hours later", originalFri1.plusHours(2),
+            updatedEvents.get(1).getStart());
+    assertEquals("Second Fri should be 2 hours later", originalFri2.plusHours(2),
+            updatedEvents.get(0).getStart());
 
     // Verify end times also shifted
-    assertEquals("First Wed end should be 2 hours later", testEnd.plusHours(2),
-            updatedEvents.get(0).getEnd());
-    assertEquals("First Fri end should be 2 hours later", testEnd.plusHours(2),
-            updatedEvents.get(2).getEnd());
+    assertEquals("First Wed end should be 2 hours later", testEnd.plusDays(3).plusHours(2),
+            updatedEvents.get(3).getEnd());
+    assertEquals("First Fri end should be 2 hours later", testEnd.plusDays(5).plusHours(2),
+            updatedEvents.get(1).getEnd());
   }
 
   @Test

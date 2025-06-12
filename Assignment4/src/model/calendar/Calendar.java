@@ -295,13 +295,13 @@ public class Calendar implements ICalendar {
     long between;
     switch (property) {
       case START:
-        between = ChronoUnit.DAYS.between(base, LocalDateTime.parse(value));
+        between = ChronoUnit.MINUTES.between(base, LocalDateTime.parse(value));
         setStarterEventsHelper(e, value, between, key);
         break;
 
       //checks for exception, and then goes to the helper method to mutate
       case END:
-        between = ChronoUnit.DAYS.between(base, LocalDateTime.parse(value));
+        between = ChronoUnit.MINUTES.between(base, LocalDateTime.parse(value));
         setEndEventsHelper(e, value, between);
         break;
 
@@ -313,7 +313,7 @@ public class Calendar implements ICalendar {
   //sets a series of events to a new start time and putting it into a new series
   private void setStarterEventsHelper(IEvent e, String value, long between, LocalDateTime key) {
     LocalDateTime start = LocalDateTime.parse(value);
-    LocalDateTime newDate = e.getStart().plusDays(between);
+    LocalDateTime newDate = e.getStart().plusMinutes(between);
 
     if (this.series.containsKey(key)) {
       this.series.get(key).remove(e);
@@ -337,18 +337,22 @@ public class Calendar implements ICalendar {
     removeAndAddToCalendar(e.getStart(), e, newDate);
 
     // Update the event times
-    e.setStart(LocalDateTime.of(newDate.toLocalDate(), start.toLocalTime()));
-    e.setEnd(LocalDateTime.of(newDate.toLocalDate(), e.getEnd().toLocalTime()));
+    e.setStart(newDate);
+    if (newDate.isAfter(start) && newDate.toLocalTime().isAfter(e.getEnd().toLocalTime())) {
+      e.setEnd(e.getEnd().plusMinutes(between));
+    } else {
+      e.setEnd(LocalDateTime.of(newDate.toLocalDate(), e.getEnd().toLocalTime()));
+    }
   }
 
   //sets a series of event's end times
   private void setEndEventsHelper(IEvent e, String value, long between) {
-    LocalDateTime end = e.getEnd().plusDays(between);
+    LocalDateTime end = e.getEnd().plusMinutes(between);
     LocalTime endTime = LocalDateTime.parse(value).toLocalTime();
 
     //check exceptions
     checkEndTimeAfterStart(end, e.getStart());
-    checkEventIsOneDay(e.getStart().plusDays(between), end);
+    checkEventIsOneDay(e.getStart().plusMinutes(between), end);
 
     e.setEnd(LocalDateTime.of(e.getEnd().toLocalDate(), endTime));
   }

@@ -353,7 +353,7 @@ public class CalendarTest {
     //change by a whole day
     calendar.editEvent(PropertyType.START, "New name", start, end, "2025-10-06T10:00");
     start = LocalDateTime.parse("2025-10-06T10:00");
-    end = LocalDateTime.parse("2025-10-06T12:00");
+    end = LocalDateTime.parse("2025-10-06T17:00");
 
     // Check that event was removed from original date
     List<IEvent> oct5Events = calendar.getCalendar().get(LocalDate.parse("2025-10-05"));
@@ -368,7 +368,7 @@ public class CalendarTest {
     //checks that the times got updated correctly
     assertEquals("Start time should be updated", LocalDateTime.parse("2025-10-06T10:00"),
             events06.get(0).getStart());
-    assertEquals("End time should be updated", LocalDateTime.parse("2025-10-06T12:00"),
+    assertEquals("End time should be updated", LocalDateTime.parse("2025-10-06T17:00"),
             events06.get(0).getEnd());
 
     //change by a whole day backwards

@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
-import model.calendar.Event;
 import model.calendar.IEvent;
 import model.multicalendar.MultiCalendar;
 import model.multicalendar.IMultiCalendar;

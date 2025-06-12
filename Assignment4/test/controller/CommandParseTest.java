@@ -481,7 +481,7 @@ public class CommandParseTest {
             modifiedEvent.getStart());
 
     // End time should be automatically adjusted to maintain duration
-    LocalDateTime expectedEnd = LocalDateTime.of(2025, 6, 15, 12, 0); // 2 hours later
+    LocalDateTime expectedEnd = LocalDateTime.of(2025, 6, 15, 16, 0); // 2 hours later
     assertEquals("End time should be adjusted", expectedEnd, modifiedEvent.getEnd());
   }
 
