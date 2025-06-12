@@ -8,7 +8,7 @@ import model.enums.Location;
 import model.enums.Status;
 
 /**
- * Interface of a specific calendar and the methods it'll need.
+ * Interface of a calendar that has a name field and timezone field and the methods it'll need.
  */
 public interface ISpecificCalendar extends ICalendar{
 

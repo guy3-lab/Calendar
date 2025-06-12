@@ -18,7 +18,8 @@ import model.enums.Location;
 import model.enums.Status;
 
 /**
- * The class that represents multiple unique calendars.
+ * The class that represents multiple unique calendars and its ability to access each calendar as
+ * well as the events that come with it.
  */
 public class MultiCalendar implements IMultiCalendar {
   private List<ISpecificCalendar> calendars;

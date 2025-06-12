@@ -9,7 +9,7 @@ import java.util.List;
 import model.calendar.ISpecificCalendar;
 
 /**
- * interface that represents a multicalendar and its methods.
+ * interface that represents a multitude of calendars that can be accessed and edited.
  */
 public interface IMultiCalendar {
 
