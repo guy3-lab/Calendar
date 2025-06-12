@@ -15,23 +15,25 @@ import controller.format.OutputFormatter;
 import model.calendar.Calendar;
 import model.calendar.Event;
 import model.calendar.ICalendar;
-import model.calendar.IEvent;
+import model.calendar.SpecificCalendar;
+import model.multicalendar.IMultiCalendar;
+import model.multicalendar.MultiCalendar;
 
 /**
  * Controller that executes parsed commands on the calendar model and formats output.
- * Now uses IOutputFormatter interface for better abstraction and testability.
+ * Now supports multi-calendar functionality.
  */
 public class CalendarController {
-  private final ICalendar calendar;
+  private final IMultiCalendar multiCalendar;
   private final IOutputFormatter formatter;
 
   /**
    * Constructor with dependency injection for better testability.
-   * @param calendar the calendar model to use
+   * @param multiCalendar the multi-calendar model to use
    * @param formatter the output formatter to use
    */
-  public CalendarController(ICalendar calendar, IOutputFormatter formatter) {
-    this.calendar = calendar;
+  public CalendarController(IMultiCalendar multiCalendar, IOutputFormatter formatter) {
+    this.multiCalendar = multiCalendar;
     this.formatter = formatter;
   }
 
@@ -39,7 +41,19 @@ public class CalendarController {
    * Default constructor for convenience - creates default dependencies.
    */
   public CalendarController() {
-    this(new Calendar(), new OutputFormatter());
+    this(new MultiCalendar(), new OutputFormatter());
+  }
+
+  /**
+   * Legacy constructor for backwards compatibility.
+   * @param calendar single calendar (not used in multi-calendar mode)
+   * @param formatter the output formatter to use
+   */
+  public CalendarController(ICalendar calendar, IOutputFormatter formatter) {
+    this(new MultiCalendar(), formatter);
+    // Create a default calendar for backwards compatibility
+    this.multiCalendar.addCalendar("default", java.time.ZoneId.systemDefault());
+    this.multiCalendar.useCalendar("default");
   }
 
   /**
@@ -66,6 +80,18 @@ public class CalendarController {
         return executePrintEvents(parseResult);
       case SHOW_STATUS:
         return executeShowStatus(parseResult);
+      case CREATE_CALENDAR:
+        return executeCreateCalendar(parseResult);
+      case EDIT_CALENDAR:
+        return executeEditCalendar(parseResult);
+      case USE_CALENDAR:
+        return executeUseCalendar(parseResult);
+      case COPY_SINGLE_EVENT:
+        return executeCopySingleEvent(parseResult);
+      case COPY_EVENTS_ON_DAY:
+        return executeCopyEventsOnDay(parseResult);
+      case COPY_EVENTS_BETWEEN:
+        return executeCopyEventsBetween(parseResult);
       case EXIT:
         return null;
       default:
@@ -74,17 +100,180 @@ public class CalendarController {
   }
 
   /**
+   * Executes create calendar command.
+   */
+  private String executeCreateCalendar(ParseResult parseResult) {
+    try {
+      // Check for duplicate calendar names
+      for (SpecificCalendar cal : multiCalendar.getCalendars()) {
+        if (cal.getName().equals(parseResult.getCalendarName())) {
+          throw new IllegalArgumentException("Calendar with name '" +
+                  parseResult.getCalendarName() + "' already exists");
+        }
+      }
+
+      multiCalendar.addCalendar(parseResult.getCalendarName(), parseResult.getTimezone());
+
+      return formatter.formatSuccess("Created calendar: \"" +
+              parseResult.getCalendarName() + "\" with timezone " +
+              parseResult.getTimezone());
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Failed to create calendar: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Executes edit calendar command.
+   */
+  private String executeEditCalendar(ParseResult parseResult) {
+    try {
+      // Check if calendar exists
+      boolean found = false;
+      for (SpecificCalendar cal : multiCalendar.getCalendars()) {
+        if (cal.getName().equals(parseResult.getCalendarName())) {
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
+        throw new IllegalArgumentException("Calendar '" + parseResult.getCalendarName() +
+                "' not found");
+      }
+
+      // Check for duplicate name if editing name
+      if (parseResult.getPropertyName().equals("name")) {
+        for (SpecificCalendar cal : multiCalendar.getCalendars()) {
+          if (!cal.getName().equals(parseResult.getCalendarName()) &&
+                  cal.getName().equals(parseResult.getPropertyValue())) {
+            throw new IllegalArgumentException("Calendar with name '" +
+                    parseResult.getPropertyValue() + "' already exists");
+          }
+        }
+      }
+
+      multiCalendar.editCalendar(parseResult.getCalendarName(),
+              parseResult.getPropertyName(), parseResult.getPropertyValue());
+
+      return formatter.formatSuccess("Updated calendar \"" +
+              parseResult.getCalendarName() + "\" " + parseResult.getPropertyName() +
+              " to: " + parseResult.getPropertyValue());
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Failed to edit calendar: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Executes use calendar command.
+   */
+  private String executeUseCalendar(ParseResult parseResult) {
+    try {
+      // Check if calendar exists
+      boolean found = false;
+      for (SpecificCalendar cal : multiCalendar.getCalendars()) {
+        if (cal.getName().equals(parseResult.getCalendarName())) {
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
+        throw new IllegalArgumentException("Calendar '" + parseResult.getCalendarName() +
+                "' not found");
+      }
+
+      multiCalendar.useCalendar(parseResult.getCalendarName());
+
+      return formatter.formatSuccess("Now using calendar: \"" +
+              parseResult.getCalendarName() + "\"");
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Failed to use calendar: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Executes copy single event command.
+   */
+  private String executeCopySingleEvent(ParseResult parseResult) {
+    try {
+      checkCalendarInUse();
+
+      multiCalendar.copyEvent(parseResult.getSubject(), parseResult.getStartTime(),
+              parseResult.getTargetCalendarName(), parseResult.getTargetDateTime());
+
+      return formatter.formatSuccess("Copied event \"" + parseResult.getSubject() +
+              "\" to calendar \"" + parseResult.getTargetCalendarName() + "\"");
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Failed to copy event: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Executes copy events on day command.
+   */
+  private String executeCopyEventsOnDay(ParseResult parseResult) {
+    try {
+      checkCalendarInUse();
+
+      multiCalendar.copyEvents(parseResult.getSourceDate(),
+              parseResult.getTargetCalendarName(), parseResult.getTargetDate());
+
+      return formatter.formatSuccess("Copied events from " + parseResult.getSourceDate() +
+              " to calendar \"" + parseResult.getTargetCalendarName() + "\"");
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Failed to copy events: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Executes copy events between dates command.
+   */
+  private String executeCopyEventsBetween(ParseResult parseResult) {
+    try {
+      checkCalendarInUse();
+
+      multiCalendar.copyEventsInterval(parseResult.getCopyStartDate(),
+              parseResult.getCopyEndDate(), parseResult.getTargetCalendarName(),
+              parseResult.getTargetDate());
+
+      return formatter.formatSuccess("Copied events from " + parseResult.getCopyStartDate() +
+              " to " + parseResult.getCopyEndDate() +
+              " to calendar \"" + parseResult.getTargetCalendarName() + "\"");
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Failed to copy events: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Checks if a calendar is currently in use.
+   */
+  private void checkCalendarInUse() {
+    if (multiCalendar.getCurrent() == null) {
+      throw new IllegalStateException("No calendar currently in use. Use 'use calendar' command first");
+    }
+  }
+
+  /**
+   * Gets the current calendar, throwing exception if none is set.
+   */
+  private SpecificCalendar getCurrentCalendar() {
+    checkCalendarInUse();
+    return multiCalendar.getCurrent();
+  }
+
+  /**
    * Executes create event commands.
-   * Now uses formatter.formatSuccess() for consistent success message formatting.
    */
   private String executeCreateEvent(ParseResult parseResult) {
     try {
+      SpecificCalendar current = getCurrentCalendar();
+
       if (parseResult.isRepeating()) {
         RepeatInfo repeatInfo = parseResult.getRepeatInfo();
         List<String> repeatDays = parseRepeatDays(repeatInfo.getRepeatDays());
 
         if (repeatInfo.hasTimeLimit()) {
-          calendar.createSeriesTimes(
+          current.createSeriesTimes(
                   parseResult.getSubject(),
                   parseResult.getStartTime(),
                   parseResult.getEndTime(),
@@ -95,7 +284,7 @@ public class CalendarController {
                   + parseResult.getSubject()
                   + "\" (" + repeatInfo.getRepeatTimes() + " occurrences)");
         } else if (repeatInfo.hasDateLimit()) {
-          calendar.createSeriesUntil(
+          current.createSeriesUntil(
                   parseResult.getSubject(),
                   parseResult.getStartTime(),
                   parseResult.getEndTime(),
@@ -106,7 +295,7 @@ public class CalendarController {
                   + parseResult.getSubject() + "\" (until " + repeatInfo.getRepeatUntil() + ")");
         }
       } else {
-        Event event = calendar.createEvent(
+        Event event = current.createEvent(
                 parseResult.getSubject(),
                 parseResult.getStartTime(),
                 parseResult.getEndTime()
@@ -125,15 +314,15 @@ public class CalendarController {
 
   /**
    * Executes edit event commands.
-   * Now uses formatter.formatSuccess() for consistent success message formatting.
    */
   private String executeEditEvent(ParseResult parseResult) {
     try {
+      SpecificCalendar current = getCurrentCalendar();
       CommandType editType = parseResult.getCommandType();
 
       switch (editType) {
         case EDIT_EVENT:
-          calendar.editEvent(
+          current.editEvent(
                   parseResult.getProperty(),
                   parseResult.getEventSubject(),
                   parseResult.getEventStart(),
@@ -144,7 +333,7 @@ public class CalendarController {
                   + parseResult.getEventSubject() + "\"");
 
         case EDIT_EVENTS:
-          calendar.editEvents(
+          current.editEvents(
                   parseResult.getProperty(),
                   parseResult.getEventSubject(),
                   parseResult.getEventStart(),
@@ -154,7 +343,7 @@ public class CalendarController {
                   + parseResult.getEventSubject() + "\"");
 
         case EDIT_SERIES:
-          calendar.editSeries(
+          current.editSeries(
                   parseResult.getProperty(),
                   parseResult.getEventSubject(),
                   parseResult.getEventStart(),
@@ -166,6 +355,9 @@ public class CalendarController {
         default:
           throw new IllegalArgumentException("Unknown edit type: " + editType);
       }
+    } catch (IllegalStateException e) {
+      // Re-throw IllegalStateException as is
+      throw e;
     } catch (Exception e) {
       throw new IllegalArgumentException("Failed to edit event: " + e.getMessage());
     }
@@ -173,18 +365,20 @@ public class CalendarController {
 
   /**
    * Executes print events commands.
-   * Uses the formatter interface to format output.
    */
   private String executePrintEvents(ParseResult parseResult) {
     try {
-      Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
+      SpecificCalendar current = getCurrentCalendar();
 
       if (parseResult.isPrintRange()) {
-        return calendar.printEventsInterval(parseResult.getPrintStartDate(),
+        return current.printEventsInterval(parseResult.getPrintStartDate(),
                 parseResult.getPrintEndDate());
       } else {
-        return calendar.printEvents(parseResult.getPrintStartDate().toLocalDate());
+        return current.printEvents(parseResult.getPrintStartDate().toLocalDate());
       }
+    } catch (IllegalStateException e) {
+      // Re-throw IllegalStateException as is
+      throw e;
     } catch (Exception e) {
       throw new IllegalArgumentException("Failed to print events: " + e.getMessage());
     }
@@ -195,11 +389,15 @@ public class CalendarController {
    */
   private String executeShowStatus(ParseResult parseResult) {
     try {
+      SpecificCalendar current = getCurrentCalendar();
       LocalDateTime queryTime = parseResult.getStatusDateTime();
-      Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();
+      Map<LocalDate, List<Event>> calendarData = current.getCalendar();
 
       boolean isBusy = checkIfBusy(calendarData, queryTime);
       return isBusy ? "busy" : "available";
+    } catch (IllegalStateException e) {
+      // Re-throw IllegalStateException as is
+      throw e;
     } catch (Exception e) {
       throw new IllegalArgumentException("Failed to check status: " + e.getMessage());
     }
@@ -207,39 +405,28 @@ public class CalendarController {
 
   /**
    * Checks if the user is busy at a specific date and time.
-   * A user is considered busy if the query time falls within any event's time range.
-   * <p>
-   * Time range logic: queryTime >= eventStart AND queryTime < eventEnd
-   * - If query time equals event start time: BUSY (event is starting)
-   * - If query time equals event end time: AVAILABLE (event has ended)
-   *</p>
-   * @param calendarData the calendar data to search
-   * @param queryTime the specific moment to check
-   * @return true if busy, false if available
    */
-  private boolean checkIfBusy(Map<LocalDate, List<IEvent>> calendarData, LocalDateTime queryTime) {
+  private boolean checkIfBusy(Map<LocalDate, List<Event>> calendarData, LocalDateTime queryTime) {
     LocalDate queryDate = queryTime.toLocalDate();
 
     if (!calendarData.containsKey(queryDate)) {
       return false;
     }
 
-    List<IEvent> dayEvents = calendarData.get(queryDate);
+    List<Event> dayEvents = calendarData.get(queryDate);
 
-    for (IEvent event : dayEvents) {
-      // check if query time falls within event time range [start, end)
+    for (Event event : dayEvents) {
       if (!queryTime.isBefore(event.getStart()) && queryTime.isBefore(event.getEnd())) {
-        return true; // found overlapping event
+        return true;
       }
 
-      // check multi-day events
       if (event.getStart().toLocalDate().isBefore(queryDate) &&
               event.getEnd().toLocalDate().isAfter(queryDate)) {
         return true;
       }
     }
 
-    return false; // did not find any event(s) overlapping
+    return false;
   }
 
   /**
@@ -250,8 +437,8 @@ public class CalendarController {
   }
 
   // getters for testing
-  public ICalendar getCalendar() {
-    return calendar;
+  public IMultiCalendar getMultiCalendar() {
+    return multiCalendar;
   }
 
   public IOutputFormatter getFormatter() {

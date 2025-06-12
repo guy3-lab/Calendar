@@ -45,7 +45,7 @@ public class MultiCalendar implements IMultiCalendar {
     try {
       ZoneId.of(timezone.getId());
     } catch(Exception e){
-        throw new IllegalArgumentException("Invalid timezone: " + timezone);
+      throw new IllegalArgumentException("Invalid timezone: " + timezone);
     }
 
     SpecificCalendar calendar = new SpecificCalendar(name, timezone);
