@@ -97,11 +97,11 @@ public interface ICalendar {
    * Returns the map of months and corresponding days.
    * @return the map of months and corresponding days
    */
-  Map<LocalDate, List<Event>> getCalendar();
+  Map<LocalDate, List<IEvent>> getCalendar();
 
   /**
    * returns the map of the events that are in series.
    * @return the map of the events that are in series
    */
-  Map<LocalDateTime, List<Event>> getSeries();
+  Map<LocalDateTime, List<IEvent>> getSeries();
 }

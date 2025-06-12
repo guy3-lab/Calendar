@@ -2,6 +2,8 @@ package model.calendar;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.HashMap;
+import java.util.Map;
 
 import model.enums.Location;
 import model.enums.Status;
@@ -12,6 +14,7 @@ import model.enums.Status;
 public class SpecificCalendar extends Calendar implements ISpecificCalendar {
   private String name;
   private ZoneId timeZone;
+  private Map<LocalDateTime, LocalDateTime> oldToNewSeries;
 
   /**
    * Constructor of a specific calendar that takes in a name and timezone.
@@ -22,12 +25,13 @@ public class SpecificCalendar extends Calendar implements ISpecificCalendar {
     super();
     this.name = name;
     this.timeZone = timeZone;
+    this.oldToNewSeries = new HashMap<>();
   }
 
 
   @Override
-  public void fullCreate(String subject, LocalDateTime startDate, LocalDateTime endDate,
-                         String desc, Location location, Status status) {
+  public void fullCreate(String subject, LocalDateTime startDate, LocalDateTime endDate, String desc,
+                         Location location, Status status) {
     Event event = new Event.EventBuilder(subject, startDate).end(endDate).desc(desc).
             location(location).status(status).build();
     addEventHelper(event, startDate);
@@ -41,6 +45,11 @@ public class SpecificCalendar extends Calendar implements ISpecificCalendar {
   @Override
   public ZoneId getTimeZone() {
     return this.timeZone;
+  }
+
+  @Override
+  public Map<LocalDateTime, LocalDateTime> getOldToNewSeries() {
+    return this.oldToNewSeries;
   }
 
   @Override

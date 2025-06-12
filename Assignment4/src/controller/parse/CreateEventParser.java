@@ -5,7 +5,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * The parser that parses through commands that create events.
+ * Takes in user input if it's a create event command and extracts the necessary information to pass
+ * to the model to create the event(s).
  */
 public class CreateEventParser implements CommandParser {
   @Override

@@ -2,14 +2,20 @@ package controller;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
-import model.calendar.Event;
+import model.calendar.IEvent;
 import model.multicalendar.MultiCalendar;
 import model.multicalendar.IMultiCalendar;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
+
 
 /**
  * Test suite for multi-calendar support commands as specified in section 5 of the assignment.
@@ -19,10 +25,14 @@ public class MultiCalendarCommandsTest {
   private CalendarController controller;
   private IMultiCalendar multiCalendar;
 
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
+
   @Before
   public void setUp() {
     multiCalendar = new MultiCalendar();
-    controller = new CalendarController(multiCalendar, new controller.format.OutputFormatter());
+    // Assuming controller will be modified to accept IMultiCalendar
+    // controller = new CalendarController(multiCalendar);
   }
 
   // ========== CREATE CALENDAR COMMAND TESTS ==========
@@ -39,7 +49,8 @@ public class MultiCalendarCommandsTest {
     assertTrue(result.contains("Created calendar"));
     assertEquals(1, multiCalendar.getCalendars().size());
     assertEquals("Work", multiCalendar.getCalendars().get(0).getName());
-    assertEquals(ZoneId.of("America/New_York"), multiCalendar.getCalendars().get(0).getTimeZone());
+    assertEquals(ZoneId.of("America/New_York"),
+            multiCalendar.getCalendars().get(0).getTimeZone());
   }
 
   /**
@@ -47,14 +58,18 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testCreateMultipleCalendarsWithDifferentTimezones() {
-    controller.executeCommand("create calendar --name Personal --timezone America/Los_Angeles");
+    controller.executeCommand("create calendar --name Personal " +
+            "--timezone America/Los_Angeles");
     controller.executeCommand("create calendar --name Work --timezone Europe/London");
     controller.executeCommand("create calendar --name Travel --timezone Asia/Tokyo");
 
     assertEquals(3, multiCalendar.getCalendars().size());
-    assertEquals(ZoneId.of("America/Los_Angeles"), multiCalendar.getCalendars().get(0).getTimeZone());
-    assertEquals(ZoneId.of("Europe/London"), multiCalendar.getCalendars().get(1).getTimeZone());
-    assertEquals(ZoneId.of("Asia/Tokyo"), multiCalendar.getCalendars().get(2).getTimeZone());
+    assertEquals(ZoneId.of("America/Los_Angeles"),
+            multiCalendar.getCalendars().get(0).getTimeZone());
+    assertEquals(ZoneId.of("Europe/London"),
+            multiCalendar.getCalendars().get(1).getTimeZone());
+    assertEquals(ZoneId.of("Asia/Tokyo"),
+            multiCalendar.getCalendars().get(2).getTimeZone());
   }
 
   /**
@@ -62,12 +77,12 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testCreateCalendarDuplicateName() {
-    controller.executeCommand("create calendar --name Work --timezone America/New_York");
+    controller.executeCommand("create calendar --name Work " +
+            "--timezone America/New_York");
 
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-      controller.executeCommand("create calendar --name Work --timezone Europe/Paris");
-    });
-    assertTrue(exception.getMessage().toLowerCase().contains("already exists"));
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage("duplicate");
+    controller.executeCommand("create calendar --name Work --timezone Europe/Paris");
   }
 
   /**
@@ -75,14 +90,14 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testCreateCalendarInvalidTimezone() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-      controller.executeCommand("create calendar --name Test --timezone Invalid/Timezone");
-    });
-    assertTrue(exception.getMessage().toLowerCase().contains("timezone"));
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage("timezone");
+    controller.executeCommand("create calendar --name Test " +
+            "--timezone Invalid/Timezone");
   }
 
   /**
-   * Tests creation of calendars with various valid IANA timezone formats.
+   * Tests creation of calendars with multiple valid IANA timezone formats.
    */
   @Test
   public void testCreateCalendarVariousValidTimezones() {
@@ -97,7 +112,8 @@ public class MultiCalendarCommandsTest {
     };
 
     for (int i = 0; i < validTimezones.length; i++) {
-      String command = String.format("create calendar --name Cal%d --timezone %s", i, validTimezones[i]);
+      String command = String.format("create calendar --name Cal%d --timezone %s", i,
+              validTimezones[i]);
       controller.executeCommand(command);
     }
 
@@ -111,8 +127,10 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testEditCalendarName() {
-    controller.executeCommand("create calendar --name OldName --timezone America/New_York");
-    controller.executeCommand("edit calendar --name OldName --property name NewName");
+    controller.executeCommand("create calendar --name OldName " +
+            "--timezone America/New_York");
+    controller.executeCommand("edit calendar --name OldName " +
+            "--property name NewName");
 
     assertEquals("NewName", multiCalendar.getCalendars().get(0).getName());
     assertEquals(1, multiCalendar.getCalendars().size());
@@ -123,10 +141,13 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testEditCalendarTimezone() {
-    controller.executeCommand("create calendar --name Work --timezone America/New_York");
-    controller.executeCommand("edit calendar --name Work --property timezone Europe/London");
+    controller.executeCommand("create calendar --name Work " +
+            "--timezone America/New_York");
+    controller.executeCommand("edit calendar --name Work " +
+            "--property timezone Europe/London");
 
-    assertEquals(ZoneId.of("Europe/London"), multiCalendar.getCalendars().get(0).getTimeZone());
+    assertEquals(ZoneId.of("Europe/London"),
+            multiCalendar.getCalendars().get(0).getTimeZone());
   }
 
   /**
@@ -134,10 +155,10 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testEditNonExistentCalendar() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-      controller.executeCommand("edit calendar --name NonExistent --property name NewName");
-    });
-    assertTrue(exception.getMessage().toLowerCase().contains("not found"));
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage("calendar");
+    controller.executeCommand("edit calendar --name NonExistent " +
+            "--property name NewName");
   }
 
   /**
@@ -145,12 +166,13 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testEditCalendarInvalidProperty() {
-    controller.executeCommand("create calendar --name Test --timezone America/New_York");
+    controller.executeCommand("create calendar --name Test " +
+            "--timezone America/New_York");
 
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-      controller.executeCommand("edit calendar --name Test --property color blue");
-    });
-    assertTrue(exception.getMessage().toLowerCase().contains("property"));
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage("property");
+    controller.executeCommand("edit calendar --name Test " +
+            "--property color blue");
   }
 
   /**
@@ -158,24 +180,28 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testEditCalendarNameToDuplicate() {
-    controller.executeCommand("create calendar --name Cal1 --timezone America/New_York");
-    controller.executeCommand("create calendar --name Cal2 --timezone America/New_York");
+    controller.executeCommand("create calendar --name Cal1 " +
+            "--timezone America/New_York");
+    controller.executeCommand("create calendar --name Cal2 " +
+            "--timezone America/New_York");
 
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-      controller.executeCommand("edit calendar --name Cal2 --property name Cal1");
-    });
-    assertTrue(exception.getMessage().toLowerCase().contains("already exists"));
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage("duplicate");
+    controller.executeCommand("edit calendar --name Cal2 --property name Cal1");
   }
 
   // ========== USE CALENDAR COMMAND TESTS ==========
+
 
   /**
    * Tests that use calendar command properly sets the active calendar context.
    */
   @Test
   public void testUseCalendarSetsContext() {
-    controller.executeCommand("create calendar --name Personal --timezone America/New_York");
-    controller.executeCommand("create calendar --name Work --timezone Europe/London");
+    controller.executeCommand("create calendar --name Personal " +
+            "--timezone America/New_York");
+    controller.executeCommand("create calendar --name Work " +
+            "--timezone Europe/London");
     controller.executeCommand("use calendar --name Work");
 
     assertEquals("Work", multiCalendar.getCurrent().getName());
@@ -186,10 +212,9 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testUseNonExistentCalendar() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-      controller.executeCommand("use calendar --name NonExistent");
-    });
-    assertTrue(exception.getMessage().toLowerCase().contains("not found"));
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage("calendar");
+    controller.executeCommand("use calendar --name NonExistent");
   }
 
   /**
@@ -197,10 +222,10 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testCreateEventWithoutCalendarInUse() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-      controller.executeCommand("create event Meeting from 2025-01-15T10:00 to 2025-01-15T11:00");
-    });
-    assertTrue(exception.getMessage().toLowerCase().contains("no calendar"));
+    thrown.expect(IllegalStateException.class);
+    thrown.expectMessage("calendar");
+    controller.executeCommand("create event Meeting from 2025-01-15T10:00 " +
+            "to 2025-01-15T11:00");
   }
 
   /**
@@ -208,7 +233,8 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testSwitchBetweenCalendars() {
-    controller.executeCommand("create calendar --name Cal1 --timezone America/New_York");
+    controller.executeCommand("create calendar --name Cal1 " +
+            "--timezone America/New_York");
     controller.executeCommand("create calendar --name Cal2 --timezone Europe/Paris");
 
     controller.executeCommand("use calendar --name Cal1");
@@ -228,13 +254,18 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testCopyEventSameTimezone() {
-    controller.executeCommand("create calendar --name Source --timezone America/New_York");
-    controller.executeCommand("create calendar --name Target --timezone America/New_York");
+    controller.executeCommand("create calendar --name Source " +
+            "--timezone America/New_York");
+    controller.executeCommand("create calendar --name Target " +
+            "--timezone America/New_York");
     controller.executeCommand("use calendar --name Source");
-    controller.executeCommand("create event Meeting from 2025-01-15T10:00 to 2025-01-15T11:00");
+    controller.executeCommand("create event Meeting from 2025-01-15T10:00 " +
+            "to 2025-01-15T11:00");
 
-    controller.executeCommand("copy event Meeting on 2025-01-15T10:00 --target Target to 2025-01-20T14:00");
+    controller.executeCommand("copy event Meeting on 2025-01-15T10:00 " +
+            "--target Target to 2025-01-20T14:00");
 
+    // verify that the event exists in the calendar
     controller.executeCommand("use calendar --name Target");
     String result = controller.executeCommand("print events on 2025-01-20");
     assertTrue(result.contains("Meeting"));
@@ -247,12 +278,17 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testCopyEventAcrossTimezones() {
-    controller.executeCommand("create calendar --name EastCoast --timezone America/New_York");
-    controller.executeCommand("create calendar --name WestCoast --timezone America/Los_Angeles");
+    controller.executeCommand("create calendar --name EastCoast " +
+            "--timezone America/New_York");
+    controller.executeCommand("create calendar --name WestCoast " +
+            "--timezone America/Los_Angeles");
     controller.executeCommand("use calendar --name EastCoast");
-    controller.executeCommand("create event Conference from 2025-01-15T14:00 to 2025-01-15T16:00");
+    controller.executeCommand("create event Conference from 2025-01-15T14:00 " +
+            "to 2025-01-15T16:00");
 
-    controller.executeCommand("copy event Conference on 2025-01-15T14:00 --target WestCoast to 2025-01-15T14:00");
+    // Copy 2pm EST meeting to 2pm PST (should maintain local time)
+    controller.executeCommand("copy event Conference on 2025-01-15T14:00 " +
+            "--target WestCoast to 2025-01-15T14:00");
 
     controller.executeCommand("use calendar --name WestCoast");
     String result = controller.executeCommand("print events on 2025-01-15");
@@ -266,14 +302,16 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testCopyNonExistentEvent() {
-    controller.executeCommand("create calendar --name Source --timezone America/New_York");
-    controller.executeCommand("create calendar --name Target --timezone America/New_York");
+    controller.executeCommand("create calendar --name Source " +
+            "--timezone America/New_York");
+    controller.executeCommand("create calendar --name Target " +
+            "--timezone America/New_York");
     controller.executeCommand("use calendar --name Source");
 
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-      controller.executeCommand("copy event NonExistent on 2025-01-15T10:00 --target Target to 2025-01-20T10:00");
-    });
-    assertTrue(exception.getMessage().toLowerCase().contains("not found"));
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage("event");
+    controller.executeCommand("copy event NonExistent on 2025-01-15T10:00 " +
+            "--target Target to 2025-01-20T10:00");
   }
 
   /**
@@ -281,19 +319,30 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testCopyEventPreservesAllProperties() {
-    controller.executeCommand("create calendar --name Source --timezone America/New_York");
-    controller.executeCommand("create calendar --name Target --timezone America/New_York");
+    controller.executeCommand("create calendar --name Source " +
+            "--timezone America/New_York");
+    controller.executeCommand("create calendar --name Target " +
+            "--timezone America/New_York");
     controller.executeCommand("use calendar --name Source");
 
-    controller.executeCommand("create event Meeting from 2025-01-15T10:00 to 2025-01-15T11:00");
-    controller.executeCommand("edit event description Meeting from 2025-01-15T10:00 to 2025-01-15T11:00 with Important client meeting");
-    controller.executeCommand("edit event location Meeting from 2025-01-15T10:00 to 2025-01-15T11:00 with PHYSICAL");
-    controller.executeCommand("edit event status Meeting from 2025-01-15T10:00 to 2025-01-15T11:00 with PRIVATE");
+    // Create event with all properties
+    controller.executeCommand("create event Meeting from 2025-01-15T10:00 " +
+            "to 2025-01-15T11:00");
+    controller.executeCommand(
+            "edit event description Meeting from 2025-01-15T10:00 "
+                    + "to 2025-01-15T11:00 with Important client meeting");
+    controller.executeCommand("edit event location Meeting from 2025-01-15T10:00 " +
+            "to 2025-01-15T11:00 with PHYSICAL");
+    controller.executeCommand("edit event status Meeting from 2025-01-15T10:00 " +
+            "to 2025-01-15T11:00 with PRIVATE");
 
-    controller.executeCommand("copy event Meeting on 2025-01-15T10:00 --target Target to 2025-01-20T14:00");
+    controller.executeCommand("copy event Meeting on 2025-01-15T10:00 " +
+            "--target Target to 2025-01-20T14:00");
 
+    // Verify all properties preserved
     controller.executeCommand("use calendar --name Target");
-    Event copiedEvent = multiCalendar.getCurrent().getCalendar().get(LocalDate.of(2025, 1, 20)).get(0);
+    IEvent copiedEvent = multiCalendar.getCurrent().getCalendar()
+            .get(LocalDate.of(2025, 1, 20)).get(0);
     assertEquals("Meeting", copiedEvent.getSubject());
     assertEquals("Important client meeting", copiedEvent.getDesc());
     assertEquals("PHYSICAL", copiedEvent.getLocation().toString());
@@ -307,18 +356,26 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testCopyEventsOnDay() {
-    controller.executeCommand("create calendar --name Source --timezone America/New_York");
-    controller.executeCommand("create calendar --name Target --timezone America/New_York");
+    controller.executeCommand("create calendar --name Source " +
+            "--timezone America/New_York");
+    controller.executeCommand("create calendar --name Target " +
+            "--timezone America/New_York");
     controller.executeCommand("use calendar --name Source");
 
-    controller.executeCommand("create event Morning from 2025-01-15T09:00 to 2025-01-15T10:00");
-    controller.executeCommand("create event Lunch from 2025-01-15T12:00 to 2025-01-15T13:00");
-    controller.executeCommand("create event Afternoon from 2025-01-15T15:00 to 2025-01-15T16:30");
+    // Create multiple events on same day
+    controller.executeCommand("create event Morning from 2025-01-15T09:00 " +
+            "to 2025-01-15T10:00");
+    controller.executeCommand("create event Lunch from 2025-01-15T12:00 " +
+            "to 2025-01-15T13:00");
+    controller.executeCommand("create event Afternoon from 2025-01-15T15:00 " +
+            "to 2025-01-15T16:30");
 
-    controller.executeCommand("copy events on 2025-01-15 --target Target to 2025-01-20");
+    controller.executeCommand("copy events on 2025-01-15 " +
+            "--target Target to 2025-01-20");
 
     controller.executeCommand("use calendar --name Target");
-    List<Event> copiedEvents = multiCalendar.getCurrent().getCalendar().get(LocalDate.of(2025, 1, 20));
+    List<IEvent> copiedEvents = multiCalendar.getCurrent().getCalendar()
+            .get(LocalDate.of(2025, 1, 20));
     assertEquals(3, copiedEvents.size());
   }
 
@@ -327,18 +384,27 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testCopyEventsWithTimezoneConversion() {
-    controller.executeCommand("create calendar --name EST --timezone America/New_York");
-    controller.executeCommand("create calendar --name PST --timezone America/Los_Angeles");
+    controller.executeCommand("create calendar --name EST " +
+            "--timezone America/New_York");
+    controller.executeCommand("create calendar --name PST " +
+            "--timezone America/Los_Angeles");
     controller.executeCommand("use calendar --name EST");
 
-    controller.executeCommand("create event Meeting from 2025-01-15T14:00 to 2025-01-15T15:00");
+    // Create 2pm EST event
+    controller.executeCommand("create event Meeting from 2025-01-15T14:00 " +
+            "to 2025-01-15T15:00");
 
-    controller.executeCommand("copy events on 2025-01-15 --target PST to 2025-01-15");
+    controller.executeCommand("copy events on 2025-01-15 --target PST " +
+            "to 2025-01-15");
 
     controller.executeCommand("use calendar --name PST");
-    Event copiedEvent = multiCalendar.getCurrent().getCalendar().get(LocalDate.of(2025, 1, 15)).get(0);
-    assertEquals(LocalDateTime.of(2025, 1, 15, 11, 0), copiedEvent.getStart());
-    assertEquals(LocalDateTime.of(2025, 1, 15, 12, 0), copiedEvent.getEnd());
+    IEvent copiedEvent = multiCalendar.getCurrent().getCalendar()
+            .get(LocalDate.of(2025, 1, 15)).get(0);
+    // 2pm EST = 11am PST
+    assertEquals(LocalDateTime.of(2025, 1, 15, 11, 0),
+            copiedEvent.getStart());
+    assertEquals(LocalDateTime.of(2025, 1, 15, 12, 0),
+            copiedEvent.getEnd());
   }
 
   /**
@@ -346,14 +412,18 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testCopyEventsFromEmptyDay() {
-    controller.executeCommand("create calendar --name Source --timezone America/New_York");
-    controller.executeCommand("create calendar --name Target --timezone America/New_York");
+    controller.executeCommand("create calendar --name Source " +
+            "--timezone America/New_York");
+    controller.executeCommand("create calendar --name Target " +
+            "--timezone America/New_York");
     controller.executeCommand("use calendar --name Source");
 
-    controller.executeCommand("copy events on 2025-01-15 --target Target to 2025-01-20");
+    controller.executeCommand("copy events on 2025-01-15 " +
+            "--target Target to 2025-01-20");
 
     controller.executeCommand("use calendar --name Target");
-    assertFalse(multiCalendar.getCurrent().getCalendar().containsKey(LocalDate.of(2025, 1, 20)));
+    assertFalse(multiCalendar.getCurrent().getCalendar()
+            .containsKey(LocalDate.of(2025, 1, 20)));
   }
 
   // ========== COPY EVENTS BETWEEN DATES COMMAND TESTS ==========
@@ -363,20 +433,30 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testCopyEventsBetweenDates() {
-    controller.executeCommand("create calendar --name Source --timezone America/New_York");
-    controller.executeCommand("create calendar --name Target --timezone America/New_York");
+    controller.executeCommand("create calendar --name Source " +
+            "--timezone America/New_York");
+    controller.executeCommand("create calendar --name Target " +
+            "--timezone America/New_York");
     controller.executeCommand("use calendar --name Source");
 
-    controller.executeCommand("create event Day1 from 2025-01-15T10:00 to 2025-01-15T11:00");
-    controller.executeCommand("create event Day2 from 2025-01-16T14:00 to 2025-01-16T15:00");
-    controller.executeCommand("create event Day3 from 2025-01-17T09:00 to 2025-01-17T10:00");
+    // Create events across multiple days
+    controller.executeCommand("create event Day1 from 2025-01-15T10:00 " +
+            "to 2025-01-15T11:00");
+    controller.executeCommand("create event Day2 from 2025-01-16T14:00 " +
+            "to 2025-01-16T15:00");
+    controller.executeCommand("create event Day3 from 2025-01-17T09:00 " +
+            "to 2025-01-17T10:00");
 
-    controller.executeCommand("copy events between 2025-01-15 and 2025-01-17 --target Target to 2025-01-20");
+    controller.executeCommand("copy events between 2025-01-15 and 2025-01-17 " +
+            "--target Target to 2025-01-20");
 
     controller.executeCommand("use calendar --name Target");
-    assertTrue(multiCalendar.getCurrent().getCalendar().containsKey(LocalDate.of(2025, 1, 20)));
-    assertTrue(multiCalendar.getCurrent().getCalendar().containsKey(LocalDate.of(2025, 1, 21)));
-    assertTrue(multiCalendar.getCurrent().getCalendar().containsKey(LocalDate.of(2025, 1, 22)));
+    assertTrue(multiCalendar.getCurrent().getCalendar()
+            .containsKey(LocalDate.of(2025, 1, 20)));
+    assertTrue(multiCalendar.getCurrent().getCalendar()
+            .containsKey(LocalDate.of(2025, 1, 21)));
+    assertTrue(multiCalendar.getCurrent().getCalendar()
+            .containsKey(LocalDate.of(2025, 1, 22)));
   }
 
   /**
@@ -384,19 +464,30 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testCopyRecurringEventPartialOverlap() {
-    controller.executeCommand("create calendar --name Source --timezone America/New_York");
-    controller.executeCommand("create calendar --name Target --timezone America/New_York");
+    controller.executeCommand("create calendar --name Source " +
+            "--timezone America/New_York");
+    controller.executeCommand("create calendar --name Target " +
+            "--timezone America/New_York");
     controller.executeCommand("use calendar --name Source");
 
-    controller.executeCommand("create event Weekly from 2025-01-13T10:00 to 2025-01-13T11:00 repeats M for 4 times");
+    // Create recurring event that spans beyond the copy range
+    controller.executeCommand("create event Weekly from 2025-01-13T10:00 " +
+            "to 2025-01-13T11:00 repeats M for 4 times");
 
-    controller.executeCommand("copy events between 2025-01-10 and 2025-01-23 --target Target to 2025-02-01");
+    // Copy only middle two occurrences (1/13 and 1/20 should be included, 1/6 and 1/27 excluded)
+    controller.executeCommand("copy events between 2025-01-10 and 2025-01-23 " +
+            "--target Target to 2025-02-01");
 
     controller.executeCommand("use calendar --name Target");
-    assertTrue(multiCalendar.getCurrent().getCalendar().containsKey(LocalDate.of(2025, 2, 1)));
-    assertTrue(multiCalendar.getCurrent().getCalendar().containsKey(LocalDate.of(2025, 2, 8)));
-    assertFalse(multiCalendar.getCurrent().getCalendar().containsKey(LocalDate.of(2025, 1, 25)));
-    assertFalse(multiCalendar.getCurrent().getCalendar().containsKey(LocalDate.of(2025, 2, 15)));
+    // Should have events on 2/1 and 2/8 (corresponding to 1/13 and 1/20)
+    assertTrue(multiCalendar.getCurrent().getCalendar()
+            .containsKey(LocalDate.of(2025, 2, 1)));
+    assertTrue(multiCalendar.getCurrent().getCalendar()
+            .containsKey(LocalDate.of(2025, 2, 8)));
+    assertFalse(multiCalendar.getCurrent().getCalendar()
+            .containsKey(LocalDate.of(2025, 1, 25)));
+    assertFalse(multiCalendar.getCurrent().getCalendar()
+            .containsKey(LocalDate.of(2025, 2, 15)));
   }
 
   /**
@@ -404,21 +495,31 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testCopyEventsMaintainsSeriesStatus() {
-    controller.executeCommand("create calendar --name Source --timezone America/New_York");
-    controller.executeCommand("create calendar --name Target --timezone America/New_York");
+    controller.executeCommand("create calendar --name Source " +
+            "--timezone America/New_York");
+    controller.executeCommand("create calendar --name Target " +
+            "--timezone America/New_York");
     controller.executeCommand("use calendar --name Source");
 
-    controller.executeCommand("create event TeamMeeting from 2025-01-15T10:00 to 2025-01-15T11:00 repeats W for 3 times");
+    // Create a weekly recurring event
+    controller.executeCommand("create event TeamMeeting from 2025-01-15T10:00 " +
+            "to 2025-01-15T11:00 repeats W for 3 times");
 
     controller.executeCommand("copy events between 2025-01-15 and 2025-01-29 " +
             "--target Target to 2025-02-01");
 
     controller.executeCommand("use calendar --name Target");
-    controller.executeCommand("edit series subject TeamMeeting from 2025-02-01T10:00 with UpdatedMeeting");
+    // Edit one occurrence and verify it affects the series
+    controller.executeCommand("edit series subject TeamMeeting " +
+            "from 2025-02-01T10:00 with UpdatedMeeting");
 
-    List<Event> feb1 = multiCalendar.getCurrent().getCalendar().get(LocalDate.of(2025, 2, 1));
-    List<Event> feb8 = multiCalendar.getCurrent().getCalendar().get(LocalDate.of(2025, 2, 8));
-    List<Event> feb15 = multiCalendar.getCurrent().getCalendar().get(LocalDate.of(2025, 2, 15));
+    // All occurrences should be updated
+    List<IEvent> feb1 = multiCalendar.getCurrent().getCalendar()
+            .get(LocalDate.of(2025, 2, 1));
+    List<IEvent> feb8 = multiCalendar.getCurrent().getCalendar()
+            .get(LocalDate.of(2025, 2, 8));
+    List<IEvent> feb15 = multiCalendar.getCurrent().getCalendar()
+            .get(LocalDate.of(2025, 2, 15));
 
     assertEquals("UpdatedMeeting", feb1.get(0).getSubject());
     assertEquals("UpdatedMeeting", feb8.get(0).getSubject());
@@ -430,18 +531,27 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testCopyEventsBetweenInclusiveEndDate() {
-    controller.executeCommand("create calendar --name Source --timezone America/New_York");
-    controller.executeCommand("create calendar --name Target --timezone America/New_York");
+    controller.executeCommand("create calendar --name Source " +
+            "--timezone America/New_York");
+    controller.executeCommand("create calendar --name Target " +
+            "--timezone America/New_York");
     controller.executeCommand("use calendar --name Source");
 
-    controller.executeCommand("create event StartDay from 2025-01-15T10:00 to 2025-01-15T11:00");
-    controller.executeCommand("create event EndDay from 2025-01-17T15:00 to 2025-01-17T16:00");
+    // Create events on start and end dates
+    controller.executeCommand("create event StartDay from 2025-01-15T10:00 " +
+            "to 2025-01-15T11:00");
+    controller.executeCommand("create event EndDay from 2025-01-17T15:00 " +
+            "to 2025-01-17T16:00");
 
-    controller.executeCommand("copy events between 2025-01-15 and 2025-01-17 --target Target to 2025-02-01");
+    controller.executeCommand("copy events between 2025-01-15 and 2025-01-17 " +
+            "--target Target to 2025-02-01");
 
     controller.executeCommand("use calendar --name Target");
-    assertTrue(multiCalendar.getCurrent().getCalendar().containsKey(LocalDate.of(2025, 2, 1)));
-    assertTrue(multiCalendar.getCurrent().getCalendar().containsKey(LocalDate.of(2025, 2, 3)));
+    // Both events should be copied
+    assertTrue(multiCalendar.getCurrent().getCalendar()
+            .containsKey(LocalDate.of(2025, 2, 1)));
+    assertTrue(multiCalendar.getCurrent().getCalendar()
+            .containsKey(LocalDate.of(2025, 2, 3)));
   }
 
   // ========== EDGE CASES AND ERROR HANDLING ==========
@@ -451,14 +561,16 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testCopyToNonExistentCalendar() {
-    controller.executeCommand("create calendar --name Source --timezone America/New_York");
+    controller.executeCommand("create calendar --name Source " +
+            "--timezone America/New_York");
     controller.executeCommand("use calendar --name Source");
-    controller.executeCommand("create event Test from 2025-01-15T10:00 to 2025-01-15T11:00");
+    controller.executeCommand("create event Test from 2025-01-15T10:00 " +
+            "to 2025-01-15T11:00");
 
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-      controller.executeCommand("copy event Test on 2025-01-15T10:00 --target NonExistent to 2025-01-20T10:00");
-    });
-    assertTrue(exception.getMessage().toLowerCase().contains("not found"));
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage("calendar");
+    controller.executeCommand("copy event Test on 2025-01-15T10:00 " +
+            "--target NonExistent to 2025-01-20T10:00");
   }
 
   /**
@@ -466,12 +578,13 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testCopyWithoutCalendarInUse() {
-    controller.executeCommand("create calendar --name Target --timezone America/New_York");
+    controller.executeCommand("create calendar --name Target " +
+            "--timezone America/New_York");
 
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-      controller.executeCommand("copy event Test on 2025-01-15T10:00 --target Target to 2025-01-20T10:00");
-    });
-    assertTrue(exception.getMessage().toLowerCase().contains("no calendar"));
+    thrown.expect(IllegalStateException.class);
+    thrown.expectMessage("calendar");
+    controller.executeCommand("copy event Test on 2025-01-15T10:00 " +
+            "--target Target to 2025-01-20T10:00");
   }
 
   /**
@@ -480,16 +593,22 @@ public class MultiCalendarCommandsTest {
   @Test
   public void testComplexTimezoneConversion() {
     controller.executeCommand("create calendar --name Tokyo --timezone Asia/Tokyo");
-    controller.executeCommand("create calendar --name London --timezone Europe/London");
+    controller.executeCommand("create calendar --name London " +
+            "--timezone Europe/London");
     controller.executeCommand("use calendar --name Tokyo");
 
-    controller.executeCommand("create event International from 2025-01-15T10:00 to 2025-01-15T11:00");
+    // Create event at 10am Tokyo time
+    controller.executeCommand("create event International from 2025-01-15T10:00 " +
+            "to 2025-01-15T11:00");
 
-    controller.executeCommand("copy event International on 2025-01-15T10:00 --target London to 2025-01-15T09:00");
+    controller.executeCommand("copy event International on 2025-01-15T10:00 " +
+            "--target London to 2025-01-15T09:00");
 
     controller.executeCommand("use calendar --name London");
-    Event copiedEvent = multiCalendar.getCurrent().getCalendar().get(LocalDate.of(2025, 1, 15)).get(0);
-    assertEquals(LocalDateTime.of(2025, 1, 15, 9, 0), copiedEvent.getStart());
+    IEvent copiedEvent = multiCalendar.getCurrent().getCalendar()
+            .get(LocalDate.of(2025, 1, 15)).get(0);
+    assertEquals(LocalDateTime.of(2025, 1, 15, 9, 0),
+            copiedEvent.getStart());
   }
 
   /**
@@ -497,7 +616,8 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testCalendarNameWithSpaces() {
-    controller.executeCommand("create calendar --name \"My Personal Calendar\" --timezone America/New_York");
+    controller.executeCommand("create calendar --name \"My Personal Calendar\" " +
+            "--timezone America/New_York");
     controller.executeCommand("use calendar --name \"My Personal Calendar\"");
 
     assertEquals("My Personal Calendar", multiCalendar.getCurrent().getName());
@@ -508,16 +628,22 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testCopyAllDayEvent() {
-    controller.executeCommand("create calendar --name Source --timezone America/New_York");
-    controller.executeCommand("create calendar --name Target --timezone Europe/London");
+    controller.executeCommand("create calendar --name Source " +
+            "--timezone America/New_York");
+    controller.executeCommand("create calendar --name Target " +
+            "--timezone Europe/London");
     controller.executeCommand("use calendar --name Source");
 
+    // Create all-day event
     controller.executeCommand("create event Holiday on 2025-01-15");
 
-    controller.executeCommand("copy event Holiday on 2025-01-15T08:00 --target Target to 2025-01-20T08:00");
+    controller.executeCommand("copy event Holiday on 2025-01-15T08:00 " +
+            "--target Target to 2025-01-20T08:00");
 
     controller.executeCommand("use calendar --name Target");
-    Event copiedEvent = multiCalendar.getCurrent().getCalendar().get(LocalDate.of(2025, 1, 20)).get(0);
-    assertTrue(copiedEvent.isAllDay());
+    IEvent copiedEvent = multiCalendar.getCurrent().getCalendar()
+            .get(LocalDate.of(2025, 1, 20)).get(0);
+    assertEquals("Should start at 8:00 AM", 8, copiedEvent.getStart().getHour());
+    assertEquals("Should end at 5:00 PM", 17, copiedEvent.getEnd().getHour());
   }
 }

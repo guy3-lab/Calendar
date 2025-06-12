@@ -19,6 +19,7 @@ import java.util.Map;
 
 import model.calendar.Calendar;
 import model.calendar.Event;
+import model.calendar.IEvent;
 
 
 /**
@@ -46,18 +47,17 @@ public class CalendarEventTest {
 
   @Test
   public void testCreateBasicTimedEvent() {
-    Event event = calendar.createEvent("Team Meeting", testStart, testEnd);
+    IEvent event = calendar.createEvent("Team Meeting", testStart, testEnd);
 
     // Verify event properties
     assertNotNull("Event should be created", event);
     assertEquals("Subject should match", "Team Meeting", event.getSubject());
     assertEquals("Start time should match", testStart, event.getStart());
     assertEquals("End time should match", testEnd, event.getEnd());
-    assertFalse("Should not be all-day event", event.isAllDay());
 
     // Verify event is in calendar
     assertTrue("Calendar should contain the date", calendar.getCalendar().containsKey(testDate));
-    List<Event> dayEvents = calendar.getCalendar().get(testDate);
+    List<IEvent> dayEvents = calendar.getCalendar().get(testDate);
     assertNotNull("Day events list should not be null", dayEvents);
     assertEquals("Should have exactly one event", 1, dayEvents.size());
     assertSame("Should be the same event object", event, dayEvents.get(0));
@@ -65,12 +65,11 @@ public class CalendarEventTest {
 
   @Test
   public void testCreateAllDayEvent() {
-    Event event = calendar.createEvent("Conference", allDayStart, null);
+    IEvent event = calendar.createEvent("Conference", allDayStart, null);
 
     // Verify all-day characteristics
     assertNotNull("Event should be created", event);
     assertEquals("Subject should match", "Conference", event.getSubject());
-    assertTrue("Should be all-day event", event.isAllDay());
     assertEquals("Should start at 8:00 AM", 8, event.getStart().getHour());
     assertEquals("Should end at 5:00 PM", 17, event.getEnd().getHour());
     assertEquals("Should be on correct date", testDate, event.getStart().toLocalDate());
@@ -113,7 +112,7 @@ public class CalendarEventTest {
   @Test
   public void testCreateMultiDayEvent() {
     LocalDateTime multiDayEnd = testStart.plusDays(2).plusHours(3);
-    Event event = calendar.createEvent("Multi-day Conference", testStart, multiDayEnd);
+    IEvent event = calendar.createEvent("Multi-day Conference", testStart, multiDayEnd);
 
     // Verify event properties
     assertEquals("Start should be preserved", testStart, event.getStart());
@@ -131,9 +130,9 @@ public class CalendarEventTest {
     assertTrue("Should appear on day 3", calendar.getCalendar().containsKey(day3));
 
     // Verify same event object on all days
-    Event day1Event = calendar.getCalendar().get(day1).get(0);
-    Event day2Event = calendar.getCalendar().get(day2).get(0);
-    Event day3Event = calendar.getCalendar().get(day3).get(0);
+    IEvent day1Event = calendar.getCalendar().get(day1).get(0);
+    IEvent day2Event = calendar.getCalendar().get(day2).get(0);
+    IEvent day3Event = calendar.getCalendar().get(day3).get(0);
 
     assertSame("Should be same object on day 1", event, day1Event);
     assertSame("Should be same object on day 2", event, day2Event);
@@ -142,10 +141,10 @@ public class CalendarEventTest {
 
   @Test
   public void testCreateMultipleEventsOnSameDay() {
-    Event event1 = calendar.createEvent("Morning Meeting", testStart, testEnd);
-    Event event2 = calendar.createEvent("Afternoon Meeting",
+    IEvent event1 = calendar.createEvent("Morning Meeting", testStart, testEnd);
+    IEvent event2 = calendar.createEvent("Afternoon Meeting",
             testStart.plusHours(4), testEnd.plusHours(4));
-    Event event3 = calendar.createEvent("Evening Meeting",
+    IEvent event3 = calendar.createEvent("Evening Meeting",
             testStart.plusHours(8), testEnd.plusHours(8));
 
     // Verify all events exist
@@ -155,7 +154,7 @@ public class CalendarEventTest {
 
     // Verify all are in calendar on same day
     assertTrue("Calendar should contain the date", calendar.getCalendar().containsKey(testDate));
-    List<Event> dayEvents = calendar.getCalendar().get(testDate);
+    List<IEvent> dayEvents = calendar.getCalendar().get(testDate);
     assertEquals("Should have 3 events", 3, dayEvents.size());
 
     // Verify all events are present
@@ -186,7 +185,7 @@ public class CalendarEventTest {
   @Test
   public void testPreventDuplicateSingleDayEvent() {
     // Create first event
-    Event event1 = calendar.createEvent("Meeting", testStart, testEnd);
+    IEvent event1 = calendar.createEvent("Meeting", testStart, testEnd);
     assertNotNull("First event should be created", event1);
 
     // Try to create identical event
@@ -208,7 +207,7 @@ public class CalendarEventTest {
     LocalDateTime multiDayEnd = testStart.plusDays(1);
 
     // Create first multi-day event
-    Event event1 = calendar.createEvent("Conference", testStart, multiDayEnd);
+    IEvent event1 = calendar.createEvent("Conference", testStart, multiDayEnd);
     assertNotNull("First event should be created", event1);
 
     // Try to create identical multi-day event
@@ -230,22 +229,22 @@ public class CalendarEventTest {
   @Test
   public void testAllowSimilarEventsWithDifferentProperties() {
     // Create original event
-    Event event1 = calendar.createEvent("Meeting", testStart, testEnd);
+    IEvent event1 = calendar.createEvent("Meeting", testStart, testEnd);
 
     // Different subject - should be allowed
-    Event event2 = calendar.createEvent("Different Meeting", testStart, testEnd);
+    IEvent event2 = calendar.createEvent("Different Meeting", testStart, testEnd);
     assertNotNull("Event with different subject should be allowed", event2);
 
     // Different start time - should be allowed
-    Event event3 = calendar.createEvent("Meeting", testStart.plusHours(1), testEnd.plusHours(1));
+    IEvent event3 = calendar.createEvent("Meeting", testStart.plusHours(1), testEnd.plusHours(1));
     assertNotNull("Event with different start time should be allowed", event3);
 
     // Different end time - should be allowed
-    Event event4 = calendar.createEvent("Meeting", testStart, testEnd.plusHours(1));
+    IEvent event4 = calendar.createEvent("Meeting", testStart, testEnd.plusHours(1));
     assertNotNull("Event with different end time should be allowed", event4);
 
     // Verify all events exist
-    List<Event> dayEvents = calendar.getCalendar().get(testDate);
+    List<IEvent> dayEvents = calendar.getCalendar().get(testDate);
     assertEquals("Should have 4 different events", 4, dayEvents.size());
   }
 
@@ -269,12 +268,12 @@ public class CalendarEventTest {
   @Test
   public void testAllowOverlappingEventsWithDifferentProperties() {
     // Create first event
-    Event event1 = calendar.createEvent("Meeting 1", testStart, testEnd);
+    IEvent event1 = calendar.createEvent("Meeting 1", testStart, testEnd);
 
     // Create overlapping event with different subject
     LocalDateTime overlappingStart = testStart.plusMinutes(30);
     LocalDateTime overlappingEnd = testEnd.plusMinutes(30);
-    Event event2 = calendar.createEvent("Meeting 2", overlappingStart, overlappingEnd);
+    IEvent event2 = calendar.createEvent("Meeting 2", overlappingStart, overlappingEnd);
 
     assertNotNull("Overlapping event should be allowed", event2);
     assertEquals("Should have 2 events on the day",
@@ -290,12 +289,12 @@ public class CalendarEventTest {
 
     // Verify series is tracked
     assertTrue("Series should be tracked", calendar.getSeries().containsKey(testStart));
-    List<Event> seriesEvents = calendar.getSeries().get(testStart);
+    List<IEvent> seriesEvents = calendar.getSeries().get(testStart);
     assertNotNull("Series events should not be null", seriesEvents);
     assertEquals("Should create 9 events (3 days × 3 times)", 9, seriesEvents.size());
 
     // Verify events have correct subjects
-    for (Event event : seriesEvents) {
+    for (IEvent event : seriesEvents) {
       assertEquals("All events should have same subject", "Weekly Meeting", event.getSubject());
     }
 
@@ -313,12 +312,12 @@ public class CalendarEventTest {
     // Test with specific occurrences
     calendar.createSeriesTimes("Daily Standup", testStart, testEnd, repeatDays, 4);
 
-    List<Event> seriesEvents = calendar.getSeries().get(testStart);
+    List<IEvent> seriesEvents = calendar.getSeries().get(testStart);
     assertEquals("Should create 8 events (2 days × 4 times)", 8, seriesEvents.size());
 
     // Verify events are spaced correctly (weekly)
-    Event firstMonday = seriesEvents.get(0);
-    Event secondMonday = seriesEvents.get(1);
+    IEvent firstMonday = seriesEvents.get(0);
+    IEvent secondMonday = seriesEvents.get(1);
 
     long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(
             firstMonday.getStart().toLocalDate(),
@@ -335,11 +334,11 @@ public class CalendarEventTest {
 
     // Verify series exists
     assertTrue("Series should be tracked", calendar.getSeries().containsKey(testStart));
-    List<Event> seriesEvents = calendar.getSeries().get(testStart);
+    List<IEvent> seriesEvents = calendar.getSeries().get(testStart);
     assertNotNull("Series events should not be null", seriesEvents);
 
     // Verify no events after until date
-    for (Event event : seriesEvents) {
+    for (IEvent event : seriesEvents) {
       assertFalse("No event should be after until date",
               event.getStart().toLocalDate().isAfter(until));
     }
@@ -371,12 +370,11 @@ public class CalendarEventTest {
     List<String> repeatDays = List.of("F");
     calendar.createSeriesTimes("Friday Off", allDayStart, null, repeatDays, 3);
 
-    List<Event> seriesEvents = calendar.getSeries().get(allDayStart);
+    List<IEvent> seriesEvents = calendar.getSeries().get(allDayStart);
     assertEquals("Should create 3 all-day events", 3, seriesEvents.size());
 
     // Verify all events are all-day
-    for (Event event : seriesEvents) {
-      assertTrue("Each event should be all-day", event.isAllDay());
+    for (IEvent event : seriesEvents) {
       assertEquals("Should start at 8:00 AM", 8, event.getStart().getHour());
       assertEquals("Should end at 5:00 PM", 17, event.getEnd().getHour());
     }
@@ -389,11 +387,12 @@ public class CalendarEventTest {
 
     calendar.createSeriesUntil("Weekend Events", allDayStart, null, repeatDays, until);
 
-    List<Event> seriesEvents = calendar.getSeries().get(allDayStart);
+    List<IEvent> seriesEvents = calendar.getSeries().get(allDayStart);
     assertTrue("Should create multiple weekend events", seriesEvents.size() >= 2);
 
-    for (Event event : seriesEvents) {
-      assertTrue("Each event should be all-day", event.isAllDay());
+    for (IEvent event : seriesEvents) {
+      assertEquals("Should start at 8:00 AM", 8, event.getStart().getHour());
+      assertEquals("Should end at 5:00 PM", 17, event.getEnd().getHour());
     }
   }
 
@@ -402,13 +401,13 @@ public class CalendarEventTest {
     List<String> repeatDays = Arrays.asList("M", "T", "W", "R", "F");
     calendar.createSeriesTimes("Daily Meeting", testStart, testEnd, repeatDays, 2);
 
-    List<Event> seriesEvents = calendar.getSeries().get(testStart);
+    List<IEvent> seriesEvents = calendar.getSeries().get(testStart);
 
     // Verify all events have same time of day
     int expectedHour = testStart.getHour();
     int expectedMinute = testStart.getMinute();
 
-    for (Event event : seriesEvents) {
+    for (IEvent event : seriesEvents) {
       assertEquals("All events should have same start hour",
               expectedHour, event.getStart().getHour());
       assertEquals("All events should have same start minute",
@@ -426,11 +425,11 @@ public class CalendarEventTest {
     List<String> repeatDays = Arrays.asList("M", "W", "F");
     calendar.createSeriesTimes("MWF Meeting", testStart, testEnd, repeatDays, 2);
 
-    List<Event> seriesEvents = calendar.getSeries().get(testStart);
+    List<IEvent> seriesEvents = calendar.getSeries().get(testStart);
     assertEquals("Should have 6 events (3 days × 2 weeks)", 6, seriesEvents.size());
 
     // Verify days of week
-    for (Event event : seriesEvents) {
+    for (IEvent event : seriesEvents) {
       int dayOfWeek = event.getStart().getDayOfWeek().getValue();
       assertTrue("Event should be on Monday, Wednesday, or Friday",
               dayOfWeek == 1 || dayOfWeek == 3 || dayOfWeek == 5);
@@ -442,11 +441,11 @@ public class CalendarEventTest {
     List<String> repeatDays = List.of("W");
     calendar.createSeriesTimes("Wednesday Meeting", testStart, testEnd, repeatDays, 4);
 
-    List<Event> seriesEvents = calendar.getSeries().get(testStart);
+    List<IEvent> seriesEvents = calendar.getSeries().get(testStart);
     assertEquals("Should create 4 Wednesday events", 4, seriesEvents.size());
 
     // Verify all are on Wednesday (day 3)
-    for (Event event : seriesEvents) {
+    for (IEvent event : seriesEvents) {
       assertEquals("All events should be on Wednesday",
               3, event.getStart().getDayOfWeek().getValue());
     }
@@ -465,12 +464,12 @@ public class CalendarEventTest {
     List<String> repeatDays = Arrays.asList("M", "T", "W", "R", "F", "S", "U");
     calendar.createSeriesTimes("Daily Events", testStart, testEnd, repeatDays, 1);
 
-    List<Event> seriesEvents = calendar.getSeries().get(testStart);
+    List<IEvent> seriesEvents = calendar.getSeries().get(testStart);
     assertEquals("Should create 7 events (one for each day)", 7, seriesEvents.size());
 
     // Verify we have all days of the week
     boolean[] daysFound = new boolean[8]; // Index 1-7 for Monday-Sunday
-    for (Event event : seriesEvents) {
+    for (IEvent event : seriesEvents) {
       int dayOfWeek = event.getStart().getDayOfWeek().getValue();
       daysFound[dayOfWeek] = true;
     }
@@ -497,7 +496,7 @@ public class CalendarEventTest {
       fail("Should prevent duplicate events in series");
     } catch (IllegalArgumentException e) {
       assertEquals("Should have specific error message",
-              "Event already exists", e.getMessage());
+              "Series already exists at this startTime", e.getMessage());
     }
   }
 
@@ -531,20 +530,20 @@ public class CalendarEventTest {
     calendar.createSeriesTimes("Bi-weekly Check", testStart, testEnd, repeatDays, 2);
 
     // Verify events appear in main calendar
-    Map<LocalDate, List<Event>> mainCalendar = calendar.getCalendar();
+    Map<LocalDate, List<IEvent>> mainCalendar = calendar.getCalendar();
 
     int eventCount = 0;
-    for (List<Event> dayEvents : mainCalendar.values()) {
+    for (List<IEvent> dayEvents : mainCalendar.values()) {
       eventCount += dayEvents.size();
     }
 
     assertEquals("Main calendar should contain all series events", 4, eventCount);
 
     // Verify series events and calendar events are the same objects
-    List<Event> seriesEvents = calendar.getSeries().get(testStart);
-    for (Event seriesEvent : seriesEvents) {
+    List<IEvent> seriesEvents = calendar.getSeries().get(testStart);
+    for (IEvent seriesEvent : seriesEvents) {
       LocalDate eventDate = seriesEvent.getStart().toLocalDate();
-      List<Event> dayEvents = mainCalendar.get(eventDate);
+      List<IEvent> dayEvents = mainCalendar.get(eventDate);
       assertTrue("Calendar should contain the series event", dayEvents.contains(seriesEvent));
     }
   }

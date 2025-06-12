@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.HashMap;
 import java.util.List;
 
 import model.enums.Location;
@@ -31,7 +32,7 @@ public class SpecificCalendarTest {
     cal.fullCreate("event1", LocalDateTime.parse("2000-10-10T10:00"),
             LocalDateTime.parse("2000-10-10T14:00"),
             "Description example", Location.ONLINE, Status.PUBLIC);
-    List<Event> calendar = cal.getCalendar().get(LocalDate.parse("2000-10-10"));
+    List<IEvent> calendar = cal.getCalendar().get(LocalDate.parse("2000-10-10"));
     assertTrue(cal.getCalendar().containsKey(LocalDate.parse("2000-10-10")));
 
     assertEquals("event1", calendar.get(0).getSubject());
@@ -50,6 +51,11 @@ public class SpecificCalendarTest {
   @Test
   public void getTimezoneTest() {
     assertEquals(ZoneId.of("America/Los_Angeles"), cal.getTimeZone());
+  }
+
+  @Test
+  public void getOldToNewTest() {
+    assertEquals(new HashMap<>(), cal.getOldToNewSeries());
   }
 
   @Test

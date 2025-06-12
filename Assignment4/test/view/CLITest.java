@@ -22,6 +22,10 @@ import org.junit.Test;
 
 import controller.CalendarController;
 
+/**
+ * Test class that tests the command line interface in order to ensure that everything
+ * works correctly.
+ */
 public class CLITest {
 
   private ByteArrayOutputStream outputStream;

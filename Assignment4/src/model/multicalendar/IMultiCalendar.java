@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 
-import controller.parse.PropertyType;
-import model.calendar.SpecificCalendar;
+
+import model.calendar.ISpecificCalendar;
 
 /**
  * interface that represents a multicalendar and its methods.
@@ -68,11 +68,11 @@ public interface IMultiCalendar {
    * Gets the list of calendars;
    * @return a list of calendars
    */
-  List<SpecificCalendar> getCalendars();
+  List<ISpecificCalendar> getCalendars();
 
   /**
    * returns the calendar currently in use.
    * @return the SpecificCalendar
    */
-  SpecificCalendar getCurrent();
+  ISpecificCalendar getCurrent();
 }

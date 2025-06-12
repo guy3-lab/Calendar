@@ -83,6 +83,7 @@ copy events on `<dateString>` --target `<calendarName>` to `<dateString>`
 
 copy events between `<dateString>` and `<dateString>` --target `<calendarName>` to `<dateString>`
 
+For all `copy events` commands, if an event series partly overlaps with the specified range, only those events in the series that overlap with the specified range should be copied
 ---
 ## How to Use
 
@@ -108,14 +109,17 @@ copy events between `<dateString>` and `<dateString>` --target `<calendarName>` 
   - Location  
   - Status
 - ✔ Create an event series where a single event spans multiple days
-- ✔ Can retrieve *all events in a series* as a group 
+- ✔ Can create multiple calendars with their own individual events
+- ✔ Can change the name and time zones of calendars
+- ✔ Can copy events from one calendar to the other, and coverting the times as needed
 
 ---
 
 ## Features That Don't Work
 
-- ✘ Cannot create two of the same events  
-- ✘ Cannot specify `status` or `description` at creation time  
+- ✘ Cannot create two of the same events
+- ✘ Cannot create two series of the same name or starting time
+- ✘ Cannot specify `status` or `description` or `location` at creation time  
 
 ---
 
@@ -131,5 +135,12 @@ copy events between `<dateString>` and `<dateString>` --target `<calendarName>` 
 **David**  
 - Model  
 - Tests  
-- Instructions  
+- Instructions
+
+## Changes from the last assignment
+- Added a check condition when making and editing series such that no two series can have the same starting time
+- Added a seriesKey field in the Event's class to do what was listed above
+- Made AddEventHelper method in the initial calendar class protected so that an extending class can have acces to it when creating and adding events
+- Added the new class SpecificCalendar that extends Calendar because it now has a name and timezone field in order to conform to open for extension, closed for modification (that is if Calendar was already good)
+- Added a new package MultiCalendar in the model in order to represent the multiple calendars that can be accessed in Assignment 5.
 

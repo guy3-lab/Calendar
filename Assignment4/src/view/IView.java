@@ -1,7 +1,7 @@
 package view;
 
 /**
- * Interface for all view implementations in the calendar application.
+ * View interface used in displaying input and results of the calendar application.
  */
 public interface IView {
   /**

@@ -18,6 +18,7 @@ public class Event implements IEvent {
   private String desc;
   private Location location;
   private Status status;
+  private LocalDateTime seriesKey;
 
   /**
    * constructor that always takes in subject and start date while setting everything else to their
@@ -32,6 +33,7 @@ public class Event implements IEvent {
     this.desc = "";
     this.location = Location.ONLINE;
     this.status = Status.PUBLIC;
+    this.seriesKey = null;
   }
 
   /**
@@ -85,6 +87,11 @@ public class Event implements IEvent {
   }
 
   @Override
+  public LocalDateTime getSeriesKey() {
+    return this.seriesKey;
+  }
+
+  @Override
   public void setSubject(String subject) {
     this.subject = subject;
   }
@@ -112,13 +119,6 @@ public class Event implements IEvent {
   @Override
   public void setStatus(Status status) {
     this.status = status;
-  }
-
-  // for testing purposes
-  public boolean isAllDay() {
-    return start.toLocalTime().equals(LocalTime.of(8, 0)) &&
-            end.toLocalTime().equals(LocalTime.of(17, 0)) &&
-            start.toLocalDate().equals(end.toLocalDate());
   }
 
   /**
