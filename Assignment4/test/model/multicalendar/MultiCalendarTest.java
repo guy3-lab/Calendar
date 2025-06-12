@@ -128,10 +128,24 @@ public class MultiCalendarTest {
 
     //tries copying an event that doesn't exist
     try {
-      mc.copyEvent("test", LocalDateTime.parse("2000-10-10T08:00"), "c3",
+      mc.copyEvent("test", LocalDateTime.parse("2000-10-10T08:00"), "c2",
               LocalDateTime.parse("2000-10-10T10:00"));
     } catch (IllegalArgumentException e) {
       assertEquals("No event found", e.getMessage());
+    }
+
+    //Two events with the same name and start time, but different end times
+    c1.createEvent("sameEvent", LocalDateTime.parse("2000-10-10T09:00"),
+            LocalDateTime.parse("2000-10-10T10:00"));
+    c1.createEvent("sameEvent", LocalDateTime.parse("2000-10-10T09:00"),
+            LocalDateTime.parse("2000-10-10T11:00"));
+
+    //tries copying an event, but can not specify which one
+    try {
+      mc.copyEvent("sameEvent", LocalDateTime.parse("2000-10-10T09:00"), "c2",
+              LocalDateTime.parse("2000-10-10T10:00"));
+    } catch (IllegalArgumentException e) {
+      assertEquals("Multiple events found", e.getMessage());
     }
   }
 
