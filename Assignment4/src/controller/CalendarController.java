@@ -12,10 +12,10 @@ import controller.parse.ParseResult;
 import controller.parse.RepeatInfo;
 import controller.format.IOutputFormatter;
 import controller.format.OutputFormatter;
-import model.calendar.Calendar;
 import model.calendar.Event;
 import model.calendar.ICalendar;
-import model.calendar.SpecificCalendar;
+import model.calendar.IEvent;
+import model.calendar.ISpecificCalendar;
 import model.multicalendar.IMultiCalendar;
 import model.multicalendar.MultiCalendar;
 
@@ -95,7 +95,8 @@ public class CalendarController {
       case EXIT:
         return null;
       default:
-        throw new IllegalArgumentException("Unknown command type: " + parseResult.getCommandType());
+        throw new IllegalArgumentException("Unknown command type: " +
+                parseResult.getCommandType());
     }
   }
 
@@ -105,7 +106,7 @@ public class CalendarController {
   private String executeCreateCalendar(ParseResult parseResult) {
     try {
       // Check for duplicate calendar names
-      for (SpecificCalendar cal : multiCalendar.getCalendars()) {
+      for (ISpecificCalendar cal : multiCalendar.getCalendars()) {
         if (cal.getName().equals(parseResult.getCalendarName())) {
           throw new IllegalArgumentException("Calendar with name '" +
                   parseResult.getCalendarName() + "' already exists");
@@ -129,7 +130,7 @@ public class CalendarController {
     try {
       // Check if calendar exists
       boolean found = false;
-      for (SpecificCalendar cal : multiCalendar.getCalendars()) {
+      for (ISpecificCalendar cal : multiCalendar.getCalendars()) {
         if (cal.getName().equals(parseResult.getCalendarName())) {
           found = true;
           break;
@@ -143,7 +144,7 @@ public class CalendarController {
 
       // Check for duplicate name if editing name
       if (parseResult.getPropertyName().equals("name")) {
-        for (SpecificCalendar cal : multiCalendar.getCalendars()) {
+        for (ISpecificCalendar cal : multiCalendar.getCalendars()) {
           if (!cal.getName().equals(parseResult.getCalendarName()) &&
                   cal.getName().equals(parseResult.getPropertyValue())) {
             throw new IllegalArgumentException("Calendar with name '" +
@@ -170,7 +171,7 @@ public class CalendarController {
     try {
       // Check if calendar exists
       boolean found = false;
-      for (SpecificCalendar cal : multiCalendar.getCalendars()) {
+      for (ISpecificCalendar cal : multiCalendar.getCalendars()) {
         if (cal.getName().equals(parseResult.getCalendarName())) {
           found = true;
           break;
@@ -249,14 +250,15 @@ public class CalendarController {
    */
   private void checkCalendarInUse() {
     if (multiCalendar.getCurrent() == null) {
-      throw new IllegalStateException("No calendar currently in use. Use 'use calendar' command first");
+      throw new IllegalStateException("No calendar currently in use. Use 'use calendar' " +
+              "command first");
     }
   }
 
   /**
    * Gets the current calendar, throwing exception if none is set.
    */
-  private SpecificCalendar getCurrentCalendar() {
+  private ISpecificCalendar getCurrentCalendar() {
     checkCalendarInUse();
     return multiCalendar.getCurrent();
   }
@@ -266,7 +268,7 @@ public class CalendarController {
    */
   private String executeCreateEvent(ParseResult parseResult) {
     try {
-      SpecificCalendar current = getCurrentCalendar();
+      ISpecificCalendar current = getCurrentCalendar();
 
       if (parseResult.isRepeating()) {
         RepeatInfo repeatInfo = parseResult.getRepeatInfo();
@@ -317,7 +319,7 @@ public class CalendarController {
    */
   private String executeEditEvent(ParseResult parseResult) {
     try {
-      SpecificCalendar current = getCurrentCalendar();
+      ISpecificCalendar current = getCurrentCalendar();
       CommandType editType = parseResult.getCommandType();
 
       switch (editType) {
@@ -356,7 +358,6 @@ public class CalendarController {
           throw new IllegalArgumentException("Unknown edit type: " + editType);
       }
     } catch (IllegalStateException e) {
-      // Re-throw IllegalStateException as is
       throw e;
     } catch (Exception e) {
       throw new IllegalArgumentException("Failed to edit event: " + e.getMessage());
@@ -368,7 +369,7 @@ public class CalendarController {
    */
   private String executePrintEvents(ParseResult parseResult) {
     try {
-      SpecificCalendar current = getCurrentCalendar();
+      ISpecificCalendar current = getCurrentCalendar();
 
       if (parseResult.isPrintRange()) {
         return current.printEventsInterval(parseResult.getPrintStartDate(),
@@ -377,7 +378,6 @@ public class CalendarController {
         return current.printEvents(parseResult.getPrintStartDate().toLocalDate());
       }
     } catch (IllegalStateException e) {
-      // Re-throw IllegalStateException as is
       throw e;
     } catch (Exception e) {
       throw new IllegalArgumentException("Failed to print events: " + e.getMessage());
@@ -389,9 +389,9 @@ public class CalendarController {
    */
   private String executeShowStatus(ParseResult parseResult) {
     try {
-      SpecificCalendar current = getCurrentCalendar();
+      ISpecificCalendar current = getCurrentCalendar();
       LocalDateTime queryTime = parseResult.getStatusDateTime();
-      Map<LocalDate, List<Event>> calendarData = current.getCalendar();
+      Map<LocalDate, List<IEvent>> calendarData = current.getCalendar();
 
       boolean isBusy = checkIfBusy(calendarData, queryTime);
       return isBusy ? "busy" : "available";
@@ -406,16 +406,16 @@ public class CalendarController {
   /**
    * Checks if the user is busy at a specific date and time.
    */
-  private boolean checkIfBusy(Map<LocalDate, List<Event>> calendarData, LocalDateTime queryTime) {
+  private boolean checkIfBusy(Map<LocalDate, List<IEvent>> calendarData, LocalDateTime queryTime) {
     LocalDate queryDate = queryTime.toLocalDate();
 
     if (!calendarData.containsKey(queryDate)) {
       return false;
     }
 
-    List<Event> dayEvents = calendarData.get(queryDate);
+    List<IEvent> dayEvents = calendarData.get(queryDate);
 
-    for (Event event : dayEvents) {
+    for (IEvent event : dayEvents) {
       if (!queryTime.isBefore(event.getStart()) && queryTime.isBefore(event.getEnd())) {
         return true;
       }

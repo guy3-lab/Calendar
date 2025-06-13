@@ -130,11 +130,17 @@ public class MultiCalendar implements IMultiCalendar {
 
     LocalDateTime originalSeriesKey = inSeries(eventName, date);
     if (originalSeriesKey != null) {
+      // If the event is part of a series then we should ONLY add to the series mechanism
+      // and not create a single event to prevent bugs via duplication
       Event eventInSeries = new Event.EventBuilder(eventName, targetDate).end(newEndTime).
               desc(desc).location(location).status(status).build();
       putIntoSeries(originalSeriesKey, eventInSeries, targetCalendar);
+      targetCalendar.getCalendar().computeIfAbsent(targetDate.toLocalDate(),
+              k -> new ArrayList<>()).add(eventInSeries);
+    } else {
+      // only create singl event if NOT part of series
+      targetCalendar.fullCreate(eventName, targetDate, newEndTime, desc, location, status);
     }
-    targetCalendar.fullCreate(eventName, targetDate, newEndTime, desc, location, status);
   }
 
   //gets the event from the current calendar
@@ -143,7 +149,13 @@ public class MultiCalendar implements IMultiCalendar {
     ISpecificCalendar currentCalendar = this.current;
     IEvent currentEvent = null;
     int count = 0;
+
+    // null check
     List<IEvent> currentEvents = currentCalendar.getCalendar().get(date.toLocalDate());
+    if (currentEvents == null) {
+      throw new IllegalArgumentException("No event found");
+    }
+
     for (IEvent event : currentEvents) {
       if (event.getSubject().equals(eventName) && event.getStart().equals(date)) {
         currentEvent = event;
@@ -180,13 +192,21 @@ public class MultiCalendar implements IMultiCalendar {
                              ISpecificCalendar targetCalendar) {
     if (targetCalendar.getOldToNewSeries().containsKey(originalSeriesKey)) {
       LocalDateTime newKey = targetCalendar.getOldToNewSeries().get(originalSeriesKey);
+      // check if series exists in the target calendar
+      if (!targetCalendar.getSeries().containsKey(newKey)) {
+        targetCalendar.getSeries().put(newKey, new ArrayList<>());
+      }
       targetCalendar.getSeries().get(newKey).add(event);
     } else {
-      targetCalendar.getOldToNewSeries().put(originalSeriesKey, event.getStart());
+      // For a new series being copied, we need to determine the correct key
+      // The key should be the start time of the very first event in the copied series
+      // And since we're copying in order the first event copied will establish the key
+      LocalDateTime seriesKey = event.getStart();
+      targetCalendar.getOldToNewSeries().put(originalSeriesKey, seriesKey);
 
       List<IEvent> newSeries = new ArrayList<>();
       newSeries.add(event);
-      targetCalendar.getSeries().put(event.getStart(), newSeries);
+      targetCalendar.getSeries().put(seriesKey, newSeries);
     }
   }
 
@@ -221,6 +241,11 @@ public class MultiCalendar implements IMultiCalendar {
   private void copyEventsHelper(LocalDate date,
                                 String calendarName, LocalDate targetDate) {
     List<IEvent> currentEvents = this.current.getCalendar().get(date);
+
+    // null check to prevent NullPointerException
+    if (currentEvents == null || currentEvents.isEmpty()) {
+      return;
+    }
 
     ZoneId currentZoneID = this.current.getTimeZone();
     ZoneId targetZoneID;

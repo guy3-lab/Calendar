@@ -34,7 +34,9 @@ public class HeadlessView implements IView {
       processCommandFile(reader);
     } catch (IOException e) {
       displayError("Could not read command file '" + filename + "': " + e.getMessage());
-      System.exit(1);
+      // instead of System.exit(1), which terminates every test hereafter
+      // throw an exception that tests can catch
+      throw new RuntimeException("Failed to read command file: " + e.getMessage());
     }
   }
 
@@ -80,7 +82,9 @@ public class HeadlessView implements IView {
 
     if (!exitFound) {
       displayError("Command file must end with 'exit' command");
-      System.exit(1);
+      // instead of System.exit(1), which terminates every test hereafter
+      // throw an exception that tests can catch
+      throw new RuntimeException("Command file must end with 'exit' command");
     }
   }
 

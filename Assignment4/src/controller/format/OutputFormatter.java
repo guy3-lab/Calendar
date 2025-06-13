@@ -23,6 +23,7 @@ public class OutputFormatter implements IOutputFormatter {
   /**
    * Formats events for a specific date.
    */
+  @Override
   public String formatEventsForDate(Map<LocalDate, List<Event>> calendar, LocalDate date) {
     if (!calendar.containsKey(date) || calendar.get(date).isEmpty()) {
       return "No events scheduled on " + date.format(DATE_FORMAT);
@@ -46,6 +47,7 @@ public class OutputFormatter implements IOutputFormatter {
   /**
    * Formats events for a date range.
    */
+  @Override
   public String formatEventRange(Map<LocalDate, List<Event>> calendar,
                                  LocalDate startDate, LocalDate endDate) {
     StringBuilder result = new StringBuilder();
@@ -83,6 +85,7 @@ public class OutputFormatter implements IOutputFormatter {
   /**
    * Formats a list of events for debugging or logging purposes.
    */
+  @Override
   public String formatEventsList(List<Event> events) {
     if (events.isEmpty()) {
       return "No events";
@@ -100,6 +103,7 @@ public class OutputFormatter implements IOutputFormatter {
   /**
    * Formats error messages consistently.
    */
+  @Override
   public String formatError(String message) {
     return "Error: " + message;
   }
@@ -107,6 +111,7 @@ public class OutputFormatter implements IOutputFormatter {
   /**
    * Formats success messages consistently.
    */
+  @Override
   public String formatSuccess(String message) {
     return message;
   }

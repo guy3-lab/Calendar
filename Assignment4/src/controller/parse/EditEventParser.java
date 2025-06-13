@@ -72,28 +72,23 @@ public class EditEventParser implements CommandParser {
   }
 
   private String extractEventSubject(String input) {
-    String[] parts = input.split("\\s+");
-    StringBuilder subject = new StringBuilder();
-
-    boolean foundProperty = false;
-    for (String part : parts) {
-      if (foundProperty && !part.equalsIgnoreCase("from")) {
-        if (subject.length() > 0) {
-          subject.append(" ");
-        }
-        subject.append(part);
-      } else if (foundProperty && part.equalsIgnoreCase("from")) {
-        break;
-      } else if (isPropertyKeyword(part.toLowerCase())) {
-        foundProperty = true;
-      }
-    }
-
-    if (subject.length() == 0) {
+    String[] parts = input.split("\\s+", 4);
+    if (parts.length < 4) {
       throw new IllegalArgumentException("Cannot extract event subject");
     }
+    String remainingInput = parts[3];
+    int fromIndex = remainingInput.toLowerCase().indexOf(" from ");
+    if (fromIndex == -1) {
+      throw new IllegalArgumentException("Cannot find 'from' keyword");
+    }
 
-    return subject.toString().trim();
+    String subjectPart = remainingInput.substring(0, fromIndex).trim();
+
+    if (subjectPart.startsWith("\"") && subjectPart.endsWith("\"") && subjectPart.length() > 1) {
+      return subjectPart.substring(1, subjectPart.length() - 1);
+    }
+
+    return subjectPart;
   }
 
   private boolean isPropertyKeyword(String word) {
