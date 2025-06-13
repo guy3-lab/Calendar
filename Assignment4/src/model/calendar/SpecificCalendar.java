@@ -9,7 +9,9 @@ import model.enums.Location;
 import model.enums.Status;
 
 /**
- * A calendar class with fields of name and time zone to specify unique calendars.
+ * A calendar class with fields of name and time zone to specify unique calendars. Added this class
+ * to extend Calendar because it should still be able to use the same methods as Calendar, but with
+ * additional methods and fields unique to itself.
  */
 public class SpecificCalendar extends Calendar implements ISpecificCalendar {
   private String name;

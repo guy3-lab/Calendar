@@ -140,7 +140,8 @@ public class CalendarTest {
             multiDayEvent.getStart());
 
     //creates an event without an end field, which therefore is a full day event
-    IEvent allDayEvent = calendar.createEvent("test", LocalDateTime.parse("2025-02-27T05:00"), null);
+    IEvent allDayEvent = calendar.createEvent("test", LocalDateTime.parse("2025-02-27T05:00"),
+            null);
     LocalDate feb27 = LocalDate.parse("2025-02-27");
     List<IEvent> feb27Events = calendar.getCalendar().get(feb27);
     assertTrue("Feb 27 should contain all-day event", feb27Events.contains(allDayEvent));

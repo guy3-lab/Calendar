@@ -13,6 +13,9 @@ public class ParsingTools {
 
   /**
    * Extract quoted or unquoted subject from input.
+   * @param input the user input
+   * @param prefix the prefix of the command
+   * @return the subject name
    */
   public static String extractSubject(String input, String prefix) {
     if (!input.toLowerCase().startsWith(prefix.toLowerCase())) {
@@ -30,6 +33,10 @@ public class ParsingTools {
 
   /**
    * Extract datetime between two pointers.
+   * @param input the user input
+   * @param startPointer the starting pointer
+   * @param endPointer the ending pointer
+   * @return the date time between the two pointers
    */
   public static LocalDateTime extractDateTime(String input, String startPointer,
                                               String endPointer) {
@@ -63,6 +70,9 @@ public class ParsingTools {
 
   /**
    * Extract date and convert to datetime - exclusively for all-day events.
+   * @param input the user input
+   * @param pointer the pointer word to help extract
+   * @return the extracted date
    */
   public static LocalDateTime extractDate(String input, String pointer) {
     int start = input.toLowerCase().indexOf(pointer.toLowerCase());
@@ -91,7 +101,10 @@ public class ParsingTools {
   }
 
   /**
-   * Extract value after a keyword.
+   * Extracts the keyword from the user input.
+   * @param input the user input
+   * @param keyword the keyword to be looked for
+   * @return A string of the value that was found
    */
   public static String extractAfterKeyword(String input, String keyword) {
     int start = input.toLowerCase().indexOf(keyword.toLowerCase()) + keyword.length();

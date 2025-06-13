@@ -1,7 +1,7 @@
 package controller.parse;
 
 /**
- * Parser for use calendar commands.
+ * Parser for use calendar commands that the user inputs.
  */
 public class UseCalendarParser implements CommandParser {
 
