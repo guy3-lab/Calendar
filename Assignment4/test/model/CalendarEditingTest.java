@@ -840,10 +840,6 @@ public class CalendarEditingTest {
     }
   }
 
-
-  /**
-   *
-   */
   @Test
   public void testComplexSeriesEditingScenario() {
     // This test implements the complex example from the assignment requirements
@@ -870,10 +866,15 @@ public class CalendarEditingTest {
     calendar.editEvents(PropertyType.SUBJECT, "First", may12Start, "Second");
 
     // Count events with each subject
-    int firstCount = 0, secondCount = 0;
+    int firstCount = 0;
+    int secondCount = 0;
     for (IEvent event : firstSeries) {
-      if ("First".equals(event.getSubject())) { firstCount++ ;}
-      else if ("Second".equals(event.getSubject())) { secondCount++; }
+      if ("First".equals(event.getSubject())) {
+        firstCount++ ;
+      }
+      else if ("Second".equals(event.getSubject())) {
+        secondCount++;
+      }
     }
 
     // Should have some "First" events (before May 12) and some "Second" events (from May 12 onward)
@@ -886,10 +887,15 @@ public class CalendarEditingTest {
     calendar.editSeries(PropertyType.SUBJECT, "First", may5Start, "Third");
 
     // Now all remaining "First" events should become "Third"
-    int thirdCount = 0, secondCount2 = 0;
+    int thirdCount = 0;
+    int secondCount2 = 0;
     for (IEvent event : firstSeries) {
-      if ("Third".equals(event.getSubject())) { thirdCount++; }
-      else if ("Second".equals(event.getSubject())) { secondCount2++; }
+      if ("Third".equals(event.getSubject())) {
+        thirdCount++;
+      }
+      else if ("Second".equals(event.getSubject())) {
+        secondCount2++;
+      }
     }
 
     assertTrue("Should have 'Third' events", thirdCount > 0);

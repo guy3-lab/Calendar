@@ -389,19 +389,26 @@ public class Calendar implements ICalendar {
   @Override
   public String printEventsInterval(LocalDateTime start, LocalDateTime end) {
     LocalDate day = start.toLocalDate();
-    LocalDate endDay = end.toLocalDate();
     List<String> events = new ArrayList<>();
-    while (!day.isAfter(endDay)) {
+    int count = 0;
+
+    // If end is provided, no limit. If end is null, limit to 10 events.
+    while ((end == null && count < 10) || (end != null && !day.isAfter(end.toLocalDate()))) {
       if (this.calendar.containsKey(day)) {
         List<IEvent> eventList = this.calendar.get(day);
         for (IEvent e : eventList) {
           if (!e.getStart().isBefore(start)) {
             events.add(printHelper(e));
+            count++;
+            if (end == null && count == 10) {
+              break;
+            }
           }
         }
       }
       day = day.plusDays(1);
     }
+
     return String.join("\n", events);
   }
 

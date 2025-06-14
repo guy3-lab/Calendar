@@ -327,33 +327,6 @@ public class EventTest {
     assertNotNull("Build should return event", event);
   }
 
-//  @Test
-//  public void testIsAllDayDetectionAccuracy() {
-//    IEvent allDay = new Event("All Day", testStart);
-//    assertEquals("Should start at 8:00 AM", 8, allDay.getStart().getHour());
-//    assertEquals("Should end at 5:00 PM", 17, allDay.getEnd().getHour());
-//
-//    IEvent nonAllDay1 = new Event.EventBuilder("Not All Day", testStart).end(testEnd).build();
-//    assertFalse("Custom end time should not be all-day", nonAllDay1.isAllDay());
-//
-//    IEvent notAllDay2 = new Event.EventBuilder("Coincidental Times",
-//            LocalDateTime.of(2025, 6, 15, 8, 0))
-//            .end(LocalDateTime.of(2025, 6, 16, 17, 0))
-//            .build();
-//    assertFalse("Multi-day 8-17 should not be all-day", notAllDay2.isAllDay());
-//
-//    IEvent notAllDay3 = new Event.EventBuilder("Different End",
-//            LocalDateTime.of(2025, 6, 15, 8, 0))
-//            .end(LocalDateTime.of(2025, 6, 15, 16, 0))
-//            .build();
-//    assertFalse("8-16 should not be all-day", notAllDay3.isAllDay());
-//
-//    IEvent notAllDay4 = new Event.EventBuilder("Different Start",
-//            LocalDateTime.of(2025, 6, 15, 9, 0))
-//            .end(LocalDateTime.of(2025, 6, 15, 17, 0))
-//            .build();
-//    assertFalse("9-17 should not be all-day", notAllDay4.isAllDay());
-//  }
 
   @Test
   public void testEventImmutabilityAfterCreation() {

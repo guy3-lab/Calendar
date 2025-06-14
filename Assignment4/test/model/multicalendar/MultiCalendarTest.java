@@ -11,11 +11,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import model.calendar.ISpecificCalendar;
-import model.calendar.SpecificCalendar;
+
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Tests the multiCalendar.
+ */
 public class MultiCalendarTest {
   MultiCalendar mc;
 
@@ -56,7 +59,7 @@ public class MultiCalendarTest {
     try {
       mc.editCalendar("doesn't exist", "timezone", "Europe/Paris");
     } catch (IllegalArgumentException e) {
-     assertEquals("Calendar doesn't exist not found.", e.getMessage());
+      assertEquals("Calendar doesn't exist not found.", e.getMessage());
     }
 
     //tries editing calendar name to existing calendar
@@ -167,7 +170,7 @@ public class MultiCalendarTest {
             LocalDateTime.parse("2000-10-10T09:00"), days, 2);
 
     //checking if all events made properly
-    assertEquals(4 ,c1.getCalendar().get(LocalDate.parse("2000-10-10")).size());
+    assertEquals(4, c1.getCalendar().get(LocalDate.parse("2000-10-10")).size());
     mc.useCalendar("c1");
     assertEquals("c1", mc.getCurrent().getName());
 

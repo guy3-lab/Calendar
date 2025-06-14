@@ -35,8 +35,8 @@ public class MultiCalendar implements IMultiCalendar {
   @Override
   public void addCalendar(String name, ZoneId timezone) {
     // check if this calendar already exists
-    for(ISpecificCalendar cal: calendars){
-      if(cal.getName().equals(name)){
+    for (ISpecificCalendar cal: calendars) {
+      if (cal.getName().equals(name)) {
         throw new IllegalArgumentException("Calendar with name " + name + " already exists.");
       }
     }
@@ -44,7 +44,7 @@ public class MultiCalendar implements IMultiCalendar {
     // throw if timezone isn't valid
     try {
       ZoneId.of(timezone.getId());
-    } catch(Exception e){
+    } catch (Exception e) {
       throw new IllegalArgumentException("Invalid timezone: " + timezone);
     }
 
@@ -136,8 +136,8 @@ public class MultiCalendar implements IMultiCalendar {
       Event eventInSeries = new Event.EventBuilder(eventName, targetDate).end(newEndTime).
               desc(desc).location(location).status(status).build();
       putIntoSeries(originalSeriesKey, eventInSeries, targetCalendar);
-      targetCalendar.getCalendar().computeIfAbsent(targetDate.toLocalDate(),
-              k -> new ArrayList<>()).add(eventInSeries);
+      targetCalendar.getCalendar().computeIfAbsent(targetDate.toLocalDate(), k ->
+              new ArrayList<>()).add(eventInSeries);
     } else {
       // only create singl event if NOT part of series
       targetCalendar.fullCreate(eventName, targetDate, newEndTime, desc, location, status);
@@ -231,7 +231,7 @@ public class MultiCalendar implements IMultiCalendar {
   public void copyEventsInterval(LocalDate startDate, LocalDate endDate, String calendarName,
                                  LocalDate targetDate) {
     isCalendarChosen();
-    while(!startDate.isAfter(endDate)) {
+    while (!startDate.isAfter(endDate)) {
       copyEventsHelper(startDate, calendarName, targetDate);
       startDate = startDate.plusDays(1);
       targetDate = targetDate.plusDays(1);

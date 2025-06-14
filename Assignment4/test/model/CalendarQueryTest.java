@@ -972,8 +972,8 @@ public class CalendarQueryTest {
     assertEquals("Location should be PHYSICAL", Location.PHYSICAL, physicalEvent.getLocation());
 
     // Add physical event to calendar manually
-    calendar.getCalendar().computeIfAbsent(testDate,
-            k -> new java.util.ArrayList<>()).add(physicalEvent);
+    calendar.getCalendar().computeIfAbsent(testDate, k -> new java.util.ArrayList<>()).
+            add(physicalEvent);
 
     // Verify calendar state
     Map<LocalDate, List<IEvent>> calendarData = calendar.getCalendar();

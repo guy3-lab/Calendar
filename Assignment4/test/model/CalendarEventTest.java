@@ -78,36 +78,6 @@ public class CalendarEventTest {
     assertEquals("Should have one event", 1, calendar.getCalendar().get(testDate).size());
   }
 
-//  @Test
-//  public void testCreateEventWithAllProperties() {
-//    Event event = calendar.createEvent("Important Meeting", testStart, testEnd,
-//            "Quarterly business review", Location.PHYSICAL, Status.PRIVATE);
-//
-//    // Verify all properties
-//    assertEquals("Subject should match", "Important Meeting", event.getSubject());
-//    assertEquals("Start should match", testStart, event.getStart());
-//    assertEquals("End should match", testEnd, event.getEnd());
-//    assertEquals("Description should match", "Quarterly business review", event.getDesc());
-//    assertEquals("Location should match", Location.PHYSICAL, event.getLocation());
-//    assertEquals("Status should match", Status.PRIVATE, event.getStatus());
-//
-//    // Verify in calendar
-//    assertTrue("Calendar should contain event", calendar.getCalendar().containsKey(testDate));
-//  }
-
-//  @Test
-//  public void testCreateEventWithPartialProperties() {
-//    Event event = calendar.createEvent("Meeting", testStart, testEnd,
-//            "Test description", null, null);
-//
-//    // Verify provided properties
-//    assertEquals("Description should be set", "Test description", event.getDesc());
-//
-//    // Verify defaults for null properties
-//    assertEquals("Location should default to ONLINE", Location.ONLINE, event.getLocation());
-//    assertEquals("Status should default to PUBLIC", Status.PUBLIC, event.getStatus());
-//  }
-
   @Test
   public void testCreateMultiDayEvent() {
     LocalDateTime multiDayEnd = testStart.plusDays(2).plusHours(3);
@@ -346,23 +316,6 @@ public class CalendarEventTest {
     assertTrue("Should have at least 4 events", seriesEvents.size() >= 4);
   }
 
-//  @Test
-//  public void testCreateSeriesWithAllProperties() {
-//    List<String> repeatDays = Arrays.asList("T", "R");
-//    calendar.createSeriesTimes("Team Sync", testStart, testEnd, repeatDays, 2,
-//            "Weekly team synchronization", Location.PHYSICAL, Status.PRIVATE);
-//
-//    List<Event> seriesEvents = calendar.getSeries().get(testStart);
-//    assertEquals("Should create 4 events (2 days × 2 times)", 4, seriesEvents.size());
-//
-//    // Verify all events have the specified properties
-//    for (Event event : seriesEvents) {
-//      assertEquals("Subject should match", "Team Sync", event.getSubject());
-//      assertEquals("Description should match", "Weekly team synchronization", event.getDesc());
-//      assertEquals("Location should match", Location.PHYSICAL, event.getLocation());
-//      assertEquals("Status should match", Status.PRIVATE, event.getStatus());
-//    }
-//  }
 
   @Test
   public void testCreateAllDaySeriesWithTimes() {

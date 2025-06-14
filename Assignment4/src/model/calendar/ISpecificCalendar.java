@@ -10,7 +10,7 @@ import model.enums.Status;
 /**
  * Interface of a calendar that has a name field and timezone field and the methods it'll need.
  */
-public interface ISpecificCalendar extends ICalendar{
+public interface ISpecificCalendar extends ICalendar {
 
   /**
    * creates a full creation of an event.
@@ -37,7 +37,7 @@ public interface ISpecificCalendar extends ICalendar{
   ZoneId getTimeZone();
 
   /**
-   * Gets the corresponding key of the target calendar to the current calendar's series
+   * Gets the corresponding key of the target calendar to the current calendar's series.
    * @return the corresponding key
    */
   Map<LocalDateTime, LocalDateTime> getOldToNewSeries();

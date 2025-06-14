@@ -4,14 +4,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+
 import model.calendar.IEvent;
 import model.multicalendar.MultiCalendar;
 import model.multicalendar.IMultiCalendar;
+
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -100,14 +103,8 @@ public class MultiCalendarCommandsTest {
    */
   @Test
   public void testCreateCalendarVariousValidTimezones() {
-    String[] validTimezones = {
-            "America/New_York",
-            "Europe/Paris",
-            "Asia/Kolkata",
-            "Australia/Sydney",
-            "Africa/Cairo",
-            "Pacific/Auckland",
-            "America/Argentina/Buenos_Aires"
+    String[] validTimezones = {"America/New_York", "Europe/Paris", "Asia/Kolkata",
+      "Australia/Sydney", "Africa/Cairo", "Pacific/Auckland", "America/Argentina/Buenos_Aires"
     };
 
     for (int i = 0; i < validTimezones.length; i++) {

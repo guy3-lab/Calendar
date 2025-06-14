@@ -65,7 +65,7 @@ public interface IMultiCalendar {
                           LocalDate targetDate);
 
   /**
-   * Gets the list of calendars;
+   * Gets the list of calendars.
    * @return a list of calendars
    */
   List<ISpecificCalendar> getCalendars();

@@ -22,6 +22,9 @@ import model.calendar.IEvent;
 import model.enums.Location;
 import model.enums.Status;
 
+/**
+ * Tests the command parser.
+ */
 public class CommandParseTest {
 
   private CalendarController controller;
@@ -46,7 +49,8 @@ public class CommandParseTest {
     assertEquals("Test date should be June 15, 2025", LocalDate.of(2025, 6, 15), testDate);
     assertEquals("Test datetime should be 10:00 AM", 10, testDateTime.getHour());
 
-    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().
+            getCurrent().getCalendar();
     assertNotNull("Calendar data should not be null", calendarData);
     assertTrue("Calendar should be empty initially", calendarData.isEmpty());
   }
@@ -55,7 +59,8 @@ public class CommandParseTest {
 
   @Test
   public void testCreateEventWithStartAndEndTime() {
-    assertTrue("Calendar should be empty initially", controller.getMultiCalendar().getCurrent().getCalendar().isEmpty());
+    assertTrue("Calendar should be empty initially", controller.getMultiCalendar().
+            getCurrent().getCalendar().isEmpty());
 
     String command = "create event Meeting from 2025-06-15T10:00 to 2025-06-15T11:00";
     assertNotNull("Command should not be null", command);
@@ -68,7 +73,8 @@ public class CommandParseTest {
     assertTrue("Result should indicate success", result.contains("Created event"));
     assertTrue("Result should contain event name", result.contains("Meeting"));
 
-    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().
+            getCurrent().getCalendar();
     assertFalse("Calendar should not be empty after creation", calendarData.isEmpty());
     assertTrue("Calendar should contain test date", calendarData.containsKey(testDate));
 
@@ -87,7 +93,8 @@ public class CommandParseTest {
 
   @Test
   public void testCreateEventWithQuotedSubject() {
-    assertTrue("Calendar should be empty initially", controller.getMultiCalendar().getCurrent().getCalendar().isEmpty());
+    assertTrue("Calendar should be empty initially", controller.getMultiCalendar().getCurrent().
+            getCalendar().isEmpty());
 
     String command = "create event \"Team Meeting & Discussion\" " +
             "from 2025-06-15T14:00 to 2025-06-15T15:30";
@@ -105,7 +112,8 @@ public class CommandParseTest {
     assertTrue("Result should indicate success", result.contains("Created event"));
     assertTrue("Result should contain full subject", result.contains("Team Meeting & Discussion"));
 
-    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().
+            getCalendar();
     assertTrue("Calendar should contain test date", calendarData.containsKey(testDate));
 
     IEvent createdEvent = calendarData.get(testDate).get(0);
@@ -119,7 +127,8 @@ public class CommandParseTest {
 
   @Test
   public void testCreateAllDayEvent() {
-    assertTrue("Calendar should be empty initially", controller.getMultiCalendar().getCurrent().getCalendar().isEmpty());
+    assertTrue("Calendar should be empty initially", controller.getMultiCalendar().getCurrent().
+            getCalendar().isEmpty());
 
     String command = "create event Holiday on 2025-06-15";
     assertNotNull("Command should not be null", command);
@@ -132,7 +141,8 @@ public class CommandParseTest {
     assertTrue("Result should indicate success", result.contains("Created all-day event"));
     assertTrue("Result should contain event name", result.contains("Holiday"));
 
-    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().
+            getCalendar();
     assertTrue("Calendar should contain test date", calendarData.containsKey(testDate));
 
     IEvent createdEvent = calendarData.get(testDate).get(0);
@@ -148,8 +158,10 @@ public class CommandParseTest {
 
   @Test
   public void testCreateRecurringEventWithTimes() {
-    assertTrue("Calendar should be empty initially", controller.getMultiCalendar().getCurrent().getCalendar().isEmpty());
-    assertTrue("Series should be empty initially", controller.getMultiCalendar().getCurrent().getSeries().isEmpty());
+    assertTrue("Calendar should be empty initially", controller.getMultiCalendar().getCurrent().
+            getCalendar().isEmpty());
+    assertTrue("Series should be empty initially", controller.getMultiCalendar().getCurrent().
+            getSeries().isEmpty());
 
     String command = "create event \"Weekly Standup\" from 2025-06-16T09:00 to 2025-06-16T09:30 " +
             "repeats MWF for 6 times";
@@ -168,10 +180,12 @@ public class CommandParseTest {
     assertTrue("Result should contain event name", result.contains("Weekly Standup"));
     assertTrue("Result should contain occurrence count", result.contains("6 occurrences"));
 
-    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().
+            getCalendar();
     assertFalse("Calendar should not be empty after creation", calendarData.isEmpty());
 
-    Map<LocalDateTime, List<IEvent>> seriesData = controller.getMultiCalendar().getCurrent().getSeries();
+    Map<LocalDateTime, List<IEvent>> seriesData = controller.getMultiCalendar().getCurrent().
+            getSeries();
     assertFalse("Series should not be empty after creation", seriesData.isEmpty());
     assertEquals("Should have one series", 1, seriesData.size());
 
@@ -194,8 +208,10 @@ public class CommandParseTest {
 
   @Test
   public void testCreateRecurringEventWithUntilDate() {
-    assertTrue("Calendar should be empty initially", controller.getMultiCalendar().getCurrent().getCalendar().isEmpty());
-    assertTrue("Series should be empty initially", controller.getMultiCalendar().getCurrent().getSeries().isEmpty());
+    assertTrue("Calendar should be empty initially", controller.getMultiCalendar().getCurrent().
+            getCalendar().isEmpty());
+    assertTrue("Series should be empty initially", controller.getMultiCalendar().getCurrent().
+            getSeries().isEmpty());
 
     String command = "create event \"Daily Workout\" from 2025-06-16T07:00 to 2025-06-16T08:00 " +
             "repeats MTWRF until 2025-06-27";
@@ -212,10 +228,12 @@ public class CommandParseTest {
     assertTrue("Result should contain event name", result.contains("Daily Workout"));
     assertTrue("Result should contain until date", result.contains("until 2025-06-27"));
 
-    Map<LocalDateTime, List<IEvent>> seriesData = controller.getMultiCalendar().getCurrent().getSeries();
+    Map<LocalDateTime, List<IEvent>> seriesData = controller.getMultiCalendar().getCurrent().
+            getSeries();
     assertFalse("Series should not be empty", seriesData.isEmpty());
 
-    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().
+            getCalendar();
     assertFalse("Calendar should not be empty", calendarData.isEmpty());
 
     LocalDate startDate = LocalDate.of(2025, 6, 16);
@@ -238,7 +256,8 @@ public class CommandParseTest {
 
   @Test
   public void testCreateRecurringAllDayEventWithTimes() {
-    assertTrue("Calendar should be empty initially", controller.getMultiCalendar().getCurrent().getCalendar().isEmpty());
+    assertTrue("Calendar should be empty initially", controller.getMultiCalendar().getCurrent().
+            getCalendar().isEmpty());
 
     String command = "create event \"Weekend Fun\" on 2025-06-14 repeats SU for 4 times";
     assertNotNull("Command should not be null", command);
@@ -253,7 +272,8 @@ public class CommandParseTest {
     assertTrue("Result should contain event name", result.contains("Weekend Fun"));
     assertTrue("Result should contain occurrence count", result.contains("4 occurrences"));
 
-    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().
+            getCalendar();
     assertFalse("Calendar should not be empty", calendarData.isEmpty());
 
     LocalDate saturday1 = LocalDate.of(2025, 6, 14);
@@ -271,7 +291,8 @@ public class CommandParseTest {
 
   @Test
   public void testCreateRecurringAllDayEventWithUntilDate() {
-    assertTrue("Calendar should be empty initially", controller.getMultiCalendar().getCurrent().getCalendar().isEmpty());
+    assertTrue("Calendar should be empty initially", controller.getMultiCalendar().getCurrent().
+            getCalendar().isEmpty());
 
     String command = "create event \"Monthly Review\" on 2025-06-15 repeats U until 2025-08-15";
     assertNotNull("Command should not be null", command);
@@ -286,7 +307,8 @@ public class CommandParseTest {
     assertTrue("Result should contain event name", result.contains("Monthly Review"));
     assertTrue("Result should contain until date", result.contains("until 2025-08-15"));
 
-    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().
+            getCalendar();
     assertFalse("Calendar should not be empty", calendarData.isEmpty());
 
     LocalDate sunday1 = LocalDate.of(2025, 6, 15);
@@ -310,7 +332,8 @@ public class CommandParseTest {
   public void testEditSingleEventSubject() {
     controller.executeCommand("create event Old Meeting from 2025-06-15T10:00 to 2025-06-15T11:00");
 
-    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().
+            getCalendar();
     assertTrue("Calendar should contain test date", calendarData.containsKey(testDate));
     assertEquals("Should have one event", 1, calendarData.get(testDate).size());
 
@@ -356,7 +379,8 @@ public class CommandParseTest {
     assertNotNull("Result should not be null", result);
     assertTrue("Result should indicate success", result.contains("Updated event"));
 
-    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().
+            getCalendar();
 
     assertTrue("Calendar should still contain test date", calendarData.containsKey(testDate));
     List<IEvent> events = calendarData.get(testDate);
@@ -386,7 +410,8 @@ public class CommandParseTest {
     assertNotNull("Result should not be null", result);
     assertTrue("Result should indicate success", result.contains("Updated event"));
 
-    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().
+            getCalendar();
     List<IEvent> events = calendarData.get(testDate);
     IEvent modifiedEvent = events.get(0);
 
@@ -412,7 +437,8 @@ public class CommandParseTest {
     assertNotNull("Result should not be null", result);
     assertTrue("Result should indicate success", result.contains("Updated event"));
 
-    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().
+            getCalendar();
     IEvent modifiedEvent = calendarData.get(testDate).get(0);
 
     assertNotNull("Modified event should exist", modifiedEvent);
@@ -437,7 +463,8 @@ public class CommandParseTest {
     assertNotNull("Result should not be null", result);
     assertTrue("Result should indicate success", result.contains("Updated event"));
 
-    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().
+            getCalendar();
     IEvent modifiedEvent = calendarData.get(testDate).get(0);
 
     assertNotNull("Modified event should exist", modifiedEvent);
@@ -450,13 +477,16 @@ public class CommandParseTest {
   @Test
   public void testEditEventsInSeriesFromSpecificDate() {
     LocalDateTime seriesStart = LocalDateTime.of(2025, 6, 16, 9, 0);
-    controller.executeCommand("create event \"Weekly Meeting\" from 2025-06-16T09:00 to 2025-06-16T10:00 " +
+    controller.executeCommand("create event \"Weekly Meeting\" from 2025-06-16T09:00 to " +
+            "2025-06-16T10:00 " +
             "repeats MWF for 4 times");
 
-    Map<LocalDateTime, List<IEvent>> seriesData = controller.getMultiCalendar().getCurrent().getSeries();
+    Map<LocalDateTime, List<IEvent>> seriesData = controller.getMultiCalendar().getCurrent().
+            getSeries();
     assertFalse("Series should not be empty", seriesData.isEmpty());
 
-    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().
+            getCalendar();
     LocalDate monday1 = LocalDate.of(2025, 6, 16);
     LocalDate wednesday1 = LocalDate.of(2025, 6, 18);
     LocalDate friday1 = LocalDate.of(2025, 6, 20);
@@ -495,10 +525,12 @@ public class CommandParseTest {
   @Test
   public void testEditEntireEventSeries() {
     LocalDateTime seriesStart = LocalDateTime.of(2025, 6, 16, 14, 0);
-    controller.executeCommand("create event \"Team Standup\" from 2025-06-16T14:00 to 2025-06-16T14:30 " +
+    controller.executeCommand("create event \"Team Standup\" from 2025-06-16T14:00 to " +
+            "2025-06-16T14:30 " +
             "repeats MTWRF for 3 times");
 
-    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().
+            getCalendar();
     LocalDate monday = LocalDate.of(2025, 6, 16);
     LocalDate tuesday = LocalDate.of(2025, 6, 17);
     LocalDate wednesday = LocalDate.of(2025, 6, 18);
@@ -537,10 +569,12 @@ public class CommandParseTest {
   @Test
   public void testEditEventSeriesStartTimeBreaksSeries() {
     LocalDateTime seriesStart = LocalDateTime.of(2025, 6, 16, 10, 0);
-    controller.executeCommand("create event \"Morning Sync\" from 2025-06-16T10:00 to 2025-06-16T11:00 " +
+    controller.executeCommand("create event \"Morning Sync\" from 2025-06-16T10:00 to " +
+            "2025-06-16T11:00 " +
             "repeats MW for 3 times");
 
-    Map<LocalDateTime, List<IEvent>> seriesData = controller.getMultiCalendar().getCurrent().getSeries();
+    Map<LocalDateTime, List<IEvent>> seriesData = controller.getMultiCalendar().
+            getCurrent().getSeries();
     assertTrue("Should have series with original start time", seriesData.containsKey(seriesStart));
 
     String command = "edit events start Morning Sync from 2025-06-18T10:00 with 2025-06-18T11:00";
@@ -551,7 +585,8 @@ public class CommandParseTest {
     assertNotNull("Result should not be null", result);
     assertTrue("Result should indicate success", result.contains("Updated events starting from"));
 
-    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().
+            getCurrent().getCalendar();
     LocalDate monday1 = LocalDate.of(2025, 6, 16);
     LocalDate wednesday1 = LocalDate.of(2025, 6, 18);
 
@@ -574,7 +609,8 @@ public class CommandParseTest {
 
   @Test
   public void testPrintEventsOnSpecificDate() {
-    controller.executeCommand("create event \"Morning Meeting\" from 2025-06-15T09:00 to 2025-06-15T10:00");
+    controller.executeCommand("create event \"Morning Meeting\" from 2025-06-15T09:00 to " +
+            "2025-06-15T10:00");
     controller.executeCommand("create event Lunch from 2025-06-15T12:00 to 2025-06-15T13:00");
 
     String command = "print events on 2025-06-15";
@@ -596,7 +632,8 @@ public class CommandParseTest {
 
   @Test
   public void testPrintEventsOnEmptyDate() {
-    assertTrue("Calendar should be empty initially", controller.getMultiCalendar().getCurrent().getCalendar().isEmpty());
+    assertTrue("Calendar should be empty initially", controller.getMultiCalendar().getCurrent().
+            getCalendar().isEmpty());
 
     String command = "print events on 2025-06-15";
     assertNotNull("Command should not be null", command);
@@ -630,7 +667,8 @@ public class CommandParseTest {
 
     assertNotNull("Result should not be null", result);
     assertFalse("Result should not be empty", result.isEmpty());
-    assertTrue("Result should contain date range header", result.contains("Events from 2025-06-15 to 2025-06-17"));
+    assertTrue("Result should contain date range header", result.contains("Events from 2025-06-15 "
+            + "to 2025-06-17"));
     assertTrue("Result should contain Day 1 Event", result.contains("Day 1 Event"));
     assertTrue("Result should contain Day 2 Event", result.contains("Day 2 Event"));
     assertTrue("Result should contain Day 3 Event", result.contains("Day 3 Event"));
@@ -638,8 +676,10 @@ public class CommandParseTest {
 
   @Test
   public void testPrintEventsRangeWithTimeFiltering() {
-    controller.executeCommand("create event \"Early Event\" from 2025-06-15T07:00 to 2025-06-15T08:00");
-    controller.executeCommand("create event \"Late Event\" from 2025-06-15T15:00 to 2025-06-15T16:00");
+    controller.executeCommand("create event \"Early Event\" from 2025-06-15T07:00 to " +
+            "2025-06-15T08:00");
+    controller.executeCommand("create event \"Late Event\" from 2025-06-15T15:00 to " +
+            "2025-06-15T16:00");
 
     String command = "print events from 2025-06-15T10:00 to 2025-06-15T18:00";
     assertNotNull("Command should not be null", command);
@@ -653,7 +693,8 @@ public class CommandParseTest {
 
   @Test
   public void testShowStatusBusyWithEvent() {
-    controller.executeCommand("create event \"Important Meeting\" from 2025-06-15T10:00 to 2025-06-15T11:00");
+    controller.executeCommand("create event \"Important Meeting\" from 2025-06-15T10:00 to " +
+            "2025-06-15T11:00");
 
     String command = "show status on 2025-06-15T10:00";
     assertNotNull("Command should not be null", command);
@@ -668,7 +709,8 @@ public class CommandParseTest {
 
   @Test
   public void testShowStatusAvailableNoEvents() {
-    assertTrue("Calendar should be empty initially", controller.getMultiCalendar().getCurrent().getCalendar().isEmpty());
+    assertTrue("Calendar should be empty initially", controller.getMultiCalendar().getCurrent().
+            getCalendar().isEmpty());
 
     String command = "show status on 2025-06-15T10:00";
     assertNotNull("Command should not be null", command);
@@ -681,7 +723,8 @@ public class CommandParseTest {
 
   @Test
   public void testShowStatusDuringEventPeriod() {
-    controller.executeCommand("create event \"Long Meeting\" from 2025-06-15T10:00 to 2025-06-15T12:00");
+    controller.executeCommand("create event \"Long Meeting\" from 2025-06-15T10:00 to " +
+            "2025-06-15T12:00");
 
     String command1 = "show status on 2025-06-15T10:00";
     String result1 = controller.executeCommand(command1);
@@ -784,7 +827,8 @@ public class CommandParseTest {
     assertNotNull("First result should not be null", result1);
     assertTrue("First creation should succeed", result1.contains("Created event"));
 
-    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().getCalendar();
+    Map<LocalDate, List<IEvent>> calendarData = controller.getMultiCalendar().getCurrent().
+            getCalendar();
     assertTrue("Calendar should contain test date", calendarData.containsKey(testDate));
     assertEquals("Should have one event", 1, calendarData.get(testDate).size());
 
@@ -803,7 +847,8 @@ public class CommandParseTest {
 
   @Test
   public void testEditNonExistentEvent() {
-    assertTrue("Calendar should be empty initially", controller.getMultiCalendar().getCurrent().getCalendar().isEmpty());
+    assertTrue("Calendar should be empty initially", controller.getMultiCalendar().getCurrent().
+            getCalendar().isEmpty());
 
     String command = "edit event subject NonExistent from 2025-06-15T10:00 to " +
             "2025-06-15T11:00 with NewName";

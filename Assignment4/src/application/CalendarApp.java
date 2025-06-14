@@ -12,6 +12,10 @@ public class CalendarApp {
   private static final String INTERACTIVE_MODE = "interactive";
   private static final String HEADLESS_MODE = "headless";
 
+  /**
+   * The main function.
+   * @param args user inputs
+   */
   public static void main(String[] args) {
     if (args.length == 0) {
       printUsage();
@@ -46,7 +50,8 @@ public class CalendarApp {
         new HeadlessView(controller).run(args[2]);
         break;
       default:
-        System.err.println("Error: Invalid mode '" + args[1] + "'. Must be 'interactive' or 'headless'");
+        System.err.println("Error: Invalid mode '" + args[1] + "'. Must be 'interactive' " +
+                "or 'headless'");
         printUsage();
     }
   }

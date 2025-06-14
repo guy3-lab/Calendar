@@ -193,7 +193,9 @@ public class Event implements IEvent {
 
   @Override
   public boolean equals(Object o) {
-    if (!(o instanceof Event)) { return false; }
+    if (!(o instanceof Event)) {
+      return false;
+    }
     Event event = (Event) o;
 
     return subject.equals(event.subject)
