@@ -84,6 +84,7 @@ copy events on `<dateString>` --target `<calendarName>` to `<dateString>`
 copy events between `<dateString>` and `<dateString>` --target `<calendarName>` to `<dateString>`
 
 For all `copy events` commands, if an event series partly overlaps with the specified range, only those events in the series that overlap with the specified range should be copied
+
 ---
 ## How to Use
 
