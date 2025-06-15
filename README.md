@@ -84,10 +84,11 @@ copy events on `<dateString>` --target `<calendarName>` to `<dateString>`
 copy events between `<dateString>` and `<dateString>` --target `<calendarName>` to `<dateString>`
 
 For all `copy events` commands, if an event series partly overlaps with the specified range, only those events in the series that overlap with the specified range should be copied
+
 ---
 ## How to Use
 
-1. Choose either **interactive** or **headless** mode to run the program. `--mode interactive` or `--mode headless <command_file>`
+1. Choose either **interactive**, **headless**, or **GUI** mode to run the program. `java -jar Program.jar --mode interactive` or `java -jar Program.jar --mode headless <path-of-script-file>` or `java -jar Program.jar ` For the GUI mode, simply double clicking on the jar file will work as well.
 3. For **headless mode**, provide a text file with a list of valid commands (the last command must be `exit`).  
 4. For **interactive mode**, the user types valid commands one-by-one and sees output immediately.
 
@@ -113,6 +114,11 @@ For all `copy events` commands, if an event series partly overlaps with the spec
 - ✔ Can change the name and time zones of calendars
 - ✔ Can copy events from one calendar to the other, and coverting the times as needed
 
+- Specifically for the GUI
+- ✔ able to work with a single calendar. A user should not be forced to create a new calendar. Allow a user to work with a default calendar in the user's current timezone based on their system setting.
+- ✔ able to create and view events for the calendar.
+- ✔ able to specify a date and see a schedule view from that date (first 10)
+
 ---
 
 ## Features That Don't Work
@@ -134,13 +140,21 @@ For all `copy events` commands, if an event series partly overlaps with the spec
 
 **David**  
 - Model  
-- Tests  
+- Tests
+- GUI View
+- GUI controller
 - Instructions
 
-## Changes from the last assignment
+## Changes from the last assignment Assignment 4
 - Added a check condition when making and editing series such that no two series can have the same starting time
 - Added a seriesKey field in the Event's class to do what was listed above
 - Made AddEventHelper method in the initial calendar class protected so that an extending class can have acces to it when creating and adding events
 - Added the new class SpecificCalendar that extends Calendar because it now has a name and timezone field in order to conform to open for extension, closed for modification (that is if Calendar was already good)
 - Added a new package MultiCalendar in the model in order to represent the multiple calendars that can be accessed in Assignment 5.
+
+## Changes from the last assignment Assignment 5
+- Created a new controller specifically to help with the GUI view because it works differently from the CLI
+- Made a new view for the GUI and corresponding interface since we're using Sling
+- Edited the printEventsInterval such that if an end date is not provided, it will only print the first 10 events. This prevented making another method to specifically print 10 dates, and helps reduce duplication
+
 
