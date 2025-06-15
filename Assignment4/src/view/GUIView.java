@@ -4,10 +4,12 @@ package view;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.swing.*;
 
 import controller.GUICalendarController;
+import controller.parse.PropertyType;
 import model.calendar.ISpecificCalendar;
 
 /**
@@ -18,28 +20,27 @@ public class GUIView extends JFrame implements IGuiView {
   private JPanel calendarPanel;
   private JLabel statusLabel;
   private JLabel calendarLabel;
+
   private JComboBox<String> calendarsDropdown;
+  private JComboBox<String> timeZonesDropdown;
+  private JComboBox<PropertyType> editPropertyDropdown;
+
   private JButton createButton;
+  private JButton editButton;
+  private JButton newCalendarButton;
   private JButton chooseDate;
 
-  private JTextField dayTextField;
-  private JTextField monthTextField;
-  private JTextField yearTextField;
-  private JTextField hourTextField;
-  private JTextField minuteTextField;
-
+  private JTextField calNameTextField;
+  private JTextField dateTextField;
   private JTextField nameTextField;
-  private JTextField fromDayTextField;
-  private JTextField fromMonthTextField;
-  private JTextField fromYearTextField;
-  private JTextField fromHourTextField;
-  private JTextField fromMinuteTextField;
+  private JTextField fromDateTextField;
+  private JTextField toDateTextField;
 
-  private JTextField toDayTextField;
-  private JTextField toMonthTextField;
-  private JTextField toYearTextField;
-  private JTextField toHourTextField;
-  private JTextField toMinuteTextField;
+  private JTextField editSubjectTextField;
+  private JTextField editValueTextField;
+  private JTextField fromEditTextField;
+  private JTextField toEditTextField;
+
 
   private String events;
 
@@ -49,7 +50,7 @@ public class GUIView extends JFrame implements IGuiView {
   public GUIView(GUICalendarController controller) {
     frame = new JFrame("Calendar App");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    frame.setSize(500, 500);
+    frame.setSize(800, 1000);
     frame.setLayout(new BorderLayout());
 
     //top panel
@@ -60,6 +61,18 @@ public class GUIView extends JFrame implements IGuiView {
     currentPanel.add(calendarLabel);
     currentPanel.add(calendarsDropdown);
 
+    JPanel newCalendarPanel = new JPanel();
+    JLabel createNewCalendar = new JLabel("Create new calendar: ");
+    calNameTextField = new JTextField();
+    String[] timeZones = TimeZone.getAvailableIDs();
+    timeZonesDropdown = new JComboBox<>(timeZones);
+    newCalendarButton = new JButton("Create");
+    newCalendarButton.setActionCommand("createCalendar");
+    newCalendarPanel.add(createNewCalendar);
+    newCalendarPanel.add(calNameTextField);
+    newCalendarPanel.add(timeZonesDropdown);
+    newCalendarPanel.add(newCalendarButton);
+
     JPanel statusPanel = new JPanel();
     statusLabel = new JLabel();
     statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -68,6 +81,7 @@ public class GUIView extends JFrame implements IGuiView {
     JPanel topPanel = new JPanel();
     topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
     topPanel.add(currentPanel);
+    topPanel.add(newCalendarPanel);
     topPanel.add(statusPanel);
 
     frame.add(topPanel, BorderLayout.NORTH);
@@ -82,28 +96,12 @@ public class GUIView extends JFrame implements IGuiView {
     //search panel on top of the bottom panel
     JPanel searchPanel = new JPanel();
     chooseDate = new JButton("Get Events");
+    JLabel chooseDateLabel = new JLabel("Choose a date (YYYY-MM-DDThh:mm): ");
     chooseDate.setActionCommand("chooseDate");
-    JLabel dayLabel = new JLabel("Day");
-    JLabel monthLabel = new JLabel("Month");
-    JLabel yearLabel = new JLabel("Year");
-    JLabel hourLabel = new JLabel("Hour");
-    JLabel minuteLabel = new JLabel("Minute");
-    dayTextField = new JTextField(2);
-    monthTextField = new JTextField(2);
-    yearTextField = new JTextField(4);
-    hourTextField = new JTextField(2);
-    minuteTextField = new JTextField(2);
+    dateTextField = new JTextField(16);
 
-    searchPanel.add(yearLabel);
-    searchPanel.add(yearTextField);
-    searchPanel.add(monthLabel);
-    searchPanel.add(monthTextField);
-    searchPanel.add(dayLabel);
-    searchPanel.add(dayTextField);
-    searchPanel.add(hourLabel);
-    searchPanel.add(hourTextField);
-    searchPanel.add(minuteLabel);
-    searchPanel.add(minuteTextField);
+    searchPanel.add(chooseDateLabel);
+    searchPanel.add(dateTextField);
     searchPanel.add(chooseDate);
 
     //create panel below search panel
@@ -111,51 +109,52 @@ public class GUIView extends JFrame implements IGuiView {
     createButton = new JButton("Create Event");
     createButton.setActionCommand("createEvent");
     nameTextField = new JTextField(10);
-    JLabel eventLabel = new JLabel("Event Name");
-    JLabel fromLabel = new JLabel("From: ");
-    JLabel fromDayLabel = new JLabel("Day");
-    JLabel fromMonthLabel = new JLabel("Month");
-    JLabel fromYearLabel = new JLabel("Year");
-    JLabel fromHourLabel = new JLabel("Hour");
-    JLabel fromMinuteLabel = new JLabel("Minute");
-    fromDayTextField = new JTextField(2);
-    fromMonthTextField = new JTextField(2);
-    fromYearTextField = new JTextField(4);
-    fromHourTextField = new JTextField(2);
-    fromMinuteTextField = new JTextField(2);
+    JLabel eventLabel = new JLabel("Event Name: ");
+    JLabel fromLabel = new JLabel("From (YYYY-MM-DDThh:mm): ");
+    fromDateTextField = new JTextField(16);
 
-    JLabel toLabel = new JLabel("To: ");
-    JLabel toDayLabel = new JLabel("Day");
-    JLabel toMonthLabel = new JLabel("Month");
-    JLabel toYearLabel = new JLabel("Year");
-    JLabel toHourLabel = new JLabel("Hour");
-    JLabel toMinuteLabel = new JLabel("Minute");
-    toDayTextField = new JTextField(2);
-    toMonthTextField = new JTextField(2);
-    toYearTextField = new JTextField(4);
-    toHourTextField = new JTextField(2);
-    toMinuteTextField = new JTextField(2);
+    JLabel toLabel = new JLabel("To (YYYY-MM-DDThh:mm): ");
+    toDateTextField = new JTextField(16);
 
     createPanel.add(eventLabel);
     createPanel.add(nameTextField);
     createPanel.add(fromLabel);
-    createPanel.add(fromYearLabel);
-    createPanel.add(fromMonthLabel);
-    createPanel.add(fromDayLabel);
-    createPanel.add(fromHourLabel);
-    createPanel.add(fromMinuteLabel);
+    createPanel.add(fromDateTextField);
     createPanel.add(toLabel);
-    createPanel.add(toYearLabel);
-    createPanel.add(toMonthLabel);
-    createPanel.add(toDayLabel);
-    createPanel.add(toHourLabel);
-    createPanel.add(toMinuteLabel);
+    createPanel.add(toDateTextField);
     createPanel.add(createButton);
+
+    //edit panel
+    JPanel editPanel = new JPanel();
+    editButton = new JButton("Edit");
+    editButton.setActionCommand("editEvent");
+    JLabel property = new JLabel("Property: ");
+    JLabel subject = new JLabel("Subject: ");
+    JLabel from = new JLabel("From (YYYY-MM-DDThh:mm): ");
+    JLabel to = new JLabel("To (YYYY-MM-DDThh:mm): ");
+    JLabel value = new JLabel("Value: ");
+    editPropertyDropdown = new JComboBox<PropertyType>(PropertyType.values());
+    editSubjectTextField = new JTextField(16);
+    fromEditTextField = new JTextField(16);
+    toEditTextField = new JTextField(16);
+    editValueTextField = new JTextField(16);
+
+    editPanel.add(property);
+    editPanel.add(editPropertyDropdown);
+    editPanel.add(subject);
+    editPanel.add(editSubjectTextField);
+    editPanel.add(from);
+    editPanel.add(fromEditTextField);
+    editPanel.add(to);
+    editPanel.add(toEditTextField);
+    editPanel.add(value);
+    editPanel.add(editValueTextField);
 
     JPanel bottomPanel = new JPanel();
     bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.Y_AXIS));
     bottomPanel.add(searchPanel);
     bottomPanel.add(createPanel);
+    bottomPanel.add(editPanel);
     frame.add(bottomPanel, BorderLayout.SOUTH);
 
     updateCalendar();
@@ -184,7 +183,7 @@ public class GUIView extends JFrame implements IGuiView {
   @Override
   public void updateCalendar() {
     calendarPanel.removeAll();
-    calendarPanel.setLayout(new GridLayout(0, 7));
+    calendarPanel.setLayout(new GridLayout(12, 7));
     calendarPanel.setBackground(Color.WHITE);
 
     JTextArea eventsArea = new JTextArea(events);  // 'events' is the string you set from controller
@@ -204,6 +203,8 @@ public class GUIView extends JFrame implements IGuiView {
     calendarsDropdown.addActionListener(listener);
     createButton.addActionListener(listener);
     chooseDate.addActionListener(listener);
+    newCalendarButton.addActionListener(listener);
+    editButton.addActionListener(listener);
   }
 
   @Override
@@ -215,83 +216,33 @@ public class GUIView extends JFrame implements IGuiView {
   }
 
   @Override
-  public String getYearTextField() {
-    return this.yearTextField.getText();
+  public String getCalName() {
+    return this.calNameTextField.getText();
   }
 
   @Override
-  public String getMonthTextField() {
-    return this.monthTextField.getText();
+  public JComboBox<String> getTimeZoneDropdown() {
+    return this.timeZonesDropdown;
   }
 
   @Override
-  public String getDayTextField() {
-    return this.dayTextField.getText();
+  public String getDateTextField() {
+    return this.dateTextField.getText();
   }
 
   @Override
-  public String getHourTextField() {
-    return this.hourTextField.getText();
+  public String getFromDateTextField() {
+    return this.fromDateTextField.getText();
   }
 
   @Override
-  public String getMinuteTextField() {
-    return this.minuteTextField.getText();
-  }
-
-  @Override
-  public String getFromYearTextField() {
-    return this.yearTextField.getText();
-  }
-
-  @Override
-  public String getFromMonthTextField() {
-    return this.monthTextField.getText();
+  public String getToDateTextField() {
+    return this.toDateTextField.getText();
   }
 
   @Override
   public String getEventName() {
     return this.nameTextField.getText();
-  }
-
-  @Override
-  public String getFromDayTextField() {
-    return this.dayTextField.getText();
-  }
-
-  @Override
-  public String getFromHourTextField() {
-    return this.hourTextField.getText();
-  }
-
-  @Override
-  public String getFromMinuteTextField() {
-    return this.minuteTextField.getText();
-  }
-
-  @Override
-  public String getToYearTextField() {
-    return this.yearTextField.getText();
-  }
-
-  @Override
-  public String getToMonthTextField() {
-    return this.monthTextField.getText();
-  }
-
-  @Override
-  public String getToDayTextField() {
-    return this.dayTextField.getText();
-  }
-
-  @Override
-  public String getToHourTextField() {
-    return this.hourTextField.getText();
-  }
-
-  @Override
-  public String getToMinuteTextField() {
-    return this.minuteTextField.getText();
   }
 
   @Override
@@ -309,28 +260,52 @@ public class GUIView extends JFrame implements IGuiView {
     this.statusLabel.setText(status);
   }
 
+  @Override
+  public JComboBox<PropertyType> getEditProperty() {
+    return this.editPropertyDropdown;
+  }
+  @Override
+  public String getEditFromTextField() {
+    return this.fromEditTextField.getText();
+  }
+
+  @Override
+  public String getEditToTextField() {
+    return this.toEditTextField.getText();
+  }
+
+  @Override
+  public String getEditValue() {
+    return this.editValueTextField.getText();
+  }
+
+  @Override
+  public String getEditSubject() {
+    return this.editSubjectTextField.getText();
+  }
+
 
   @Override
   public void clearDateFieldsAfterRetrieving() {
-    yearTextField.setText("");
-    monthTextField.setText("");
-    dayTextField.setText("");
-    hourTextField.setText("");
-    minuteTextField.setText("");
+    dateTextField.setText("");
   }
 
   @Override
   public void clearDateFieldsAfterCreation() {
-    fromYearTextField.setText("");
-    fromMonthTextField.setText("");
-    fromDayTextField.setText("");
-    fromHourTextField.setText("");
-    fromMinuteTextField.setText("");
+    fromDateTextField.setText("");
+    toDateTextField.setText("");
+  }
 
-    toYearTextField.setText("");
-    toMonthTextField.setText("");
-    toDayTextField.setText("");
-    toHourTextField.setText("");
-    toMinuteTextField.setText("");
+  @Override
+  public void clearCalFieldsAfterCreation() {
+    calNameTextField.setText("");
+  }
+
+  @Override
+  public void clearDateFieldsAfterEditing() {
+    editSubjectTextField.setText("");
+    fromEditTextField.setText("");
+    toEditTextField.setText("");
+    editValueTextField.setText("");
   }
 }

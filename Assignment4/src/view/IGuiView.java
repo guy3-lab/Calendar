@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.swing.*;
 
+import controller.parse.PropertyType;
 import model.calendar.ISpecificCalendar;
 
 public interface IGuiView extends IView {
@@ -22,94 +23,34 @@ public interface IGuiView extends IView {
   void setCalendarsDropdown(List<ISpecificCalendar> calendars);
 
   /**
-   * Gets the year that was typed into this text field.
-   * @return the string that the user inputted
+   * Gets the calendar name for creating a new calendar.
+   * @return the new calendar name
    */
-  String getYearTextField();
+  String getCalName();
 
   /**
-   * Gets the month that was typed into this text field.
-   * @return the string that the user inputted
+   * gets the combobox for the timezone.
+   * @return the combobox
    */
-  String getMonthTextField();
+  JComboBox<String> getTimeZoneDropdown();
 
   /**
-   * Gets the day that was typed into this text field.
-   * @return the string that the user inputted
+   * gets the date from the text field for when retrieving all events.
+   * @return the date inputted
    */
-  String getDayTextField();
+  String getDateTextField();
 
   /**
-   * Gets the hour that was typed into this text field.
-   * @return the string that the user inputted
+   * gets the date from the text field for when creating a new event.
+   * @return the date inputted
    */
-  String getHourTextField();
+  String getFromDateTextField();
 
   /**
-   * Gets the minute that was typed into this text field.
-   * @return the string that the user inputted
+   * gets the date from the text field for when creating a new event.
+   * @return the date inputted
    */
-  String getMinuteTextField();
-
-  /**
-   * Gets the year that was typed into this text field.
-   * @return the string that the user inputted
-   */
-  String getFromYearTextField();
-
-  /**
-   * Gets the month that was typed into this text field.
-   * @return the string that the user inputted
-   */
-  String getFromMonthTextField();
-
-  /**
-   * Gets the day that was typed into this text field.
-   * @return the string that the user inputted
-   */
-  String getFromDayTextField();
-
-  /**
-   * Gets the hour that was typed into this text field.
-   * @return the string that the user inputted
-   */
-  String getFromHourTextField();
-
-  /**
-   * Gets the minute that was typed into this text field.
-   * @return the string that the user inputted
-   */
-  String getFromMinuteTextField();
-
-  /**
-   * Gets the year that was typed into this text field.
-   * @return the string that the user inputted
-   */
-  String getToYearTextField();
-
-  /**
-   * Gets the month that was typed into this text field.
-   * @return the string that the user inputted
-   */
-  String getToMonthTextField();
-
-  /**
-   * Gets the day that was typed into this text field.
-   * @return the string that the user inputted
-   */
-  String getToDayTextField();
-
-  /**
-   * Gets the hour that was typed into this text field.
-   * @return the string that the user inputted
-   */
-  String getToHourTextField();
-
-  /**
-   * Gets the minute that was typed into this text field.
-   * @return the string that the user inputted
-   */
-  String getToMinuteTextField();
+  String getToDateTextField();
 
   /**
    * Gets the event name that was typed into this text field.
@@ -122,6 +63,12 @@ public interface IGuiView extends IView {
    * @return the label of the calendar.
    */
   JLabel getCalendarLabel();
+
+  JComboBox<PropertyType> getEditProperty();
+  String getEditFromTextField();
+  String getEditToTextField();
+  String getEditValue();
+  String getEditSubject();
 
   /**
    * Sets the event text area to the inputted events.
@@ -144,4 +91,14 @@ public interface IGuiView extends IView {
    * Clears the date fields after creating an event.
    */
   void clearDateFieldsAfterCreation();
+
+  /**
+   * Clears the date fields after creating an event.
+   */
+  void clearCalFieldsAfterCreation();
+
+  /**
+   * Clears the date fields after creating an event.
+   */
+  void clearDateFieldsAfterEditing();
 }

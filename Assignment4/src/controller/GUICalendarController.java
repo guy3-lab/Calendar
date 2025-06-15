@@ -8,6 +8,7 @@ import java.time.ZoneId;
 
 import javax.swing.*;
 
+import controller.parse.PropertyType;
 import model.multicalendar.IMultiCalendar;
 import view.IGuiView;
 
@@ -49,16 +50,20 @@ public class GUICalendarController implements IController, ActionListener {
     try {
       switch (command) {
         case "calendarSelected":
-          JComboBox<?> source = (JComboBox<?>) e.getSource();
-          String selected = (String) source.getSelectedItem();
-          multiCalendar.useCalendar(selected);
-          view.getCalendarLabel().setText(selected);
+          selectCalendar(e);
           break;
         case "chooseDate":
           chooseDateHelper();
           break;
         case "createEvent":
           createEventHelper();
+          break;
+        case "createCalendar":
+          createNewCalendar();
+          break;
+        case "editEvent":
+          editEventHelper();
+          break;
         default: //nothing happens because no action is done
       }
     } catch (Exception ex) {
@@ -66,20 +71,21 @@ public class GUICalendarController implements IController, ActionListener {
     }
   }
 
+  //sets the selected calendar to the current
+  private void selectCalendar(ActionEvent e) {
+    JComboBox<?> source = (JComboBox<?>) e.getSource();
+    String selected = (String) source.getSelectedItem();
+    multiCalendar.useCalendar(selected);
+    view.setEvents("");
+    view.updateCalendar();
+    view.getCalendarLabel().setText(selected);
+  }
+
   //prints out the first 10 events starting at the inputted starting time
   private void chooseDateHelper() {
-    String year = view.getYearTextField();
-    String month = view.getMonthTextField();
-    String day = view.getDayTextField();
+    String date = view.getDateTextField();
 
-    int hourInt = Integer.parseInt(view.getHourTextField());
-    String hour = String.format("%02d", hourInt);
-
-    int minInt = Integer.parseInt(view.getMinuteTextField());
-    String minute = String.format("%02d", minInt);
-
-    LocalDateTime start = LocalDateTime.parse(year + "-" + month + "-" + day + "T"
-            + hour + ":" + minute);
+    LocalDateTime start = LocalDateTime.parse(date);
     view.setEvents(multiCalendar.getCurrent().printEventsInterval(start, null));
     view.clearDateFieldsAfterRetrieving();
     view.updateCalendar();
@@ -89,32 +95,45 @@ public class GUICalendarController implements IController, ActionListener {
   //creates an event from the user inputs
   private void createEventHelper() {
     String eventName = view.getEventName();
-    String fromYear = view.getFromYearTextField();
-    String toYear = view.getToYearTextField();
+    String fromDate = view.getFromDateTextField();
+    String toDate = view.getToDateTextField();
 
-    String fromMonth = view.getFromMonthTextField();
-    String toMonth = view.getToMonthTextField();
+    LocalDateTime start = LocalDateTime.parse(fromDate);
+    LocalDateTime end;
+    if (toDate.isEmpty()) {
+      end = null;
+    } else {
+      end = LocalDateTime.parse(toDate);
+    }
 
-    String fromDay = view.getFromDayTextField();
-    String toDay = view.getToDayTextField();
-
-    int fromHourInt = Integer.parseInt(view.getFromHourTextField());
-    String fromHour = String.format("%02d", fromHourInt);
-    int toHourInt = Integer.parseInt(view.getToHourTextField());
-    String toHour = String.format("%02d", toHourInt);
-
-    int fromMinInt = Integer.parseInt(view.getFromMinuteTextField());
-    String fromMin = String.format("%02d", fromMinInt);
-    int toMinInt = Integer.parseInt(view.getToMinuteTextField());
-    String toMin = String.format("%02d", toMinInt);
-
-    LocalDateTime start = LocalDateTime.parse(fromYear + "-" + fromMonth + "-" + fromDay + "T"
-            + fromHour + ":" + fromMin);
-    LocalDateTime end = LocalDateTime.parse(toYear + "-" + toMonth + "-" + toDay + "T"
-            + toHour + ":" + toMin);
     multiCalendar.getCurrent().createEvent(eventName, start, end);
+    view.updateCalendar();
     view.clearDateFieldsAfterCreation();
     view.setStatus(eventName + " created");
+  }
+
+  //creates a new calendar
+  private void createNewCalendar() {
+    String calName = view.getCalName();
+    String zone = view.getTimeZoneDropdown().getSelectedItem().toString();
+    ZoneId zoneId = ZoneId.of(zone);
+    multiCalendar.addCalendar(calName, zoneId);
+    view.clearCalFieldsAfterCreation();
+    view.setCalendarsDropdown(multiCalendar.getCalendars());
+    view.setStatus(calName + " created");
+  }
+
+  //edits an event
+  private void editEventHelper() {
+    PropertyType property = (PropertyType) view.getEditProperty().getSelectedItem();
+    String subject = view.getEditSubject();
+    LocalDateTime start = LocalDateTime.parse(view.getEditFromTextField());
+    LocalDateTime end = LocalDateTime.parse(view.getEditToTextField());
+    String value = view.getEditValue();
+    multiCalendar.getCurrent().editEvent(property, subject, start, end, value);
+    view.clearDateFieldsAfterEditing();
+    view.updateCalendar();
+    view.setStatus("Event edited");
   }
 }
 
