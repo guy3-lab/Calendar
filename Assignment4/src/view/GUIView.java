@@ -227,17 +227,29 @@ public class GUIView extends JFrame implements IGuiView {
 
   @Override
   public String getDateTextField() {
-    return this.dateTextField.getText();
+    try {
+      return this.dateTextField.getText();
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Invalid date");
+    }
   }
 
   @Override
   public String getFromDateTextField() {
-    return this.fromDateTextField.getText();
+    try {
+      return this.fromDateTextField.getText();
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Invalid date");
+    }
   }
 
   @Override
   public String getToDateTextField() {
-    return this.toDateTextField.getText();
+    try {
+      return this.toDateTextField.getText();
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Invalid date");
+    }
   }
 
   @Override
@@ -266,12 +278,20 @@ public class GUIView extends JFrame implements IGuiView {
   }
   @Override
   public String getEditFromTextField() {
-    return this.fromEditTextField.getText();
+    try {
+      return this.fromEditTextField.getText();
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Invalid date");
+    }
   }
 
   @Override
   public String getEditToTextField() {
-    return this.toEditTextField.getText();
+    try {
+      return this.toEditTextField.getText();
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Invalid date");
+    }
   }
 
   @Override

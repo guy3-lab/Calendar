@@ -86,7 +86,11 @@ public class GUICalendarController implements IController, ActionListener {
     String date = view.getDateTextField();
 
     LocalDateTime start = LocalDateTime.parse(date);
-    view.setEvents(multiCalendar.getCurrent().printEventsInterval(start, null));
+    String events = multiCalendar.getCurrent().printEventsInterval(start, null);
+    if (events.isEmpty()) {
+      throw new IllegalArgumentException("No events found starting at " + date);
+    }
+    view.setEvents(events);
     view.clearDateFieldsAfterRetrieving();
     view.updateCalendar();
     view.setStatus("Events starting at " + start);
@@ -130,6 +134,13 @@ public class GUICalendarController implements IController, ActionListener {
     LocalDateTime start = LocalDateTime.parse(view.getEditFromTextField());
     LocalDateTime end = LocalDateTime.parse(view.getEditToTextField());
     String value = view.getEditValue();
+    if (property == PropertyType.START || property == PropertyType.END) {
+      try {
+        LocalDateTime.parse(value);
+      } catch (Exception ex) {
+        throw new IllegalArgumentException("Invalid date value: " + value);
+      }
+    }
     multiCalendar.getCurrent().editEvent(property, subject, start, end, value);
     view.clearDateFieldsAfterEditing();
     view.updateCalendar();
