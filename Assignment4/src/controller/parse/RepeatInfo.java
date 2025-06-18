@@ -1,7 +1,8 @@
 package controller.parse;
 
 /**
- * Class that contains the repeat info that the user had inputted.
+ * Class that contains the repeat info that the user had inputted. This includes the weekdays that
+ * the user expects an event to repeat, the amount of times to repeat, or until when.
  */
 public class RepeatInfo {
   private final String repeatDays;

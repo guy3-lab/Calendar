@@ -4,7 +4,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * Parser for copy event and copy events commands.
+ * Parser for copy event and copy events commands
+ * (copy events on <dateString> --target <calendarName> to <dateString>,
+ * copy events between <dateString> and <dateString> --target <calendarName> to <dateString>).
+ *
  */
 public class CopyEventParser implements CommandParser {
 

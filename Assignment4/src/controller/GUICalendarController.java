@@ -14,7 +14,8 @@ import view.IGuiView;
 
 
 /**
- * Represents the controller for the application with a GUI
+ * Represents the controller for the application with a GUI. Calls on the calendar models and passes
+ * in the data to the GUIView to display.
  */
 public class GUICalendarController implements IController, ActionListener {
   private final IMultiCalendar multiCalendar;

@@ -4,7 +4,12 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Main parser that coordinates all specific parsers.
+ * Coordinates the parsing of user input commands by delegating them to the appropriate
+ * specific parser.
+ * This class holds a list of all available command parsers and determines which parser
+ * should handle
+ * a given input. It simplifies the process of command recognition by centralizing the
+ * delegation logic.
  */
 public class CommandParserCoordinator {
 
