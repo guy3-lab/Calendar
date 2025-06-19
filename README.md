@@ -91,6 +91,7 @@ For all `copy events` commands, if an event series partly overlaps with the spec
 1. Choose either **interactive**, **headless**, or **GUI** mode to run the program. `java -jar Program.jar --mode interactive` or `java -jar Program.jar --mode headless <path-of-script-file>` or `java -jar Program.jar ` For the GUI mode, simply double clicking on the jar file will work as well.
 3. For **headless mode**, provide a text file with a list of valid commands (the last command must be `exit`).  
 4. For **interactive mode**, the user types valid commands one-by-one and sees output immediately.
+5. For **GUI mode**, the user can input a new calendar name and choose a timezone to create a new calendar. A user can also follow the on-screen instructions to create and edit events by properly inputting the correct date formats.
 
 ---
 
@@ -118,6 +119,7 @@ For all `copy events` commands, if an event series partly overlaps with the spec
 - ✔ able to work with a single calendar. A user should not be forced to create a new calendar. Allow a user to work with a default calendar in the user's current timezone based on their system setting.
 - ✔ able to create and view events for the calendar.
 - ✔ able to specify a date and see a schedule view from that date (first 10)
+- ✔ Able to edit an event with the specific start date, end date, and subject name.
 
 ---
 
@@ -125,7 +127,12 @@ For all `copy events` commands, if an event series partly overlaps with the spec
 
 - ✘ Cannot create two of the same events
 - ✘ Cannot create two series of the same name or starting time
-- ✘ Cannot specify `status` or `description` or `location` at creation time  
+- ✘ Cannot specify `status` or `description` or `location` at creation time
+
+- specifically for the GUI
+- ✘ Can not edit event series
+- ✘ can not create event series
+- ✘ Can not print events only from a specific day
 
 ---
 
