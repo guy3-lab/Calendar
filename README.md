@@ -91,7 +91,7 @@ For all `copy events` commands, if an event series partly overlaps with the spec
 1. Choose either **interactive**, **headless**, or **GUI** mode to run the program. `java -jar Program.jar --mode interactive` or `java -jar Program.jar --mode headless <path-of-script-file>` or `java -jar Program.jar ` For the GUI mode, simply double clicking on the jar file will work as well.
 3. For **headless mode**, provide a text file with a list of valid commands (the last command must be `exit`).  
 4. For **interactive mode**, the user types valid commands one-by-one and sees output immediately.
-5. For **GUI mode**, the user can input a new calendar name and choose a timezone to create a new calendar. A user can also follow the on-screen instructions to create and edit events by properly inputting the correct date formats.
+5. For **GUI mode**, the user can input a new calendar name and choose a timezone to create a new calendar. A user can also follow the on-screen instructions to create and edit events by properly inputting the correct date formats. Also able to input a proper date time to show all events (up to 10) starting from a specific date.
 
 ---
 
