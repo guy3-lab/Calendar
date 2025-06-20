@@ -1,7 +1,8 @@
 package controller.parse;
 
 /**
- * Parser for edit calendar commands.
+ * Parser for edit calendar commands
+ * (edit calendar --name <name-of-calendar> --property <property-name> <new-property-value>).
  */
 public class EditCalendarParser implements CommandParser {
 

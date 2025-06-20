@@ -3,7 +3,7 @@ package controller.parse;
 import java.time.ZoneId;
 
 /**
- * Parser for create calendar commands.
+ * Parser for create calendar commands (create calendar --name <calName> --timezone area/location).
  */
 public class CreateCalendarParser implements CommandParser {
 

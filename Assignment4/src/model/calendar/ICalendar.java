@@ -10,7 +10,7 @@ import controller.parse.PropertyType;
 
 
 /**
- * The calendar interface that contains all the methods required to edit and create events.
+ * The calendar interface that contains all the methods required to edit, print, and create events.
  */
 public interface ICalendar {
   /**

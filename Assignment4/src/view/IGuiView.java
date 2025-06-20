@@ -8,6 +8,11 @@ import javax.swing.*;
 import controller.parse.PropertyType;
 import model.calendar.ISpecificCalendar;
 
+/**
+ * The interface of the basic GUI for the calendar program that contains methods that help access
+ * information that user inputs into text fields, or information that get displayed for the user to
+ * see.
+ */
 public interface IGuiView extends IView {
 
   void updateCalendar();

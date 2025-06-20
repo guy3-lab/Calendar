@@ -3,7 +3,8 @@ package controller.parse;
 import java.time.LocalDateTime;
 
 /**
- * Class that handles the commands that asks to show status.
+ * Class that handles the commands that asks to show status
+ * (show status on <dateStringTtimeString>).
  */
 public class ShowStatusParser implements CommandParser {
   @Override

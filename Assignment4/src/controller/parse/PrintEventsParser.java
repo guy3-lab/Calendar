@@ -4,7 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * class that parses the print event command input.
+ * class that parses the print "multiple events" command input
+ * (print events from <dateStringTtimeString> to <dateStringTtimeString>).
  */
 public class PrintEventsParser implements CommandParser {
   @Override

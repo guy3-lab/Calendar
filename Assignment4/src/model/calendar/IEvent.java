@@ -6,7 +6,10 @@ import model.enums.Location;
 import model.enums.Status;
 
 /**
- * the Event object interface that contains getter and setter methods.
+ * Represents a calendar event with details like subject, time, description, location, and status.
+ * This interface provides methods to get and update event information. It also supports tracking
+ * events that are part of a recurring series using a series key.* the Event object interface that
+ * contains getter and setter methods.
  */
 public interface IEvent {
 
