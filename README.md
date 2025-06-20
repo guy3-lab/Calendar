@@ -143,7 +143,9 @@ For all `copy events` commands, if an event series partly overlaps with the spec
 - Model
 - View
 - Command Line Interface & Files  
-- Tests  
+- Tests
+- GUI View
+- GUI Controller
 
 **David**  
 - Model  
@@ -161,7 +163,7 @@ For all `copy events` commands, if an event series partly overlaps with the spec
 
 ## Changes from the last assignment Assignment 5
 - Created a new controller specifically to help with the GUI view because it works differently from the CLI
-- Made a new view for the GUI and corresponding interface since we're using Sling
+- Made a new view for the GUI and corresponding interface since we're using Swing
 - Edited the printEventsInterval such that if an end date is not provided, it will only print the first 10 events. This prevented making another method to specifically print 10 dates, and helps reduce duplication
 
 
