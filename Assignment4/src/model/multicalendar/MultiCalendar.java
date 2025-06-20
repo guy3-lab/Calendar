@@ -231,10 +231,13 @@ public class MultiCalendar implements IMultiCalendar {
   public void copyEventsInterval(LocalDate startDate, LocalDate endDate, String calendarName,
                                  LocalDate targetDate) {
     isCalendarChosen();
-    while (!startDate.isAfter(endDate)) {
-      copyEventsHelper(startDate, calendarName, targetDate);
-      startDate = startDate.plusDays(1);
-      targetDate = targetDate.plusDays(1);
+    LocalDate currentSourceDate = startDate;
+    LocalDate currentTargetDate = targetDate;
+
+    while (!currentSourceDate.isAfter(endDate)) {
+      copyEventsHelper(currentSourceDate, calendarName, currentTargetDate);
+      currentSourceDate = currentSourceDate.plusDays(1);
+      currentTargetDate = currentTargetDate.plusDays(1);
     }
   }
 
@@ -248,25 +251,40 @@ public class MultiCalendar implements IMultiCalendar {
       return;
     }
 
+    // get source and target timezones
     ZoneId currentZoneID = this.current.getTimeZone();
-    ZoneId targetZoneID;
+    ZoneId targetZoneID = null;
+
+    // find target calendar and get its timezone
     for (ISpecificCalendar calendar : calendars) {
       if (calendar.getName().equals(calendarName)) {
         targetZoneID = calendar.getTimeZone();
-        for (IEvent event : currentEvents) {
-          String eventName = event.getSubject();
-          LocalDateTime eventDate = event.getStart();
-
-          ZonedDateTime dateWithZoneID = eventDate.atZone(currentZoneID);
-          ZonedDateTime newZonedDateTime = dateWithZoneID.withZoneSameInstant(targetZoneID);
-          LocalDateTime targetDateTime = newZonedDateTime.toLocalDateTime();
-
-          long betweenDays = ChronoUnit.DAYS.between(targetDateTime.toLocalDate(), targetDate);
-
-          copyEvent(eventName, eventDate, calendarName, targetDateTime.plusDays(betweenDays));
-        }
         break;
       }
+    }
+
+    if (targetZoneID == null) {
+      throw new IllegalArgumentException("Target calendar not found: " + calendarName);
+    }
+
+    // copy each event with timezone conversion
+    for (IEvent event : currentEvents) {
+      String eventName = event.getSubject();
+      LocalDateTime eventDate = event.getStart();
+
+      // convert the event time from source timezone to target timezone
+      ZonedDateTime sourceZonedTime = eventDate.atZone(currentZoneID);
+      ZonedDateTime targetZonedTime = sourceZonedTime.withZoneSameInstant(targetZoneID);
+      LocalDateTime convertedEventTime = targetZonedTime.toLocalDateTime();
+
+      // calculate the day offset from the source date to the target date
+      long dayOffset = ChronoUnit.DAYS.between(date, targetDate);
+
+      // apply the day offset to the converted time
+      LocalDateTime finalTargetDateTime = convertedEventTime.plusDays(dayOffset);
+
+      // copy the event to the target calendar at the calculated time
+      copyEvent(eventName, eventDate, calendarName, finalTargetDateTime);
     }
   }
 
