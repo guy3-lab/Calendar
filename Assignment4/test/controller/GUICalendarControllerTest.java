@@ -57,7 +57,8 @@ public class GUICalendarControllerTest {
     JComboBox<String> combo = new JComboBox<>();
     combo.addItem("Work");
     combo.setSelectedItem("Work");
-    ActionEvent event = new ActionEvent(combo, ActionEvent.ACTION_PERFORMED, "calendarSelected");
+    ActionEvent event = new ActionEvent(combo, ActionEvent.ACTION_PERFORMED,
+            "calendarSelected");
 
     controller.actionPerformed(event);
     waitForEDT();
@@ -75,7 +76,8 @@ public class GUICalendarControllerTest {
     controller.go();
     mockView.dateText = "";
 
-    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED, "chooseDate");
+    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED,
+            "chooseDate");
     controller.actionPerformed(event);
     waitForEDT();
 
@@ -91,8 +93,10 @@ public class GUICalendarControllerTest {
     controller.go();
     mockView.dateText = "2025-06-19T10:00";
 
-    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED, "chooseDate");
+    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED,
+            "chooseDate");
     controller.actionPerformed(event);
+
     waitForEDT();
 
     assertTrue(mockView.eventsText.contains("Events from 2025-06-19 10:00"));
@@ -106,11 +110,13 @@ public class GUICalendarControllerTest {
     controller.go();
     mockView.dateText = "invalid-date";
 
-    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED, "chooseDate");
+    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED,
+            "chooseDate");
     controller.actionPerformed(event);
     waitForEDT();
 
-    assertEquals("Invalid date format. Use: YYYY-MM-DDThh:mm (e.g., 2025-06-19T10:00)", mockView.statusText);
+    assertEquals("Invalid date format. Use: YYYY-MM-DDThh:mm (e.g., 2025-06-1" +
+            "9T10:00)", mockView.statusText);
   }
 
   /**
@@ -123,7 +129,8 @@ public class GUICalendarControllerTest {
     mockView.fromDate = "2025-06-19T10:00";
     mockView.toDate = "2025-06-19T11:00";
 
-    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED, "createEvent");
+    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED,
+            "createEvent");
     controller.actionPerformed(event);
     waitForEDT();
 
@@ -143,7 +150,8 @@ public class GUICalendarControllerTest {
     mockView.fromDate = "2025-06-19T08:00";
     mockView.toDate = "";
 
-    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED, "createEvent");
+    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED,
+            "createEvent");
     controller.actionPerformed(event);
     waitForEDT();
 
@@ -160,7 +168,8 @@ public class GUICalendarControllerTest {
     mockView.eventName = "";
     mockView.fromDate = "2025-06-19T10:00";
 
-    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED, "createEvent");
+    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED,
+            "createEvent");
     controller.actionPerformed(event);
     waitForEDT();
 
@@ -177,7 +186,8 @@ public class GUICalendarControllerTest {
     mockView.eventName = "Meeting";
     mockView.fromDate = "";
 
-    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED, "createEvent");
+    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED,
+            "createEvent");
     controller.actionPerformed(event);
     waitForEDT();
 
@@ -195,8 +205,10 @@ public class GUICalendarControllerTest {
     mockView.fromDate = "2025-06-19T11:00";
     mockView.toDate = "2025-06-19T10:00";
 
-    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED, "createEvent");
+    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED,
+            "createEvent");
     controller.actionPerformed(event);
+
     waitForEDT();
 
     assertEquals("End time must be after start time", mockView.statusText);
@@ -211,7 +223,9 @@ public class GUICalendarControllerTest {
     mockView.calName = "Personal";
     mockView.selectedTimeZone = "America/New_York";
 
-    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED, "createCalendar");
+
+    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED,
+            "createCalendar");
     controller.actionPerformed(event);
     waitForEDT();
 
@@ -228,7 +242,8 @@ public class GUICalendarControllerTest {
     controller.go();
     mockView.calName = "";
 
-    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED, "createCalendar");
+    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED,
+            "createCalendar");
     controller.actionPerformed(event);
     waitForEDT();
 
@@ -243,7 +258,8 @@ public class GUICalendarControllerTest {
   public void testEditEventValid() throws Exception {
     controller.go();
     // Create event through the current calendar
-    mockModel.getCurrent().createEvent("Meeting", LocalDateTime.parse("2025-06-19T10:00"), LocalDateTime.parse("2025-06-19T11:00"));
+    mockModel.getCurrent().createEvent("Meeting", LocalDateTime.parse(
+            "2025-06-19T10:00"), LocalDateTime.parse("2025-06-19T11:00"));
 
     mockView.editProperty = PropertyType.SUBJECT;
     mockView.editSubject = "Meeting";
@@ -251,7 +267,8 @@ public class GUICalendarControllerTest {
     mockView.editTo = "2025-06-19T11:00";
     mockView.editValue = "Updated Meeting";
 
-    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED, "editEvent");
+    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED,
+            "editEvent");
     controller.actionPerformed(event);
     waitForEDT();
 
@@ -269,7 +286,8 @@ public class GUICalendarControllerTest {
     mockView.editProperty = PropertyType.SUBJECT;
     mockView.editSubject = "";
 
-    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED, "editEvent");
+    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED,
+            "editEvent");
     controller.actionPerformed(event);
     waitForEDT();
 
@@ -288,7 +306,8 @@ public class GUICalendarControllerTest {
     mockView.editFrom = "";
     mockView.editTo = "";
 
-    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED, "editEvent");
+    ActionEvent event = new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED,
+            "editEvent");
     controller.actionPerformed(event);
     waitForEDT();
 
@@ -366,13 +385,15 @@ public class GUICalendarControllerTest {
     }
 
     @Override
-    public void copyEvent(String eventName, LocalDateTime date, String calendarName, LocalDateTime targetDate) {}
+    public void copyEvent(String eventName, LocalDateTime date, String calendarName,
+                          LocalDateTime targetDate) {}
 
     @Override
     public void copyEvents(LocalDate date, String calendarName, LocalDate targetDate) {}
 
     @Override
-    public void copyEventsInterval(LocalDate startDate, LocalDate endDate, String calendarName, LocalDate targetDate) {}
+    public void copyEventsInterval(LocalDate startDate, LocalDate endDate, String calendarName,
+                                   LocalDate targetDate) {}
 
     @Override
     public List<ISpecificCalendar> getCalendars() {
@@ -445,21 +466,27 @@ public class GUICalendarControllerTest {
     }
 
     @Override
-    public void editEvent(PropertyType property, String subject, LocalDateTime startTime, LocalDateTime endTime, String value) {
-      parentModel.eventsEdited.add(parentModel.new EventEdited(property, subject, startTime, endTime, value));
+    public void editEvent(PropertyType property, String subject, LocalDateTime startTime,
+                          LocalDateTime endTime, String value) {
+      parentModel.eventsEdited.add(parentModel.new EventEdited(property, subject, startTime,
+              endTime, value));
     }
 
     @Override
-    public void createSeriesTimes(String subject, LocalDateTime startTime, LocalDateTime endTime, List<String> repeatDays, int times) {}
+    public void createSeriesTimes(String subject, LocalDateTime startTime, LocalDateTime
+            endTime, List<String> repeatDays, int times) {}
 
     @Override
-    public void createSeriesUntil(String subject, LocalDateTime startTime, LocalDateTime endTime, List<String> repeatDays, LocalDate until) {}
+    public void createSeriesUntil(String subject, LocalDateTime startTime, LocalDateTime
+            endTime, List<String> repeatDays, LocalDate until) {}
 
     @Override
-    public void editEvents(PropertyType property, String subject, LocalDateTime startTime, String value) {}
+    public void editEvents(PropertyType property, String subject, LocalDateTime startTime,
+                           String value) {}
 
     @Override
-    public void editSeries(PropertyType property, String subject, LocalDateTime startTime, String value) {}
+    public void editSeries(PropertyType property, String subject, LocalDateTime startTime,
+                           String value) {}
 
     @Override
     public String printEvents(LocalDate day) { return ""; }
@@ -471,7 +498,9 @@ public class GUICalendarControllerTest {
     public String showStatus(LocalDateTime day) { return "available"; }
 
     @Override
-    public void fullCreate(String subject, LocalDateTime startDate, LocalDateTime endDate, String desc, model.enums.Location location, model.enums.Status status) {}
+    public void fullCreate(String subject, LocalDateTime startDate, LocalDateTime endDate,
+                           String desc, model.enums.Location location, model.enums.Status status)
+    {}
   }
 
   class MockGuiView implements IGuiView {
@@ -532,7 +561,8 @@ public class GUICalendarControllerTest {
     public void updateCalendar() {}
 
     @Override
-    public void setActionListener(java.awt.event.ActionListener listener) { actionListenerSet = true; }
+    public void setActionListener(java.awt.event.ActionListener listener) { actionListenerSet =
+            true; }
 
     @Override
     public void setCalendarsDropdown(List<ISpecificCalendar> calendars) {}

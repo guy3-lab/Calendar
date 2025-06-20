@@ -110,7 +110,8 @@ public class GUIView extends JFrame implements IGuiView {
 
   private JPanel createCenterPanel() {
     calendarPanel = new JPanel(new BorderLayout());
-    calendarPanel.setBorder(BorderFactory.createTitledBorder("Schedule View (Shows up to 10 events)"));
+    calendarPanel.setBorder(BorderFactory.createTitledBorder("Schedule View " +
+            "(Shows up to 10 events)"));
 
     // Create scrollable text area for events
     JTextArea eventsArea = new JTextArea();
